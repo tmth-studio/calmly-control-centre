@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — Launch Components Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+
+      /* Launch category colours — distinct from at-scale product palette */
+      --c-reg: #b45309;       --c-reg-bg: #fef3c7;     --c-reg-border: #e8c79a;
+      --c-ent: #475569;       --c-ent-bg: #f1f5f9;     --c-ent-border: #cbd5dc;
+      --c-cap: #047857;       --c-cap-bg: #d1fae5;     --c-cap-border: #a3d8c2;
+      --c-part: #7c3aed;      --c-part-bg: #ede9fe;    --c-part-border: #c4aff0;
+      --c-trust: #be185d;     --c-trust-bg: #fce7f3;   --c-trust-border: #f0b8d4;
+      --c-ops: #0e7490;       --c-ops-bg: #cffafe;     --c-ops-border: #a8d4dc;
+      --c-gov: #4338ca;       --c-gov-bg: #e0e7ff;     --c-gov-border: #b8c5e8;
+
+      /* Owner tags */
+      --o-founder: #fde8e8;   --o-founder-c: #991b1b;
+      --o-legal: #fef9e6;     --o-legal-c: #854d0e;
+      --o-ext: #f0ebfb;       --o-ext-c: #5b21b6;
+      --o-ops: #d1fae5;       --o-ops-c: #065f46;
+
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 0 0 80px; background: var(--surface); }
+
+    /* Header */
+    .doc-header { background: var(--panel-bg); color: var(--panel-text); padding: 40px 40px 32px; }
+    .doc-header .eyebrow { font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; font-weight: 500; }
+    .doc-header h1 { font-size: 30px; font-weight: 600; color: #fff; margin-bottom: 8px; line-height: 1.25; }
+    .doc-header .subtitle { font-family: var(--font-body); font-size: 16px; color: rgba(255,255,255,0.78); max-width: 820px; line-height: 1.7; margin-bottom: 24px; }
+    .meta-row { display: flex; gap: 24px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.14); padding-top: 18px; }
+    .meta-item { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .meta-item strong { color: rgba(255,255,255,0.88); font-weight: 600; margin-right: 4px; }
+
+    /* Main */
+    .main { padding: 40px 40px 0; }
+    h2 { font-size: 22px; font-weight: 600; margin: 48px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+    h2:first-child { margin-top: 0; }
+    h3 { font-size: 17px; font-weight: 600; margin: 24px 0 10px; }
+    p { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
+
+    /* Governing panel */
+    .gov-panel { background: var(--panel-bg); color: var(--panel-text); padding: 24px 28px; margin-bottom: 32px; }
+    .gov-panel-label { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+    .gov-panel p { color: rgba(255,255,255,0.88); font-family: var(--font-body); font-size: 16px; line-height: 1.7; margin-bottom: 0; }
+
+    /* Inset block */
+    .inset { border-left: 4px solid var(--inset-border); background: var(--accent-light); padding: 14px 18px; margin: 16px 0; }
+    .inset p { margin-bottom: 0; font-size: 15px; color: var(--text); }
+    .inset-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 6px; }
+
+    /* Warning inset (for incomplete-modelling notes) */
+    .warning { border-left: 4px solid var(--warning-border); background: var(--warning-bg); padding: 14px 18px; margin: 16px 0; }
+    .warning p { margin-bottom: 0; font-size: 14px; color: var(--text); }
+    .warning-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--warning-border); margin-bottom: 6px; }
+
+    /* Legend */
+    .legend { background: #fafaf8; border: 1px solid var(--border); padding: 18px 20px; margin-bottom: 36px; }
+    .legend-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .legend-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .legend-group h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
+    .legend-row { font-size: 13px; color: var(--text-secondary); padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+
+    /* Category chips */
+    .chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--tag-radius); margin: 1px 2px 1px 0; letter-spacing: 0.02em; white-space: nowrap; border: 1px solid; }
+    .chip-reg { background: var(--c-reg-bg); color: var(--c-reg); border-color: var(--c-reg-border); }
+    .chip-ent { background: var(--c-ent-bg); color: var(--c-ent); border-color: var(--c-ent-border); }
+    .chip-cap { background: var(--c-cap-bg); color: var(--c-cap); border-color: var(--c-cap-border); }
+    .chip-part { background: var(--c-part-bg); color: var(--c-part); border-color: var(--c-part-border); }
+    .chip-trust { background: var(--c-trust-bg); color: var(--c-trust); border-color: var(--c-trust-border); }
+    .chip-ops { background: var(--c-ops-bg); color: var(--c-ops); border-color: var(--c-ops-border); }
+    .chip-gov { background: var(--c-gov-bg); color: var(--c-gov); border-color: var(--c-gov-border); }
+
+    /* At-scale slice references */
+    .slice { display: inline-block; font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); background: #fafaf8; color: var(--text-secondary); border-radius: 3px; margin: 1px 3px 1px 0; font-weight: 500; }
+    .slice-cust { background: #eff6ff; border-color: #b8c8e8; color: #1e3a8a; }
+    .slice-def { background: #fee2e2; border-color: #f0b4b4; color: #991b1b; }
+    .slice-itp { background: #f5f3ff; border-color: #c4aff0; color: #5b21b6; }
+    .slice-pool { background: #dcfce7; border-color: #a7d4b8; color: #166534; }
+    .slice-law { background: #fef9e6; border-color: #e8c79a; color: #854d0e; }
+    .slice-esc { background: #fde8e8; border-color: #f0b4b4; color: #991b1b; }
+    .slice-all { background: #f1f3f5; border-color: #d0d5dd; color: #4a5568; font-weight: 600; }
+
+    /* Owner tags */
+    .owner-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .o-founder { background: var(--o-founder); color: var(--o-founder-c); }
+    .o-legal { background: var(--o-legal); color: var(--o-legal-c); }
+    .o-ext { background: var(--o-ext); color: var(--o-ext-c); }
+    .o-ops { background: var(--o-ops); color: var(--o-ops-c); }
+
+    /* Overview table */
+    table.overview { width: 100%; border-collapse: collapse; margin-bottom: 32px; font-size: 13px; }
+    table.overview thead th { background: var(--panel-bg); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+    table.overview td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; font-family: var(--font-body); }
+    table.overview tr:nth-child(even) td { background: #fafaf8; }
+    table.overview .id-cell { font-family: var(--font-ui); font-weight: 600; }
+
+    /* Component cards */
+    .component { border: 1px solid var(--border); margin-bottom: 28px; }
+    .component-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .component-header.reg { background: var(--c-reg-bg); border-bottom-color: var(--c-reg-border); }
+    .component-header.ent { background: var(--c-ent-bg); border-bottom-color: var(--c-ent-border); }
+    .component-header.cap { background: var(--c-cap-bg); border-bottom-color: var(--c-cap-border); }
+    .component-header.part { background: var(--c-part-bg); border-bottom-color: var(--c-part-border); }
+    .component-header.trust { background: var(--c-trust-bg); border-bottom-color: var(--c-trust-border); }
+    .component-header.ops { background: var(--c-ops-bg); border-bottom-color: var(--c-ops-border); }
+    .component-header.gov { background: var(--c-gov-bg); border-bottom-color: var(--c-gov-border); }
+    .component-id { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
+    .component-id.reg { color: var(--c-reg); }
+    .component-id.ent { color: var(--c-ent); }
+    .component-id.cap { color: var(--c-cap); }
+    .component-id.part { color: var(--c-part); }
+    .component-id.trust { color: var(--c-trust); }
+    .component-id.ops { color: var(--c-ops); }
+    .component-id.gov { color: var(--c-gov); }
+    .component-name { font-size: 17px; font-weight: 600; color: var(--text); flex: 1; }
+    .component-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    .component-body { padding: 20px 24px; }
+    .state-change { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); font-style: italic; margin-bottom: 18px; padding: 10px 14px; background: #fafaf8; border-left: 3px solid var(--border-strong); }
+    .state-change strong { color: var(--text); font-style: normal; font-family: var(--font-ui); font-weight: 600; }
+
+    .section-block { margin-top: 18px; }
+    .section-block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+
+    /* Activity lists */
+    .activity-list { list-style: none; padding-left: 0; }
+    .activity-list li { padding: 6px 0 6px 22px; border-bottom: 1px dashed var(--border); position: relative; font-size: 14px; font-family: var(--font-body); color: var(--text); line-height: 1.55; }
+    .activity-list li:last-child { border-bottom: none; }
+    .activity-list li::before { content: "→"; position: absolute; left: 4px; color: var(--text-muted); font-size: 13px; top: 6px; }
+
+    /* Requirement grid */
+    .req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+    .req-card { border: 1px solid var(--border); padding: 12px 14px; background: #fafaf8; }
+    .req-card .req-cat { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .req-card p { font-size: 13px; margin-bottom: 0; line-height: 1.55; color: var(--text); }
+    .req-card.full { grid-column: 1 / -1; }
+
+    /* Owner row */
+    .owner-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+    .owner-pair { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #fafaf8; border: 1px solid var(--border); border-radius: 3px; font-size: 13px; }
+    .owner-pair .owner-tag { font-size: 9px; }
+    .owner-pair .owner-name { font-weight: 500; color: var(--text); font-family: var(--font-ui); }
+
+    /* Slice row */
+    .slice-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
+
+    /* Cross-ref tables */
+    table.crossref { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+    table.crossref thead th { background: #f7f7f6; color: var(--text-muted); padding: 10px 12px; text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 2px solid var(--border); }
+    table.crossref td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.crossref tr:last-child td { border-bottom: none; }
+    table.crossref td.role-cell { font-family: var(--font-ui); font-weight: 600; width: 220px; }
+    table.crossref td.role-cell .owner-tag { font-size: 9px; margin-left: 6px; vertical-align: middle; }
+    table.crossref td.touches { font-family: var(--font-body); }
+    table.crossref td.touches .chip { font-family: var(--font-ui); margin: 2px 4px 2px 0; }
+    table.crossref .summary-note { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 4px; display: block; }
+
+    /* Done definition */
+    .done-block { background: #f0fdf4; border: 1px solid #a7d4b8; padding: 10px 14px; margin-top: 10px; }
+    .done-block-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: #166534; margin-bottom: 4px; }
+    .done-block p { font-size: 13px; color: var(--text); margin-bottom: 0; line-height: 1.55; font-family: var(--font-body); }
+
+    /* Footnote */
+    .footnote { font-size: 12px; color: var(--text-muted); font-family: var(--font-body); margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); line-height: 1.65; }
+    .footnote strong { color: var(--text-secondary); font-family: var(--font-ui); }
+    .footnote code { font-family: 'SF Mono', Consolas, monospace; font-size: 11px; background: #f1f3f5; padding: 1px 4px; border-radius: 2px; }
+
+    @media (max-width: 820px) {
+      .doc-header, .main { padding-left: 24px; padding-right: 24px; }
+      .legend-grid { grid-template-columns: 1fr; gap: 16px; }
+      .req-grid { grid-template-columns: 1fr; }
+      .component-body { padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="eyebrow">Calmly · IVE Design Tools · Launch Components Map</div>
+    <h1>Launch Components Map</h1>
+    <p class="subtitle">Sibling document to the at-scale components map. Where the at-scale map describes the operating system in steady state, this map describes the foundation work to get there — the regulatory position, entity stack, capital, founding partnerships, trust foundation, operating infrastructure, and governance that must exist before any at-scale slice can run. Launch components are completed once and maintained; they do not scale with claim volume.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>PCO:</strong> Commercial fast track — UK SME disputes £10k–£50k</div>
+      <div class="meta-item"><strong>Derived from:</strong> Business architecture · ARM constraints · Fin Sim Stage 1 gate</div>
+      <div class="meta-item"><strong>Version:</strong> v1</div>
+      <div class="meta-item"><strong>Date:</strong> 23 May 2026</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Governing thought -->
+    <div class="gov-panel">
+      <div class="gov-panel-label">What this document is</div>
+      <p>The AOM, ARM and Fin Sim are at-scale documents — they model the steady-state operating system. They assume regulatory authorisation, capital, entity stack, founding partnerships and governance exist. This map inventories the work those assumptions hide. Each launch component is a state to be reached, not an activity to be performed repeatedly. Done once, maintained thereafter. Most launch work is founder-led with external advisor support; some hands to the Head of Legal &amp; Operations as the venture matures. Cross-referenced to the at-scale slices each component unblocks.</p>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-grid">
+        <div class="legend-group">
+          <h4>Launch categories</h4>
+          <div class="legend-row"><span class="chip chip-reg">REG</span> Regulatory position — right to operate</div>
+          <div class="legend-row"><span class="chip chip-ent">ENT</span> Entity stack — legal vehicles &amp; structure</div>
+          <div class="legend-row"><span class="chip chip-cap">CAP</span> Capital — Stage 1 funding &amp; reporting</div>
+          <div class="legend-row"><span class="chip chip-part">PART</span> Founding partnerships — first ITP, Pool, law school</div>
+          <div class="legend-row"><span class="chip chip-trust">TRU</span> Trust foundation — brand, credibility, validation</div>
+          <div class="legend-row"><span class="chip chip-ops">OPS</span> Operating infrastructure — systems, HR, finance</div>
+          <div class="legend-row"><span class="chip chip-gov">GOV</span> Governance — decision rights &amp; board</div>
+        </div>
+        <div class="legend-group">
+          <h4>Owners</h4>
+          <div class="legend-row"><span class="owner-tag o-founder">Founder</span> Founder / CEO leads</div>
+          <div class="legend-row"><span class="owner-tag o-legal">H. L&amp;O</span> Head of Legal &amp; Ops leads</div>
+          <div class="legend-row"><span class="owner-tag o-ext">External</span> External advisor / counsel / accountant</div>
+          <div class="legend-row"><span class="owner-tag o-ops">Ops&amp;Fin</span> Operations &amp; Finance leads</div>
+
+          <h4 style="margin-top:14px;">At-scale slices unblocked</h4>
+          <div class="legend-row"><span class="slice slice-cust">Claimant happy path</span></div>
+          <div class="legend-row"><span class="slice slice-def">Defendant motivation</span></div>
+          <div class="legend-row"><span class="slice slice-esc">Defendant escalation</span></div>
+          <div class="legend-row"><span class="slice slice-itp">ITP partnership loop</span></div>
+          <div class="legend-row"><span class="slice slice-pool">Pool Operator infra</span></div>
+          <div class="legend-row"><span class="slice slice-law">Law school infra</span></div>
+          <div class="legend-row"><span class="slice slice-all">All slices</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master overview table -->
+    <h2>Overview — launch components</h2>
+    <table class="overview">
+      <thead>
+        <tr>
+          <th style="width:80px;">ID</th>
+          <th style="width:260px;">Name</th>
+          <th>State to reach</th>
+          <th style="width:160px;">Primary owner</th>
+          <th style="width:140px;">Unblocks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-cell"><span class="chip chip-reg">REG1</span></td>
+          <td>SRA position on claim assignment</td>
+          <td>SRA-authorised position confirmed in writing for Calmly's claim-purchase model</td>
+          <td>Head of Legal &amp; Ops + external counsel</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-reg">REG2</span></td>
+          <td>LASPO compliance framework</td>
+          <td>Documented framework — Qualified Supervisor sign-off, scope-of-service boundaries, escalation rules</td>
+          <td>Head of Legal &amp; Ops</td>
+          <td><span class="slice slice-def">Def motivation</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-reg">REG3</span></td>
+          <td>FCA + AML + GDPR position</td>
+          <td>Written advisor opinions; data and money-flow practices documented; PI cover in place</td>
+          <td>External counsel</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-ent">ENT1</span></td>
+          <td>Calmly Ltd + Pool Operator vehicle</td>
+          <td>Trading entity incorporated; Pool Operator SPV(s) structured; bank accounts open; IP assigned</td>
+          <td>Founder + external counsel + accountant</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-ent">ENT2</span></td>
+          <td>Tax + platform fee structure</td>
+          <td>Tax treatment confirmed for claim-purchase model; platform fee booking location decided</td>
+          <td>External accountant</td>
+          <td><span class="slice slice-cust">Claimant</span> <span class="slice slice-pool">Pool</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-cap">CAP1</span></td>
+          <td>Stage 1 capital raise</td>
+          <td>£475–700k of litigation funder capital committed; term sheet signed; first tranche drawn</td>
+          <td>Founder</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-cap">CAP2</span></td>
+          <td>Funder reporting infrastructure</td>
+          <td>Reporting templates, cadence, data definitions accepted by Stage 1 funder</td>
+          <td>Ops &amp; Finance + Founder</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-part">PART1</span></td>
+          <td>First ITP partnership</td>
+          <td>One ITP partnership signed; referral mechanism and data-sharing terms live</td>
+          <td>Founder</td>
+          <td><span class="slice slice-itp">ITP loop</span> <span class="slice slice-cust">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-part">PART2</span></td>
+          <td>First law school partnership</td>
+          <td>One law school agreement live; student pipeline committed for first cohort; supervision model agreed</td>
+          <td>Head of Legal &amp; Ops + Founder</td>
+          <td><span class="slice slice-law">Law school</span> <span class="slice slice-def">Def motivation</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-part">PART3</span></td>
+          <td>Pool Operator agreement</td>
+          <td>Pool Operator role contracted (in-house or 3rd party); fund flow mechanics signed off</td>
+          <td>Founder + external counsel</td>
+          <td><span class="slice slice-pool">Pool</span> <span class="slice slice-cust">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-trust">TRU1</span></td>
+          <td>Brand + public-facing identity</td>
+          <td>Calmly brand live, regulatory licences visible, value proposition tested with target SME segment</td>
+          <td>Founder</td>
+          <td><span class="slice slice-cust">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-trust">TRU2</span></td>
+          <td>Founding credibility &amp; validation</td>
+          <td>First-mover testimonials, advisory board, third-party endorsement, founder public position</td>
+          <td>Founder</td>
+          <td><span class="slice slice-cust">Claimant</span> <span class="slice slice-itp">ITP loop</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-ops">OPS1</span></td>
+          <td>HR + employment infrastructure</td>
+          <td>Employment contracts, payroll, PI insurance, remote/office stack, HR policies live</td>
+          <td>Operations &amp; Finance</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-ops">OPS2</span></td>
+          <td>Finance &amp; bookkeeping function</td>
+          <td>Bookkeeping live, management accounts cadence agreed, audit trail standards in place</td>
+          <td>External accountant + Ops &amp; Finance</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-gov">GOV1</span></td>
+          <td>Board + decision rights</td>
+          <td>Board constituted, shareholder agreement signed, decision-rights matrix documented (raises, escalations, partner drops)</td>
+          <td>Founder + external counsel</td>
+          <td><span class="slice slice-all">All slices</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset">
+      <div class="inset-label">How to read the detail cards</div>
+      <p>Each component below carries the activities required to reach the state, the requirements for "done", the owner(s), and the at-scale slice(s) it unblocks. Activities are mostly one-off (incorporate, sign, draft, secure) rather than recurring. The "requirements" column captures conditions for legitimate completion drawn from the existing modelling — LASPO floor from ARM, capital floor from Fin Sim Model 2 Stage 1, partnership thresholds from Fin Sim gates, Pool Operator integration from AOM.</p>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- COMPONENT DETAILS                      -->
+    <!-- ====================================== -->
+
+    <h2>Component detail — launch components</h2>
+
+    <!-- REG1 -->
+    <div class="component">
+      <div class="component-header reg">
+        <span class="component-id reg">REG1</span>
+        <span class="component-name">SRA position on claim assignment</span>
+        <span class="component-type">Regulatory · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Calmly's claim-purchase model has a confirmed, defensible SRA position. Either authorised activity, exempt activity, or structured so that the regulated parts sit with the Qualified Supervisor and external counsel.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Engage specialist SRA counsel to map Calmly's model against SRA Handbook</li>
+            <li>Identify the regulated activities in WP1–WP6 and confirm responsibility chain</li>
+            <li>Secure written position from counsel; consider direct SRA engagement if material ambiguity</li>
+            <li>Draft Calmly's regulatory operating manual: what's done by whom, with what supervision</li>
+            <li>Build the audit and record-keeping that demonstrates ongoing compliance</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">LASPO floor (ARM)</div><p>Qualified Supervisor sign-off on WP3 is a hard regulatory requirement. The SRA position must permit the student-draft / supervisor-signoff model that the ARM assumes.</p></div>
+            <div class="req-card"><div class="req-cat">Claim assignment (WP2)</div><p>The legal transfer in WP2 is what makes Calmly the party-in-interest. SRA position must confirm Calmly can hold assigned claims and act on them.</p></div>
+            <div class="req-card"><div class="req-cat">Cost-floor implication</div><p>£258 cost floor (Fin Sim v4) assumes a specific regulatory model. A different SRA outcome could change the cost floor materially.</p></div>
+            <div class="req-card"><div class="req-cat">Maintenance</div><p>Position must be reviewable against SRA Handbook changes. Annual review owned by Head of Legal &amp; Ops at scale.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-legal">H. L&amp;O</span> <span class="owner-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">runs the work</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">SRA specialist counsel</span> <span style="font-size:11px;color:var(--text-muted);">written opinion</span></div>
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">final accountability</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— gating prerequisite for any claim handling</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Written counsel opinion received; Calmly regulatory operating manual signed off; first claim processed under the model with no SRA flag raised.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REG2 -->
+    <div class="component">
+      <div class="component-header reg">
+        <span class="component-id reg">REG2</span>
+        <span class="component-name">LASPO compliance framework</span>
+        <span class="component-type">Regulatory · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Documented LASPO compliance framework covering Qualified Supervisor sign-off (WP3), scope-of-service boundaries, and escalation rules. Trains the at-scale operating roles in what they can and cannot do.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Document the Qualified Supervisor sign-off process for WP3, including criteria, format, audit</li>
+            <li>Define scope-of-service boundaries: what Calmly does, what it doesn't, what triggers referral to external counsel</li>
+            <li>Document escalation rules: when court counsel must be engaged (WP6), at what threshold</li>
+            <li>Build templates and decision trees that operating roles can follow without legal training</li>
+            <li>Train initial Qualified Supervisor; pilot framework on first cohort of cases</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">ARM Constraint 1</div><p>LASPO floor = 0.5 FTE Qualified Supervisor minimum. Framework must accommodate the minimum-volume case.</p></div>
+            <div class="req-card"><div class="req-cat">Student-supervisor ratio</div><p>1 supervisor per 10–15 active students. Framework must specify supervision quality standards, not just sign-off.</p></div>
+            <div class="req-card"><div class="req-cat">Court escalation</div><p>~25% of cases (Fin Sim). Framework must say who decides, at what cost threshold, with what authorisation.</p></div>
+            <div class="req-card"><div class="req-cat">Pilot-then-scale</div><p>First cohort under the framework is also the proof. Quality patterns flagged to Claims Manager (per ARM).</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-legal">H. L&amp;O</span> <span class="owner-name">Head of Legal &amp; Ops</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">LASPO advisor</span> <span style="font-size:11px;color:var(--text-muted);">if needed</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-def">Defendant motivation path</span>
+            <span class="slice slice-law">Law school infra</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— WP3 cannot be produced without this</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Framework documented; first Qualified Supervisor trained; first cohort of WP3s signed off under framework with audit trail intact.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- REG3 -->
+    <div class="component">
+      <div class="component-header reg">
+        <span class="component-id reg">REG3</span>
+        <span class="component-name">FCA + AML + GDPR position + PI cover</span>
+        <span class="component-type">Regulatory · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Written opinions on FCA, AML and GDPR positions; data practices documented; professional indemnity cover in place sized to Stage 1 risk.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>FCA: confirm whether claim purchase + portfolio = regulated financial activity. Specialist opinion.</li>
+            <li>AML: design KYC for claimants and defendants; transaction monitoring for PP1 flows</li>
+            <li>GDPR: define data controller / processor roles across Calmly, Pool Operator, ITP partners, law schools</li>
+            <li>PI cover: secure quotes, size to Stage 1 case mix and value, bind cover before first WP2 contract</li>
+            <li>Build the data audit trail that satisfies PartP1 investor-grade standard (Fin Sim Gate 2→3)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">PartP1 data grade</div><p>Outcomes data must be investor-grade for the securitisation-readiness pack (Gate 2→3). GDPR position must allow cross-LMU aggregation.</p></div>
+            <div class="req-card"><div class="req-cat">PP1 AML</div><p>Pool Operator routes all settlement money. AML procedures must satisfy both Calmly and Pool Operator standards.</p></div>
+            <div class="req-card"><div class="req-cat">FCA risk</div><p>Litigation funder capital + claim portfolio is FCA-sensitive territory. Opinion confirms model is outside regulated perimeter or names the route to authorisation.</p></div>
+            <div class="req-card"><div class="req-cat">PI sizing</div><p>Stage 1 claim values are £10–50k. PI cover must size to claim-value × volume × risk multiplier, not generic professional cover.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">FCA / AML / GDPR counsel</span></div>
+            <div class="owner-pair"><span class="owner-tag o-legal">H. L&amp;O</span> <span class="owner-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">internal owner</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ops">Ops&amp;Fin</span> <span class="owner-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">AML execution</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Three written opinions received; AML procedures live; GDPR ROPA documented; PI cover bound and certificate in file.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENT1 -->
+    <div class="component">
+      <div class="component-header ent">
+        <span class="component-id ent">ENT1</span>
+        <span class="component-name">Calmly Ltd + Pool Operator vehicle</span>
+        <span class="component-type">Entity stack · One-off</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Trading entity (Calmly Ltd) incorporated. Pool Operator SPV(s) structured. Bank accounts open for both. IP (C1–C10 architecture, templates, brand) assigned to Calmly Ltd.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Incorporate Calmly Ltd; agree founder cap table; sign shareholder agreement</li>
+            <li>Design Pool Operator vehicle structure (in-house SPV vs 3rd-party arrangement)</li>
+            <li>Open trading bank account; open Pool Operator account with appropriate ringfencing</li>
+            <li>Assign IP from founder(s) to Calmly Ltd: architecture, brand, templates, processes</li>
+            <li>Document inter-entity flows: how Pool Operator hands platform fee to Calmly Ltd</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">AOM — Pool Operator role</div><p>AOM v4 specifies 1–3 regional Pool Operators at scale. Stage 1 needs at least one. Structure must be replicable.</p></div>
+            <div class="req-card"><div class="req-cat">Fin Sim — fund flow</div><p>Settlement money routes through Pool Operator. Platform fee deducted at that point and lands in Calmly Ltd. Entity flow must support this.</p></div>
+            <div class="req-card"><div class="req-cat">Investor-readiness</div><p>Stage 2→3 securitisation requires clean entity separation between operating company and claim-holding vehicle.</p></div>
+            <div class="req-card"><div class="req-cat">IP location</div><p>C1–C10 design value sits in Calmly Ltd. Founder personal IP must be assigned in writing before Stage 1 raise.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Corporate counsel</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Accountant</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Companies House filings complete; bank accounts open; shareholder agreement signed; IP assignment deed executed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ENT2 -->
+    <div class="component">
+      <div class="component-header ent">
+        <span class="component-id ent">ENT2</span>
+        <span class="component-name">Tax + platform fee structure</span>
+        <span class="component-type">Entity stack · One-off + reviewed</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Tax treatment of claim purchase, settlement receipt, and platform fee confirmed. Platform fee booking location decided (Pool Operator vs Calmly Ltd). VAT position clear.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Confirm tax treatment of claim purchase price (capital vs revenue) at point of WP2</li>
+            <li>Confirm tax treatment of settlement receipt at point of PP1-in</li>
+            <li>Confirm VAT position on platform fee</li>
+            <li>Decide whether platform fee is booked at Pool Operator (deducted from settlement) or at Calmly Ltd (invoiced separately)</li>
+            <li>Document the chosen flow in finance procedures</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Fin Sim — FMOS</div><p>60.3% FMOS at scale is a pre-tax operating margin. Tax structure must not erode it materially below the Fin Sim assumption.</p></div>
+            <div class="req-card"><div class="req-cat">Platform fee point</div><p>WP5 description has Calmly fee deducted before claimant payout. Tax flow must support this without creating VAT leakage.</p></div>
+            <div class="req-card"><div class="req-cat">Investor implication</div><p>Tax structure must be clean for Stage 2 specialist debt and Stage 3 securitisation. Surprises here block gates.</p></div>
+            <div class="req-card"><div class="req-cat">SME claimant tax</div><p>Treatment of the claimant's receipt (claim sale + settlement share) must be clear so Calmly can advise honestly in CP1 / WP1 materials.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Tax accountant</span></div>
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-cust">Claimant happy path</span>
+            <span class="slice slice-pool">Pool Operator infra</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Written tax memo received; platform fee flow documented in finance procedures; first PP1 cycle reconciled cleanly under the chosen structure.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAP1 -->
+    <div class="component">
+      <div class="component-header cap">
+        <span class="component-id cap">CAP1</span>
+        <span class="component-name">Stage 1 capital raise</span>
+        <span class="component-type">Capital · One-off (until Stage 2)</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> £475–700k of Stage 1 capital committed by a litigation funder. Term sheet signed, drawdown mechanics live, first tranche received.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Package the Fin Sim, business architecture and AOM into a funder-grade investment thesis</li>
+            <li>Build funder shortlist; warm intros via founder network or advisor</li>
+            <li>Pitch; negotiate term sheet (cost of capital 25–30% per Fin Sim Model 2)</li>
+            <li>Complete legal documentation and conditions precedent</li>
+            <li>Open drawdown facility; receive first tranche</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Fin Sim — capital floor</div><p>£475–700k Stage 1 capital sized to working capital at 40–80 claims/month with claim purchase price as primary use.</p></div>
+            <div class="req-card"><div class="req-cat">Cost of capital</div><p>25–30% blended cost of capital at Stage 1 (litigation funder). Drives the cost floor — every basis point matters.</p></div>
+            <div class="req-card"><div class="req-cat">Gate to Stage 2</div><p>Stage 2 specialist debt at 15–18% requires demonstrated cohort returns. Stage 1 reporting must capture data that proves this.</p></div>
+            <div class="req-card"><div class="req-cat">Dependency on REG1+REG3</div><p>Funders will not commit until regulatory position is confirmed. Sequencing matters: REG before CAP1 close.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Capital advisor / lawyer</span> <span style="font-size:11px;color:var(--text-muted);">term sheet support</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Term sheet signed; conditions precedent met; first drawdown received in Pool Operator account; first claim purchased.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAP2 -->
+    <div class="component">
+      <div class="component-header cap">
+        <span class="component-id cap">CAP2</span>
+        <span class="component-name">Funder reporting infrastructure</span>
+        <span class="component-type">Capital · One-off + recurring</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Reporting templates and cadence agreed with Stage 1 funder. Data definitions documented. First report delivered and accepted.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Agree report content, cadence, data definitions with funder during term-sheet negotiation</li>
+            <li>Build the data capture and aggregation pipeline that produces the report (links to OPS2 and PartP1 at scale)</li>
+            <li>Establish cohort definitions for tracking returns (Stage 2→3 gate-relevant)</li>
+            <li>Deliver and iterate first reports until accepted as standard</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Stage 2 gate prep</div><p>Stage 2 specialist debt requires demonstrated cohort returns. Reporting infrastructure must capture data that proves the FMOS chain.</p></div>
+            <div class="req-card"><div class="req-cat">Definitions</div><p>Cohort = group of claims purchased in a defined window. Returns = realised settlement value minus claim cost. Definitions must match Stage 2 lender expectations.</p></div>
+            <div class="req-card"><div class="req-cat">Frequency</div><p>Monthly probable for Stage 1 funder; less than monthly is unusual at this stage.</p></div>
+            <div class="req-card"><div class="req-cat">Investor-grade</div><p>Same data feeds PartP1 (ITP outcomes report). Building once, used twice.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-ops">Ops&amp;Fin</span> <span class="owner-name">Operations &amp; Finance</span></div>
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">funder relationship</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All slices (data spine)</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— also unblocks future Stage 2 raise</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>First report delivered to funder and accepted; cohort tracking running; report cadence stable.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART1 -->
+    <div class="component">
+      <div class="component-header part">
+        <span class="component-id part">PART1</span>
+        <span class="component-name">First ITP partnership</span>
+        <span class="component-type">Founding partnership · One-off (template)</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> One ITP partnership signed. Referral mechanism live (defines how the ITP sends a claimant to CP1). Data-sharing terms agreed (defines how PartP1 outcomes flow back). This first deal is the template for the next 14+.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Identify and engage candidate ITP partners with relevant claimant flow</li>
+            <li>Articulate the value exchange: claim flow into Calmly, outcomes data back to ITP, joint credibility</li>
+            <li>Negotiate referral mechanism, fees, data-sharing terms</li>
+            <li>Sign partnership agreement; integrate into CP1 inbound and PartP1 outbound</li>
+            <li>Document the deal structure for replication at Stage 2 (15+ partnerships)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">C7 channel mix (Fin Sim)</div><p>60% of CAC blend at scale comes from ITP referrals at £25 NTP fee. First partnership must validate this assumption is achievable.</p></div>
+            <div class="req-card"><div class="req-cat">C8 lock-in (AOM)</div><p>PartP1 outcomes report builds switching cost via data dependency. First partnership must include data flowback to seed C8.</p></div>
+            <div class="req-card"><div class="req-cat">Concentration limit</div><p>By Stage 2→3, no single ITP &gt;30% of claim supply (PartP1 requirement). First partnership term must not lock Calmly out of broader market.</p></div>
+            <div class="req-card"><div class="req-cat">Template requirement</div><p>Deal terms must be replicable to 3+ at Stage 2 and 15+ at scale. Bespoke clauses hard to repeat are red flags.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-legal">H. L&amp;O</span> <span class="owner-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">contract + data terms</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-itp">ITP partnership loop</span>
+            <span class="slice slice-cust">Claimant happy path</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— C7 ITP channel of CP1 doesn't operate without this</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Partnership signed; first referral received and converted to a Calmly inquiry; first outcomes report delivered to ITP partner.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART2 -->
+    <div class="component">
+      <div class="component-header part">
+        <span class="component-id part">PART2</span>
+        <span class="component-name">First law school partnership</span>
+        <span class="component-type">Founding partnership · One-off (template)</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> One law school agreement live. Student pipeline committed for first cohort. Supervision model agreed between Calmly's Qualified Supervisor and the law school faculty. Template ready for multi-university expansion.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Identify and engage candidate law schools — clinic programmes, professional skills modules, employability tracks</li>
+            <li>Define value exchange: student development + credit/CV, Calmly gets supervised assessor capacity</li>
+            <li>Agree cohort sizing, term-time scheduling, quality standards</li>
+            <li>Align supervision model with LASPO framework (REG2)</li>
+            <li>Sign agreement; onboard first student cohort</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">ARM Constraint 2</div><p>Student capacity batched to term-time. First partnership must specify how non-term-time WP3 demand is handled.</p></div>
+            <div class="req-card"><div class="req-cat">Quality floor</div><p>Qualified Supervisor sign-off (REG2) sits above student work. First partnership must commit students to Calmly methodology and standards.</p></div>
+            <div class="req-card"><div class="req-cat">Multi-university template</div><p>To smooth term seasonality at scale, Calmly will need 2–3+ law school partnerships. Template must be repeatable across universities with different governance.</p></div>
+            <div class="req-card"><div class="req-cat">RCF methodology</div><p>WP3 method depends on Reference Class Forecasting. Partnership must allow Calmly to train and assess students on this method.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-legal">H. L&amp;O</span> <span class="owner-name">Head of Legal &amp; Ops</span></div>
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">positioning</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-law">Law school infra</span>
+            <span class="slice slice-def">Defendant motivation path</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Agreement signed; first student cohort onboarded; first WP3 drafted by student and signed off by Qualified Supervisor under the partnership.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PART3 -->
+    <div class="component">
+      <div class="component-header part">
+        <span class="component-id part">PART3</span>
+        <span class="component-name">Pool Operator agreement</span>
+        <span class="component-type">Founding partnership · One-off</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Pool Operator role contracted — either in-house SPV with documented operating procedures, or 3rd-party operator with service agreement. Fund flow mechanics signed off. PP1 routing live.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Decide in-house vs 3rd party (depends on regulatory advice, cost, control needs)</li>
+            <li>Structure the vehicle (links to ENT1); document the operating procedures</li>
+            <li>Agree fund flow: how claim purchase money flows in, how settlements flow out, how platform fee is taken</li>
+            <li>Agree reporting back to Calmly Ltd and to Stage 1 funder (links to CAP2)</li>
+            <li>Test the flow with a controlled first claim before opening at volume</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">AOM — Pool Operator</div><p>AOM v4 specifies Pool Operator as a partner in PP1 and WP5 flows. Must exist before any PP1 cycle runs.</p></div>
+            <div class="req-card"><div class="req-cat">Regional scaling</div><p>1–3 regional Pool Operators at scale (AOM). Stage 1 needs 1. Architecture must allow replication.</p></div>
+            <div class="req-card"><div class="req-cat">Investor-grade</div><p>Stage 3 securitisation requires Pool Operator structure that can hold pooled claim portfolios with clean separation from Calmly Ltd.</p></div>
+            <div class="req-card"><div class="req-cat">Working capital</div><p>WC peak ~£2.2M at scale flows through Pool Operator. Banking and treasury setup must support this scale.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Corporate / financial counsel</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ops">Ops&amp;Fin</span> <span class="owner-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">flow execution</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-pool">Pool Operator infra</span>
+            <span class="slice slice-cust">Claimant happy path</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— PP1 cannot run without this</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Pool Operator account open; operating procedures documented; first claim purchase routed cleanly; first settlement received and platform fee booked.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRU1 -->
+    <div class="component">
+      <div class="component-header trust">
+        <span class="component-id trust">TRU1</span>
+        <span class="component-name">Brand + public-facing identity</span>
+        <span class="component-type">Trust foundation · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Calmly brand live. Regulatory licences visible on the website. Value proposition tested with target SME segment. Marketing Manager has working materials to deploy in CP1.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Develop brand identity (name, mark, voice) appropriate for SME financial-distress audience</li>
+            <li>Build public-facing site that displays regulatory standing, leadership, value proposition</li>
+            <li>Test the value proposition with target SME claimants — does the offer convert?</li>
+            <li>Document the brand standards Marketing Manager will operate to at scale</li>
+            <li>Build the testimonial / case-study capture process into WP5 closure</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">CP1 input</div><p>Marketing Manager runs CP1 at scale; brand is the input she works with. Without a tested brand, CP1 launch is a research exercise.</p></div>
+            <div class="req-card"><div class="req-cat">C4 trust (architecture)</div><p>Business architecture identifies trust as a structural concern. Brand is the consumer-facing surface of that trust.</p></div>
+            <div class="req-card"><div class="req-cat">SME-specific tone</div><p>Audience is SMEs in financial distress. Tone must respect that — not aggressive, not patronising. Tested with the segment.</p></div>
+            <div class="req-card"><div class="req-cat">Licences visible</div><p>SRA and other regulatory positions (REG1, REG3) must be displayed clearly. Trust is built from visible permission to operate.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Brand / web partner</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-cust">Claimant happy path</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— CP1 has no surface without it</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Brand live; site published with regulatory standing; value proposition tested with at least 10 target SMEs and converting to inquiry.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRU2 -->
+    <div class="component">
+      <div class="component-header trust">
+        <span class="component-id trust">TRU2</span>
+        <span class="component-name">Founding credibility &amp; validation</span>
+        <span class="component-type">Trust foundation · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> First testimonials captured. Advisory board constituted. Third-party endorsement secured (industry, academic, or government). Founder's public position visible (talks, articles, interviews).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Constitute advisory board: senior practitioners, ITP voices, academic credibility</li>
+            <li>Secure first third-party endorsement (industry body, academic affiliation, government engagement)</li>
+            <li>Capture testimonials from first 5–10 successful WP5 closures</li>
+            <li>Establish founder's public position via writing, speaking, expert commentary</li>
+            <li>Build the case-study capture pipeline into WP5 closure (links to PartP1 data)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">ITP credibility</div><p>ITPs only refer to credible partners. PART1 close depends on TRU2 reaching a working level.</p></div>
+            <div class="req-card"><div class="req-cat">First-mover risk</div><p>Calmly's model is novel. Without third-party validation, claimants and partners default to scepticism.</p></div>
+            <div class="req-card"><div class="req-cat">Feeds CP1 + PartP1</div><p>Testimonials and case studies become Marketing Manager content (CP1) and outcomes report context (PartP1).</p></div>
+            <div class="req-card"><div class="req-cat">Founder bandwidth</div><p>Founder time is the bottleneck. Public position takes 6–12 months to compound; start early.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-cust">Claimant happy path</span>
+            <span class="slice slice-itp">ITP partnership loop</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Advisory board live; first third-party endorsement secured; first 5 testimonials captured; founder published in 2+ relevant outlets.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPS1 -->
+    <div class="component">
+      <div class="component-header ops">
+        <span class="component-id ops">OPS1</span>
+        <span class="component-name">HR + employment infrastructure</span>
+        <span class="component-type">Operating infrastructure · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Employment contracts ready. Payroll function live. PI insurance bound. Office / remote stack chosen and provisioned. HR policies (handbook, grievance, performance) drafted.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Draft employment contracts for each ARM role; align with role descriptions in ARM Section 2</li>
+            <li>Set up payroll and benefits provider</li>
+            <li>Bind PI insurance (links to REG3) and other operating insurances</li>
+            <li>Choose and provision tech stack: comms, file sharing, case management, e-signature</li>
+            <li>Draft minimum HR policy set (handbook, grievance, performance, leave)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">ARM role chain</div><p>Every direct, managerial and support role in ARM Section 2/3 needs a contract before they start work.</p></div>
+            <div class="req-card"><div class="req-cat">PI sizing</div><p>PI cover sized to claim values and volume (links to REG3). Must be live before first WP2 contract.</p></div>
+            <div class="req-card"><div class="req-cat">Audit trail</div><p>Case management and filing must support the audit needs of REG1 + REG2 + CAP2 reporting.</p></div>
+            <div class="req-card"><div class="req-cat">Remote vs office</div><p>ARM is geography-light at Stage 1. Remote-first is probable; tech stack must support distributed collaboration.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-ops">Ops&amp;Fin</span> <span class="owner-name">Operations &amp; Finance</span></div>
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">first hires</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>First three hires onboarded under contract; payroll cycle complete; PI cover bound; case management system live.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPS2 -->
+    <div class="component">
+      <div class="component-header ops">
+        <span class="component-id ops">OPS2</span>
+        <span class="component-name">Finance &amp; bookkeeping function</span>
+        <span class="component-type">Operating infrastructure · One-off + recurring</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Bookkeeping live. Management accounts cadence agreed. Audit trail standards in place. Foundation for CAP2 funder reporting and PartP1 outcomes data.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Engage external accountant; set up accounting software</li>
+            <li>Define chart of accounts that supports the Fin Sim cost-floor categories (direct labour, indirect, consumables, WC investment)</li>
+            <li>Set management accounts cadence (monthly probable)</li>
+            <li>Design audit trail standards covering claim records, money flows, regulatory evidence</li>
+            <li>Document the data definitions that link bookkeeping to CAP2 funder reporting and to PartP1 outcomes</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Fin Sim alignment</div><p>Chart of accounts must produce the cost categories the Fin Sim uses, so model and reality reconcile.</p></div>
+            <div class="req-card"><div class="req-cat">Cohort tracking</div><p>Cohort returns are the Stage 2 gate condition. Bookkeeping must let cohort margin be reported month-by-month.</p></div>
+            <div class="req-card"><div class="req-cat">Pool Operator separation</div><p>Pool Operator books must be cleanly separable from Calmly Ltd books. Investor-grade requirement.</p></div>
+            <div class="req-card"><div class="req-cat">Audit-grade evidence</div><p>SRA, LASPO, AML, GDPR all create evidence requirements. Filing standards designed in early.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Accountant</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ops">Ops&amp;Fin</span> <span class="owner-name">Operations &amp; Finance</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All slices (data spine)</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>First management accounts produced; cohort reporting structure live; audit trail standards documented and being followed.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- GOV1 -->
+    <div class="component">
+      <div class="component-header gov">
+        <span class="component-id gov">GOV1</span>
+        <span class="component-name">Board + decision rights</span>
+        <span class="component-type">Governance · One-off + maintained</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State to reach:</strong> Board constituted. Shareholder agreement signed. Decision-rights matrix documented — who decides on capital raises, court escalations, partner drops, scope changes, hiring. Reserved matters list agreed with Stage 1 funder.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Constitute board: founder + independent + Stage 1 funder observer or director</li>
+            <li>Agree shareholder agreement: equity, vesting, reserved matters, exit terms</li>
+            <li>Document decision-rights matrix: which decisions sit with founder, board, operating roles</li>
+            <li>Agree reporting cadence to board and to Stage 1 funder (links to CAP2)</li>
+            <li>Document policies for the recurring high-stakes decisions: court escalation (WP6), partner drop (PartP1), capital raise gates</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Stage gates</div><p>Fin Sim Model 2 has three stage gates. Each transition is a board-level decision. Governance must define how that decision is made.</p></div>
+            <div class="req-card"><div class="req-cat">Court escalation</div><p>WP6 court escalation per case is operational; aggregate court-cost exposure is governance. Threshold and approval path must be defined.</p></div>
+            <div class="req-card"><div class="req-cat">Partner concentration</div><p>PartP1 specifies no single ITP &gt;30% of claim supply. When that limit is approached, who decides what to do?</p></div>
+            <div class="req-card"><div class="req-cat">Founder accountability</div><p>Founder + CEO is single role early. Decision-rights matrix prevents founder bottleneck as headcount grows past 15.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Owner</div>
+          <div class="owner-row">
+            <div class="owner-pair"><span class="owner-tag o-founder">Founder</span> <span class="owner-name">Founder / CEO</span></div>
+            <div class="owner-pair"><span class="owner-tag o-ext">External</span> <span class="owner-name">Corporate counsel</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Unblocks</div>
+          <div class="slice-row">
+            <span class="slice slice-all">All at-scale slices</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— enables Stage 2 and Stage 3 gate decisions</span>
+          </div>
+        </div>
+
+        <div class="done-block">
+          <div class="done-block-label">Done when</div>
+          <p>Board first meeting held; shareholder agreement signed; decision-rights matrix circulated and acknowledged by operating roles.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- CROSS-REFERENCE                        -->
+    <!-- ====================================== -->
+
+    <h2>Cross-reference — launch components by owner</h2>
+    <p>Founder track vs Head of Legal &amp; Ops track vs external advisor track. Useful for parallelising work.</p>
+
+    <table class="crossref">
+      <thead>
+        <tr>
+          <th>Owner</th>
+          <th>Launch components led</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role-cell">Founder / CEO <span class="owner-tag o-founder">Founder</span></td>
+          <td class="touches">
+            <span class="chip chip-cap">CAP1</span>
+            <span class="chip chip-ent">ENT1</span>
+            <span class="chip chip-part">PART1</span>
+            <span class="chip chip-part">PART3</span>
+            <span class="chip chip-trust">TRU1</span>
+            <span class="chip chip-trust">TRU2</span>
+            <span class="chip chip-gov">GOV1</span>
+            <span class="summary-note">External-facing, relationship-heavy, one-off. The founder track is largely the launch critical path.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Head of Legal &amp; Ops <span class="owner-tag o-legal">H. L&amp;O</span></td>
+          <td class="touches">
+            <span class="chip chip-reg">REG1</span>
+            <span class="chip chip-reg">REG2</span>
+            <span class="chip chip-part">PART2</span>
+            <span class="summary-note">Compliance-heavy, framework-building. Requires the role to be hired early (often the second hire).</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Operations &amp; Finance <span class="owner-tag o-ops">Ops&amp;Fin</span></td>
+          <td class="touches">
+            <span class="chip chip-cap">CAP2</span>
+            <span class="chip chip-ops">OPS1</span>
+            <span class="chip chip-ops">OPS2</span>
+            <span class="summary-note">Infrastructure-heavy, recurring after launch. Sets the data spine that everything else reads from.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">External advisors <span class="owner-tag o-ext">External</span></td>
+          <td class="touches">
+            <span class="chip chip-reg">REG3</span>
+            <span class="chip chip-ent">ENT2</span>
+            <span class="summary-note">Plus material support on REG1, ENT1, CAP1, PART3, OPS1, GOV1. The external bench is wide; the budget for it is in launch capital, not in unit economics.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset">
+      <div class="inset-label">What this view exposes</div>
+      <p>The founder is the single highest-touch launch owner (7 components). Head of Legal &amp; Ops carries 3 components but is on the critical path for regulatory work that gates everything. Operations &amp; Finance carries the data spine that future reporting depends on. External advisor spend is significant in launch and largely invisible in the at-scale unit economics — worth modelling separately.</p>
+    </div>
+
+    <!-- Cross-reference: by slice -->
+    <h2>Cross-reference — launch components by at-scale slice unblocked</h2>
+    <p>One row per at-scale slice. Shows the launch prerequisites before each slice can run.</p>
+
+    <table class="crossref">
+      <thead>
+        <tr>
+          <th>At-scale slice</th>
+          <th>Launch prerequisites</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role-cell">All slices</td>
+          <td class="touches">
+            <span class="chip chip-reg">REG1</span>
+            <span class="chip chip-reg">REG3</span>
+            <span class="chip chip-ent">ENT1</span>
+            <span class="chip chip-cap">CAP1</span>
+            <span class="chip chip-cap">CAP2</span>
+            <span class="chip chip-ops">OPS1</span>
+            <span class="chip chip-ops">OPS2</span>
+            <span class="chip chip-gov">GOV1</span>
+            <span class="summary-note">8 components gate <em>everything</em>. These are the critical path.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Claimant happy path</td>
+          <td class="touches">
+            <span class="chip chip-ent">ENT2</span>
+            <span class="chip chip-part">PART1</span>
+            <span class="chip chip-part">PART3</span>
+            <span class="chip chip-trust">TRU1</span>
+            <span class="chip chip-trust">TRU2</span>
+            <span class="summary-note">Plus the 8 all-slice prerequisites. The claimant journey has the most additional launch dependencies.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Defendant motivation path</td>
+          <td class="touches">
+            <span class="chip chip-reg">REG2</span>
+            <span class="chip chip-part">PART2</span>
+            <span class="summary-note">Plus all-slice. LASPO framework + first law school are the slice-specific gates.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Defendant escalation path</td>
+          <td class="touches">
+            <span class="chip chip-reg">REG2</span>
+            <span class="summary-note">Plus all-slice. LASPO framework also specifies court-escalation rules.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">ITP partnership loop</td>
+          <td class="touches">
+            <span class="chip chip-part">PART1</span>
+            <span class="chip chip-trust">TRU2</span>
+            <span class="summary-note">Plus all-slice. Founding credibility + first ITP. The ITP won't sign without TRU2.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Pool Operator infra</td>
+          <td class="touches">
+            <span class="chip chip-ent">ENT2</span>
+            <span class="chip chip-part">PART3</span>
+            <span class="summary-note">Plus all-slice.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Law school infra</td>
+          <td class="touches">
+            <span class="chip chip-reg">REG2</span>
+            <span class="chip chip-part">PART2</span>
+            <span class="summary-note">Plus all-slice.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warning">
+      <div class="warning-label">Worth flagging</div>
+      <p>External advisor spend (REG1, REG3, ENT1, ENT2, CAP1, PART3, OPS2, GOV1) is significant during launch and is mostly invisible in the at-scale Fin Sim cost floor. A separate launch budget should be modelled — probably £80–150k of advisor fees plus the founder time. This is consistent with the Fin Sim Stage 1 raise (£475–700k) but worth pricing as its own line so it doesn't get lost.</p>
+    </div>
+
+    <!-- Source note -->
+    <div class="footnote">
+      <p><strong>Document.</strong> Calmly — Launch Components Map · v1 · 23 May 2026. Sibling to the at-scale Components / Activity / Owner / Journey map. Derives launch components from what is implied in the existing Vault docs — regulatory floor from ARM, capital floor from Fin Sim Model 2 Stage 1, partnership thresholds from Fin Sim gates, Pool Operator integration from AOM, trust structure from business architecture LHS MCL verdict.</p>
+      <p style="margin-top:8px;"><strong>Out of scope.</strong> Stage 2 and Stage 3 transition work (treated as recurring launch work at each gate, not the initial launch). Phase II geography/segment expansion (separate launch cycle per new venture instance).</p>
+      <p style="margin-top:8px;"><strong>Open items.</strong> (1) External advisor budget needs a dedicated line in the Fin Sim, separate from at-scale costs. (2) Pool Operator in-house vs 3rd-party decision (PART3) drives REG1, REG3 and ENT1 detail — needs an early call. (3) The "founding credibility" component (TRU2) compounds over time; worth modelling as a parallel track that starts at month 0 rather than being a launch sprint.</p>
+      <p style="margin-top:8px;"><strong>Saved to:</strong> <code>04-Projects/FinTech_Justice/calmly-launch-components-map-v1.html</code></p>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.container -->
+</body>
+</html>

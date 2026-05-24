@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — Validation Plan · 23 May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1; --surface: #ffffff; --text: #0f1923;
+      --text-secondary: #4a5568; --text-muted: #718096;
+      --border: #dde1e7; --accent: #1f4fa8; --accent-light: #e8eef8;
+      --panel-bg: #0f2744; --panel-text: #ffffff;
+      --green-bg: #e6f4ec; --green-text: #166534; --green-border: #a7d4b8;
+      --red-bg: #fde8e8; --red-text: #991b1b; --red-border: #f0b4b4;
+      --yellow-bg: #fef9e6; --yellow-text: #854d0e; --yellow-border: #f0d98a;
+      --orange-bg: #fff3e0; --orange-text: #b45309; --orange-border: #e8c79a;
+      --grey-bg: #f1f3f5; --grey-text: #4a5568; --grey-border: #d0d5dd;
+      --t4-bg: #fde8e8; --t4-text: #991b1b; --t4-border: #f0b4b4;
+      --t3-bg: #fef9e6; --t3-text: #854d0e; --t3-border: #f0d98a;
+      --t2-bg: #e6f4ec; --t2-text: #166534; --t2-border: #a7d4b8;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 1000px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 0 0 100px; background: var(--surface); }
+
+    /* Header */
+    .doc-header { background: var(--panel-bg); color: var(--panel-text); padding: 40px 40px 32px; }
+    .doc-header .eyebrow { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; font-weight: 600; }
+    .doc-header h1 { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 8px; line-height: 1.2; }
+    .doc-header .subtitle { font-family: var(--font-body); font-size: 15px; color: rgba(255,255,255,0.72); max-width: 760px; line-height: 1.7; margin-bottom: 22px; }
+    .meta-row { display: flex; gap: 28px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; }
+    .meta-item { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .meta-item strong { color: rgba(255,255,255,0.85); font-weight: 600; margin-right: 4px; }
+
+    /* Main */
+    .main { padding: 36px 40px 0; }
+    h2 { font-size: 19px; font-weight: 600; margin: 44px 0 14px; border-top: 1px solid var(--border); padding-top: 28px; }
+    h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+    h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+    p { font-family: var(--font-body); font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
+
+    /* Principle panel */
+    .principle { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 18px 22px; margin-bottom: 28px; }
+    .principle-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 8px; }
+    .principle p { font-size: 15px; color: var(--text); margin-bottom: 0; line-height: 1.65; }
+
+    /* Tier legend */
+    .tier-legend { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+    .tier-def { display: flex; align-items: flex-start; gap: 10px; padding: 12px 16px; border: 1px solid var(--border); flex: 1; min-width: 200px; }
+    .tier-tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--tag-radius); border: 1px solid; flex-shrink: 0; margin-top: 2px; }
+    .tier-def .td-body { flex: 1; }
+    .tier-def .td-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .tier-def .td-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* Slice overview map */
+    .slice-map { width: 100%; border-collapse: collapse; margin: 12px 0 28px; font-size: 13px; }
+    .slice-map thead th { background: var(--panel-bg); color: #fff; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .slice-map td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .slice-map tr:last-child td { border-bottom: none; }
+    .slice-map .order-cell { font-size: 20px; font-weight: 700; color: var(--text-muted); text-align: center; width: 44px; }
+    .slice-map .slice-name { font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .slice-map .slice-why { font-size: 12px; color: var(--text-muted); font-style: italic; }
+    .slice-map .flow-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+
+    /* Tags/chips */
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: var(--tag-radius); border: 1px solid; white-space: nowrap; }
+    .tag-t4 { background: var(--t4-bg); color: var(--t4-text); border-color: var(--t4-border); }
+    .tag-t3 { background: var(--t3-bg); color: var(--t3-text); border-color: var(--t3-border); }
+    .tag-t2 { background: var(--t2-bg); color: var(--t2-text); border-color: var(--t2-border); }
+    .tag-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-grey { background: var(--grey-bg); color: var(--grey-text); border-color: var(--grey-border); }
+    .tag-orange { background: var(--orange-bg); color: var(--orange-text); border-color: var(--orange-border); }
+    .tag-accent { background: var(--accent-light); color: var(--accent); border-color: #b8c8e8; }
+
+    /* Slice cards */
+    .slice-card { border: 1px solid var(--border); margin-bottom: 32px; }
+    .slice-card-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 18px; }
+    .slice-num { width: 40px; height: 40px; min-width: 40px; background: var(--panel-bg); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+    .slice-header-body { flex: 1; }
+    .slice-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .slice-what { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+    .slice-flows-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .slice-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-right: 4px; }
+
+    .slice-card-body { padding: 20px 24px; }
+
+    /* Min build block */
+    .min-build { background: #fafaf9; border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 18px; }
+    .min-build-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+    .min-build ul { list-style: none; padding: 0; }
+    .min-build li { font-size: 13px; color: var(--text); padding: 4px 0 4px 18px; position: relative; border-bottom: 1px dashed var(--border); }
+    .min-build li:last-child { border-bottom: none; }
+    .min-build li::before { content: "→"; position: absolute; left: 2px; color: var(--text-muted); }
+
+    /* T4 flow blocks */
+    .t4-block { border-left: 3px solid var(--t4-border); background: var(--t4-bg); padding: 14px 18px; margin-bottom: 10px; }
+    .t4-block-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .t4-flow-id { font-size: 13px; font-weight: 700; color: var(--t4-text); }
+    .t4-flow-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .t4-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+    .t4-row { background: rgba(255,255,255,0.6); padding: 8px 10px; }
+    .t4-row .tr-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--t4-text); margin-bottom: 3px; }
+    .t4-row .tr-value { font-size: 13px; color: var(--text); line-height: 1.5; font-family: var(--font-body); }
+    .t4-row.fail-row { grid-column: 1 / -1; background: rgba(153,27,27,0.07); border-left: 2px solid var(--t4-border); }
+    .t4-row.fail-row .tr-label { color: var(--red-text); }
+
+    /* T3/T2 compact list */
+    .lower-flows { margin-top: 14px; }
+    .lower-flows-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 8px; }
+    .lower-flow-row { display: flex; gap: 10px; align-items: baseline; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+    .lower-flow-row:last-child { border-bottom: none; }
+    .lower-flow-id { font-weight: 600; color: var(--text); min-width: 40px; }
+    .lower-flow-name { color: var(--text-secondary); flex: 1; }
+    .lower-flow-note { font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+    /* Go/no-go gate */
+    .gate-block { background: var(--panel-bg); color: var(--panel-text); padding: 16px 20px; margin-top: 18px; display: flex; gap: 16px; align-items: flex-start; }
+    .gate-block .gate-icon { font-size: 20px; flex-shrink: 0; }
+    .gate-block .gate-body { flex: 1; }
+    .gate-block .gate-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+    .gate-block .gate-q { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .gate-block .gate-desc { font-family: var(--font-body); font-size: 13px; color: rgba(255,255,255,0.72); line-height: 1.6; }
+
+    /* Cross-cutting risks */
+    .risk-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0; }
+    .risk-table thead th { background: #f7f7f6; color: var(--text-muted); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+    .risk-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .risk-table tr:last-child td { border-bottom: none; }
+    .risk-table .risk-id { font-weight: 700; color: var(--t4-text); }
+
+    /* Don't build list */
+    .defer-list { border: 1px solid var(--border); }
+    .defer-item { display: flex; gap: 14px; padding: 12px 18px; border-bottom: 1px dashed var(--border); align-items: flex-start; font-size: 13px; }
+    .defer-item:last-child { border-bottom: none; }
+    .defer-icon { font-size: 15px; flex-shrink: 0; color: var(--text-muted); }
+    .defer-body { flex: 1; }
+    .defer-body strong { color: var(--text); font-family: var(--font-ui); }
+    .defer-body .defer-why { color: var(--text-muted); font-size: 12px; margin-top: 2px; display: block; }
+
+    /* Warning */
+    .warning { border-left: 4px solid var(--orange-border); background: var(--orange-bg); padding: 14px 18px; margin: 16px 0; }
+    .warning-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--orange-text); margin-bottom: 6px; }
+    .warning p { font-size: 14px; color: var(--text); margin-bottom: 0; line-height: 1.6; }
+
+    /* Dependency note */
+    .dep-note { font-size: 12px; color: var(--text-muted); background: #fafaf9; border: 1px solid var(--border); padding: 8px 12px; margin: 10px 0; font-style: italic; }
+    .dep-note strong { color: var(--text-secondary); font-family: var(--font-ui); font-style: normal; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="doc-header">
+    <div class="eyebrow">Calmly · TRR Preparation · Validation Plan</div>
+    <h1>Slice Validation Plan</h1>
+    <p class="subtitle">Organises the build-and-test phase by customer journey slice, not by flow. Each slice has a minimum build, T4 assumptions called out explicitly, acceptance criteria, and a go/no-go gate. Downstream slices are not designed until the upstream T4 tests pass.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>Date:</strong> 23 May 2026</div>
+      <div class="meta-item"><strong>Gate:</strong> CDR ✓ → TRR preparation</div>
+      <div class="meta-item"><strong>Derives from:</strong> calmly-cdr-package-2026-05-22.html · calmly-design-definition-2026-05-22.html</div>
+      <div class="meta-item"><strong>Slices:</strong> 5 · T4 flows: 6 · Updated: Slice 1 two-step (CP-ITP + PartP1)</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Governing principle -->
+    <div class="principle" style="margin-top: 32px;">
+      <div class="principle-label">Governing principle</div>
+      <p>Don't design or build a component until the upstream T4 assumptions it depends on have passed validation. The architecture is designed; the question is whether the assumptions it rests on are true. T4 assumptions are the ones we don't know — they require real-world tests, not simulations. T3 and T2 flows carry implementation risk, not architectural risk. Build sequence follows slice priority. Slice priority follows risk.</p>
+    </div>
+
+    <!-- Tier legend -->
+    <h2>Assumption tiers</h2>
+    <div class="tier-legend">
+      <div class="tier-def">
+        <span class="tier-tag tag-t4">T4</span>
+        <div class="td-body">
+          <div class="td-name">Untested — architectural risk</div>
+          <div class="td-desc">No published analogue. Must be tested with real participants before committing downstream build. Failure here requires architectural redesign, not just execution adjustment.</div>
+        </div>
+      </div>
+      <div class="tier-def">
+        <span class="tier-tag tag-t3">T3</span>
+        <div class="td-body">
+          <div class="td-name">Analogous — implementation risk</div>
+          <div class="td-desc">Published analogues exist. Failure is an execution problem, not an architectural one. Build once T4 upstream assumptions pass.</div>
+        </div>
+      </div>
+      <div class="tier-def">
+        <span class="tier-tag tag-t2">T2</span>
+        <div class="td-body">
+          <div class="td-name">Standard — engineering risk</div>
+          <div class="td-desc">Well-understood. Build in parallel with T4 testing — failure is an engineering problem with a known solution path.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slice overview -->
+    <h2>Slice priority order</h2>
+    <p>Five slices. Each one produces a decision gate. A slice is not exited until its T4 flows pass. Downstream slice design is deferred until the gate is cleared.</p>
+
+    <table class="slice-map">
+      <thead>
+        <tr>
+          <th style="width:44px;">#</th>
+          <th style="width:220px;">Slice</th>
+          <th>Why this order</th>
+          <th>T4 flows</th>
+          <th style="width:120px;">Gate question</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="order-cell">1</td>
+          <td>
+            <div class="slice-name">ITP Partnership Loop</div>
+            <div class="slice-why">No claim flow without it</div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">Two sequential steps. Step A (T3): sign ≥1 ITP type within Stage 1 budget — 0.5 FTE Head of Commercial, £25/referral NTP fee accepted. Step B (T4 — PartP1): signed ITP embeds referral as SOP without prompting. PartP1 is the highest-risk architectural assumption in the model. Every other slice depends on it.</td>
+          <td><div class="flow-chips"><span class="tag tag-t3">CP-ITP</span><span class="tag tag-t4">PartP1</span></div></td>
+          <td style="font-size:13px;font-weight:600;">ITP signed + ≥10 referrals flowing?</td>
+        </tr>
+        <tr>
+          <td class="order-cell">2</td>
+          <td>
+            <div class="slice-name">Claimant Happy Path</div>
+            <div class="slice-why">Core value proposition</div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">Three T4 flows in sequence. Depends on Slice 1 producing claims. WP2 (EV accuracy and cost) is the second-biggest FMOS driver — if the cost floor assumption breaks, the entire architecture needs re-engineering.</td>
+          <td><div class="flow-chips"><span class="tag tag-t4">CP1</span><span class="tag tag-t4">WP1</span><span class="tag tag-t4">WP2</span><span class="tag tag-t4">CP2</span></div></td>
+          <td style="font-size:13px;font-weight:600;">Does the EV cost and accuracy hold?</td>
+        </tr>
+        <tr>
+          <td class="order-cell">3</td>
+          <td>
+            <div class="slice-name">Defendant Motivation Path</div>
+            <div class="slice-why">Primary FMOS driver</div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">CP3 is the biggest single FMOS driver (36% failure rate in Stage 4 simulation). But you need real claims with EV assessments before you can test defendant response. Depends on Slices 1 and 2.</td>
+          <td><div class="flow-chips"><span class="tag tag-t4">CP3</span></div></td>
+          <td style="font-size:13px;font-weight:600;">Do defendants settle at ≥60%?</td>
+        </tr>
+        <tr>
+          <td class="order-cell">4</td>
+          <td>
+            <div class="slice-name">Pool Operator Infrastructure</div>
+            <div class="slice-why">Working capital + payment flows</div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">No T4 flows — all T2/T3. Needed for payment flows and working capital, but carries implementation risk only. Build in parallel with Slice 3 T4 testing, complete before integration testing begins.</td>
+          <td><div class="flow-chips"><span style="font-size:12px;color:var(--text-muted);font-style:italic;">None — T3/T2 only</span></div></td>
+          <td style="font-size:13px;font-weight:600;">Does fund flow work end-to-end?</td>
+        </tr>
+        <tr>
+          <td class="order-cell">5</td>
+          <td>
+            <div class="slice-name">Defendant Escalation Path</div>
+            <div class="slice-why">Consequence of CP3 non-settlement</div>
+          </td>
+          <td style="font-size:13px;color:var(--text-secondary);">T3 only. What happens to the ~30–40% of defendants who don't settle in Slice 3. Operational design, not architectural. Design once CP3 pass rate is known — the escalation volume determines the operational load.</td>
+          <td><div class="flow-chips"><span style="font-size:12px;color:var(--text-muted);font-style:italic;">None — T3 only</span></div></td>
+          <td style="font-size:13px;font-weight:600;">Is escalation operationally viable?</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="dep-note"><strong>Note on Law School Infrastructure:</strong> This is a production model for WP2 (EV assessment), not a separate slice. The law school partnership (PART2 launch component) enables WP2 at scale — it is validated as part of Slice 2 (Claimant Happy Path). A preliminary WP2 test can run with a commercial assessment org before the law school model is proven; law school infra is confirmed once the first student cohort processes claims under the QS sign-off framework.</div>
+
+    <!-- ===================== SLICE 1 ===================== -->
+    <h2>Slice 1 — ITP Partnership Loop</h2>
+
+    <div class="slice-card">
+      <div class="slice-card-header">
+        <div class="slice-num">1</div>
+        <div class="slice-header-body">
+          <div class="slice-title">ITP Partnership Loop</div>
+          <div class="slice-what">Two sequential steps. Step A: can the Head of Commercial sign at least one ITP type using the ITP acquisition pack — within the Stage 1 time and SC budget? Step B: once signed, does that ITP type embed Calmly referral as a standard operating procedure — not a one-off favour? Step A is T3 (B2B sales with a structured pitch pack has analogues). Step B is the C7 architectural assumption — T4. Both must pass before Slice 2 begins.</div>
+          <div class="slice-flows-row">
+            <span class="slice-label">Flows:</span>
+            <span class="tag tag-t3">CP-ITP — T3</span>
+            <span class="tag tag-t4">PartP1 — T4</span>
+            <span class="tag tag-t3">OP5 — T3</span>
+          </div>
+        </div>
+      </div>
+      <div class="slice-card-body">
+
+        <div class="min-build">
+          <div class="min-build-label">Minimum build to run this test</div>
+          <ul>
+            <li>ITP acquisition pack (CP-ITP) — B2B pitch materials for the Head of Commercial: ITP proposition document (value to ITP and claimants), NTP fee term sheet (£25/referral), ITP commercial agreement template, objection handler for the three ITP types (CMC / IFA / consumer org). Already partially drafted in calmly-itp-diligence-pack-2026-05-22.html — needs B2B sales framing added.</li>
+            <li>ITP referral portal — enough to receive a structured referral from a signed ITP and route it to CP1. Does not need full platform — a lightweight intake form with manual routing behind it is sufficient for Step B testing.</li>
+            <li>ITP onboarding pack — already written (calmly-itp-diligence-pack-2026-05-22.html). Step B T4 acceptance criteria and pilot design (25 participants, 5 ITP types) specified.</li>
+            <li>Outcomes stub — a manual or semi-automated version of OP5 (ITP outcomes reporting) to close the loop with the first ITP partner. Does not need to be automated at this stage.</li>
+          </ul>
+        </div>
+
+        <h3>Step A — Secure the ITP</h3>
+
+        <div class="t4-block" style="border-left-color: var(--t3-border); background: var(--t3-bg);">
+          <div class="t4-block-header">
+            <span class="t4-flow-id" style="color: var(--t3-text);">CP-ITP</span>
+            <span class="t4-flow-name">ITP acquisition and commercial sign-off</span>
+            <span class="tag tag-t3">T3 — implementation risk</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row" style="background: rgba(255,255,255,0.5);">
+              <div class="tr-label" style="color: var(--t3-text);">Assumption being tested</div>
+              <div class="tr-value">The Head of Commercial (0.5 FTE at Stage 1, shared with CEO) can sign at least one ITP type within the Stage 1 runway, with the £25/referral NTP fee accepted and SC cost within the ARM budget. B2B sales to a professional intermediary with a structured pitch pack has published analogues — this is T3, not T4. The risk is execution speed and proposition fit, not architectural validity.</div>
+            </div>
+            <div class="t4-row" style="background: rgba(255,255,255,0.5);">
+              <div class="tr-label" style="color: var(--t3-text);">Acceptance criteria (pass)</div>
+              <div class="tr-value">≥1 ITP type signs commercial agreement accepting: (a) £25/referral NTP fee structure, (b) referral completion ≤5 min/claim (PB-06), (c) OP5 outcomes reporting quarterly (~1.5 days/ITP/quarter at Stage 1). Time-to-first-signed-ITP: within first 3 months of Stage 1 to allow PartP1 pilot to run within the fundraise runway.</div>
+            </div>
+            <div class="t4-row" style="background: rgba(255,255,255,0.5);">
+              <div class="tr-label" style="color: var(--t3-text);">ARM constraints</div>
+              <div class="tr-value">Head of Commercial / ITP at Stage 1: 0.5 FTE (shared with CEO). SC cost: national ITP activation is a single contract per ITP type — not per individual practitioner. NTP fee: £25/referral, amortises to ~£4/claim at-scale (20 ITPs, 18,240 claims/year). If commercial terms can't be agreed within 0.5 FTE capacity, the SC model breaks before Step B can run.</div>
+            </div>
+            <div class="t4-row fail-row" style="border-left-color: var(--t3-border);">
+              <div class="tr-label" style="color: var(--t3-text);">If this fails — consequence</div>
+              <div class="tr-value">ITP won't sign at NTP fee: review fee structure or ITP type — execution problem, not architecture. Time-to-sign exceeds runway: raise Head of Commercial to full FTE earlier than planned (SC implication) or focus on single ITP type. Do not proceed to Step B with an unsigned ITP.</div>
+            </div>
+          </div>
+        </div>
+
+        <h3>Step B — Embed as standard operating procedure</h3>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">PartP1</span>
+            <span class="t4-flow-name">ITP referral protocol and activation pack</span>
+            <span class="tag tag-t4">T4 — architectural risk</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">A signed ITP will embed Calmly referral as standard operating procedure — not one-off, not prompted. Referral completion time ≤5 min per claim (PB-06) so ITP operational cost is low enough to sustain at volume without the NTP fee becoming the sole motivator.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">≥1 ITP type embeds referral as SOP. Referral completion time ≤5 min (PB-06). At least 10 referrals received within the pilot window without active prompting from Calmly. ITP account contact confirms referral will continue as normal practice.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Pilot design</div>
+              <div class="tr-value">25 participants across 5 ITP types (CMCs, solicitors, IFAs, debt management, consumer orgs). CMC and IFA types first — solicitor type waits for SRA opinion (3-week lag). Run after Step A delivers ≥1 signed ITP. See calmly-itp-diligence-pack-2026-05-22.html.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">FMOS sensitivity</div>
+              <div class="tr-value">C7 is the entire inbound claim channel. £25 NTP fee is 60% of CAC blend at scale. If PartP1 fails — ITP won't refer without constant prompting — there is no inbound flow to test downstream.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — architectural consequence</div>
+              <div class="tr-value">C7 gateway partner assumption is wrong: this ITP type will not self-refer at volume. Either the gateway partner type is wrong (return to R7) or the referral mechanism needs redesign (not a channel problem — a product-fit problem). Do not proceed to Slice 2 until a self-sustaining inbound channel is confirmed.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lower-flows">
+          <div class="lower-flows-label">T3 flows — build in parallel, not gating</div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">OP5</span>
+            <span class="lower-flow-name">ITP outcomes reporting system</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Close the ITP loop. PERT-Beta 0.85 acceptance rate. Can be manual at pilot stage (~1.5 days/ITP/quarter at Stage 1) — automate once PartP1 passes.</span>
+          </div>
+        </div>
+
+        <div class="gate-block">
+          <span class="gate-icon">⊡</span>
+          <div class="gate-body">
+            <div class="gate-label">Slice 1 exit gate — two conditions, both must clear before Slice 2 design begins</div>
+            <div class="gate-q">1. Has ≥1 ITP type signed at SC cost within Fin Sim budget? &nbsp;&nbsp; 2. Are ≥10 referrals flowing without prompting?</div>
+            <div class="gate-desc">Both conditions must pass. Condition 1 (Step A) must clear before Step B can run — you cannot test embed-as-SOP with an unsigned ITP. Condition 2 (Step B) must clear before Slice 2 design begins — without a self-sustaining inbound channel, there are no claims to run through the happy path.<br><br>If Condition 1 fails: review NTP fee or ITP type — do not block Slice 2 design indefinitely, but do not start it without a credible path to signing.<br>If Condition 2 fails: return to R7. Do not build intake or EV assessment until the inbound channel problem is solved.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== SLICE 2 ===================== -->
+    <h2>Slice 2 — Claimant Happy Path</h2>
+
+    <div class="slice-card">
+      <div class="slice-card-header">
+        <div class="slice-num">2</div>
+        <div class="slice-header-body">
+          <div class="slice-title">Claimant Happy Path</div>
+          <div class="slice-what">Can a claimant submit a dispute, receive an independently assessed EV, and decide to proceed — within the cost and accuracy bounds the architecture assumes? This slice contains four T4 flows in sequence. WP2 (EV accuracy and cost) is the most consequential — if the cost floor breaks, the entire unit economics model needs re-engineering.</div>
+          <div class="slice-flows-row">
+            <span class="slice-label">Flows:</span>
+            <span class="tag tag-t4">CP1 — T4</span>
+            <span class="tag tag-t4">WP1 — T4</span>
+            <span class="tag tag-t4">WP2 — T4</span>
+            <span class="tag tag-t4">CP2 — T4</span>
+            <span class="tag tag-t3">PP-C — T3</span>
+          </div>
+        </div>
+      </div>
+      <div class="slice-card-body">
+
+        <div class="dep-note"><strong>Depends on Slice 1:</strong> Requires at least one active ITP partner producing inbound claims before CP1 can be tested with real claimants at volume.</div>
+
+        <div class="min-build">
+          <div class="min-build-label">Minimum build to run this test</div>
+          <ul>
+            <li>CP1 intake flow — ≤8 screens. Claimant submits dispute details. No full platform needed — a structured form with manual routing is sufficient for T4 testing.</li>
+            <li>WP1 eligibility workflow — internal tool for eligibility assessor to apply structured criteria. Can be a decision tree or checklist; does not need to be automated.</li>
+            <li>WP2 EV assessment system — first version can use a commercial assessment org (not law students). The T4 test is whether EV accuracy ±20% and cost ≤£16.28/claim hold. Law school model (PART2) is confirmed once students pass quality gate under the same criteria.</li>
+            <li>CP2 EV disclosure — how the EV result is presented to the claimant and how they signal proceed/decline. Can be an email or simple web screen at pilot stage.</li>
+          </ul>
+        </div>
+
+        <h3>T4 flows</h3>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">CP1</span>
+            <span class="t4-flow-name">Claim intake and eligibility disclosure</span>
+            <span class="tag tag-t4">T4 — moderate</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">65% of inbound claimants pass the pre-screen (eligibility criteria). Intake specialist completes intake within the ARM time budget (69 min/claim).</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">Pre-screen pass rate ≥55% (10pp below assumption — adjusts volume, not architecture). Intake time ≤90 min/claim. Claimant completion rate ≥80% of started intakes.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — consequence</div>
+              <div class="tr-value">Pre-screen pass rate &lt;55%: volume shortfall. Review eligibility criteria — are they too narrow or is the ITP channel delivering the wrong claimant type? Adjusts unit economics, not core architecture. Intake time &gt;90 min: ARM cost floor rises. Review intake design.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">WP1</span>
+            <span class="t4-flow-name">Eligibility assessment workflow</span>
+            <span class="tag tag-t4">T4 — moderate</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">80% of post-screen claims proceed to EV assessment (post-EV proceed rate). No published analogue for structured FSMA/FCA mis-selling claim triage.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">Post-EV proceed rate ≥70% (10pp below assumption). Eligibility assessor time per claim within ARM budget. Rejection reasons documented and consistent.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — consequence</div>
+              <div class="tr-value">Volume shortfall — adjusts financial model throughput. If rate falls below 60%, review eligibility criteria or ITP channel quality. Does not invalidate architecture but narrows addressable volume.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">WP2</span>
+            <span class="t4-flow-name">Independent EV assessment system</span>
+            <span class="tag tag-t4">T4 — critical (cost floor)</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">EV accuracy within ±20% of expert median. Cost per EV assessment ≤£16.28/claim. Turnaround time within the SLA that keeps claimants engaged. These three together determine the cost floor — none can fail independently.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">Accuracy: ≥70% of EV assessments within ±20% of blind expert benchmark (n≥30). Cost: ≤£16.28/claim at pilot volumes (expected higher at pilot — must show path to floor at scale). Turnaround: &lt;5 working days.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Law school model validation</div>
+              <div class="tr-value">First tests use a commercial assessment org. Once PART2 (law school partnership) is live, run a parallel cohort of student assessors under QS sign-off. Accept law school model if accuracy and cost hold within ±5pp of commercial org baseline.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — architectural consequence</div>
+              <div class="tr-value">Cost failure: £258/claim cost floor rises. Every 10% increase in WP2 cost shifts FMOS by ~2.5pp. If cost exceeds £25/claim, the architecture needs redesign — the CLO circumvention strategy (R1) may need to change. This is the highest-consequence T4 failure in Slice 2. Accuracy failure: defendant settlement rate assumption (CP3, Slice 3) is built on EV credibility. Inaccurate EV collapses both claimant activation (CP2) and defendant settlement (CP3) simultaneously — correlated failure.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">CP2</span>
+            <span class="t4-flow-name">EV disclosure and claim activation</span>
+            <span class="tag tag-t4">T4 — moderate</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">After receiving the EV assessment, claimants proceed to claim activation at a sufficient rate. The EV disclosure format must produce the conviction shift described in C4 (Want Block design).</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">EV disclosure proceed rate ≥70%. Decline reasons captured and analysed. Time from EV delivery to decision ≤3 working days.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — consequence</div>
+              <div class="tr-value">Proceed rate &lt;60%: C4 attraction strategy needs revision. Review EV disclosure format and framing. Does not change the cost floor but reduces throughput to defendant stage — widening the CP3 pressure.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lower-flows">
+          <div class="lower-flows-label">T3 flows — build in parallel, not gating Slice 2</div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">PP-C</span>
+            <span class="lower-flow-name">Payment flow — claimant fee collection</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">DBA Regulations 2013. Collection near-certain (deducted at source from settlement). Build once PP-C BALM decision is resolved.</span>
+          </div>
+        </div>
+
+        <div class="warning">
+          <div class="warning-label">Open condition — blocks this slice</div>
+          <p>PP-C revenue model BALM decision (whether Calmly or Pool Operator holds the DBA) must be resolved before the payment flow can be built. The intake, eligibility, and EV assessment flows can be tested without it — but the full Claimant Happy Path cannot close without a confirmed PP-C mechanism.</p>
+        </div>
+
+        <div class="gate-block">
+          <span class="gate-icon">⊡</span>
+          <div class="gate-body">
+            <div class="gate-label">Slice 2 exit gate — before Slice 3 design begins</div>
+            <div class="gate-q">Does WP2 deliver EV at ≤£16.28/claim and ±20% accuracy?</div>
+            <div class="gate-desc">If yes: proceed to Slice 3 design. The cost floor assumption holds. EV credibility is established — defendant settlement rate test (CP3) is meaningful.<br>If no (cost fails): stop. Redesign R1 (cost bottleneck circumvention) before proceeding. Slice 3 is meaningless if the EV the defendant receives is not credible or affordable to produce.<br>If no (accuracy fails): same consequence. Inaccurate EV makes CP3 test uninterpretable — defendant response to a bad EV tells you nothing about the architecture.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== SLICE 3 ===================== -->
+    <h2>Slice 3 — Defendant Motivation Path</h2>
+
+    <div class="slice-card">
+      <div class="slice-card-header">
+        <div class="slice-num">3</div>
+        <div class="slice-header-body">
+          <div class="slice-title">Defendant Motivation Path</div>
+          <div class="slice-what">Does a defendant, receiving a credible EV assessment and a structured settlement offer, settle at a rate that makes the architecture financially viable? CP3 is the single biggest FMOS driver — 36% failure rate in the Stage 4 simulation, and the P50 FMOS falls below 60% if the actual settlement rate drops below approximately 50%.</div>
+          <div class="slice-flows-row">
+            <span class="slice-label">Flows:</span>
+            <span class="tag tag-t4">CP3 — T4</span>
+            <span class="tag tag-t3">PP-D — T3</span>
+            <span class="tag tag-t3">OP3 — T3</span>
+          </div>
+        </div>
+      </div>
+      <div class="slice-card-body">
+
+        <div class="dep-note"><strong>Depends on Slices 1 and 2:</strong> Requires real claims with credible EV assessments before defendant response can be tested. CP3 test is uninterpretable if the EV is inaccurate (WP2 T4 must pass first).</div>
+
+        <div class="min-build">
+          <div class="min-build-label">Minimum build to run this test</div>
+          <ul>
+            <li>CP3 defendant notification — a structured communication delivering the EV assessment and settlement offer to the defendant. Can be a letter, email, or portal message at pilot stage.</li>
+            <li>OP3 defendant notification system — can be manual or simple email-based at pilot. Automate once CP3 pass rate is confirmed.</li>
+            <li>Settlement mechanism — a way for the defendant to accept, negotiate, or decline. Manual process is acceptable at ≤50 claims pilot scale.</li>
+            <li>Validation: live pilot ≥50 real defendants (specified in CDR flow spec).</li>
+          </ul>
+        </div>
+
+        <h3>T4 flows</h3>
+
+        <div class="t4-block">
+          <div class="t4-block-header">
+            <span class="t4-flow-id">CP3</span>
+            <span class="t4-flow-name">Defendant notification and liability buyout facilitation</span>
+            <span class="tag tag-t4">T4 — critical (primary FMOS driver)</span>
+          </div>
+          <div class="t4-rows">
+            <div class="t4-row">
+              <div class="tr-label">Assumption being tested</div>
+              <div class="tr-value">Defendants settle at ≥60% when presented with a credible, independently assessed EV and a structured settlement offer. Target assumption: 70% settlement rate. Stage 4 simulation: 36% CP3 failure rate at T4 settlement gate.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Acceptance criteria (pass)</div>
+              <div class="tr-value">Defendant settlement rate ≥60% (PB-03 floor) across ≥50 real defendants. ITP institutional channel (PartP1) confirmed as effective in bringing defendants to the settlement conversation. Settlement occurs within defined window.</div>
+            </div>
+            <div class="t4-row">
+              <div class="tr-label">Flags from CDR</div>
+              <div class="tr-value">Three architectural flags: (1) debt management ITP creates conflict-of-interest — debt management practitioners act for defendants, so their referrals may not carry into CP3 legitimately; (2) consumer org dual-path dependency (refer AND fallback in same journey); (3) SRA opinion needed before solicitor-type ITP can be tested in CP3.</div>
+            </div>
+            <div class="t4-row fail-row">
+              <div class="tr-label">If this fails — architectural consequence</div>
+              <div class="tr-value">Settlement rate &lt;60%: FMOS falls below CDR threshold. This is a structural failure — not execution. The C2 architecture (defendant's KMC and the structured settlement path) needs redesign before any further build. Specifically: what is the defendant's actual motivation to settle, and is the EV-plus-structured-offer mechanism the right circumvention of their resistance? Return to R2 and CP3 design before proceeding to Pool Operator or Escalation slices.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lower-flows">
+          <div class="lower-flows-label">T3 flows — build in parallel</div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">PP-D</span>
+            <span class="lower-flow-name">Payment flow — defendant fee collection</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Arkin v Borchard defendant fee (8–15% of EV). Primary Calmly revenue event. Analogous to existing litigation settlement structures. T3.</span>
+          </div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">OP3</span>
+            <span class="lower-flow-name">Defendant notification and settlement system</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Notification delivery reliability PERT-Beta 0.985–0.9995. Standard digital notification. T3.</span>
+          </div>
+        </div>
+
+        <div class="gate-block">
+          <span class="gate-icon">⊡</span>
+          <div class="gate-body">
+            <div class="gate-label">Slice 3 exit gate — before Slice 4 build commits</div>
+            <div class="gate-q">Do defendants settle at ≥60% when presented with a credible EV and structured offer?</div>
+            <div class="gate-desc">If yes: proceed to Slice 4 and 5. The unit economics model holds. Commit to platform build for PP-D, Pool Operator, and the escalation path.<br>If no: stop. Do not build payment infrastructure, Pool Operator systems, or escalation handling. The revenue model is broken at the source — fixing execution on broken architecture wastes capital. Return to R2 (C2 value bottleneck) and the CP3 mechanism design.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== SLICE 4 ===================== -->
+    <h2>Slice 4 — Pool Operator Infrastructure</h2>
+
+    <div class="slice-card">
+      <div class="slice-card-header">
+        <div class="slice-num">4</div>
+        <div class="slice-header-body">
+          <div class="slice-title">Pool Operator Infrastructure</div>
+          <div class="slice-what">No T4 flows — this slice is T2/T3 throughout. Carries implementation risk, not architectural risk. Build in parallel with Slice 3 T4 testing. Complete before integration testing begins, but do not commit full platform build until Slice 3 gate passes.</div>
+          <div class="slice-flows-row">
+            <span class="slice-label">Flows:</span>
+            <span class="tag tag-t3">PartP2 — T3</span>
+            <span class="tag tag-t3">PartP3 — T3</span>
+            <span class="tag tag-t3">OP4 — T3</span>
+            <span class="tag tag-t2">WP3 — T2</span>
+          </div>
+        </div>
+      </div>
+      <div class="slice-card-body">
+
+        <div class="dep-note"><strong>Depends on Slice 3 gate:</strong> Full platform build should not commit until CP3 defendant settlement rate is confirmed. Scoping and design work can proceed in parallel — contractual and infrastructure commitments should wait.</div>
+
+        <div class="lower-flows">
+          <div class="lower-flows-label">All flows — T3/T2 (implementation risk only)</div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">PartP2</span>
+            <span class="lower-flow-name">Pool operator onboarding and quality framework</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Pool operator quality gate PERT-Beta(0.82, 0.93, 0.98). Acceptance rate ≥90% matched claims (PB-07). Analogous to existing quality frameworks in claim management.</span>
+          </div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">PartP3</span>
+            <span class="lower-flow-name">Pool insurance marketplace integration</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">FCA-regulated insurer. Pool loss insurance availability PERT-Beta(0.88, 0.96, 0.99). Analogous to ATE insurance market.</span>
+          </div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">WP3</span>
+            <span class="lower-flow-name">Pool matching algorithm</span>
+            <span class="tag tag-t2" style="flex-shrink:0;">T2</span>
+            <span class="lower-flow-note">Automated matching. PB-07 acceptance rate. Matching time is SLA metric only — not a claim-terminating gate. Standard engineering.</span>
+          </div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">OP4</span>
+            <span class="lower-flow-name">Assessment org pool QA framework (C9)</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Three-gate: org concentration ≤30%, active org count ≥3, QA score ≥0.80. C9 supplier replaceability. Standard procurement framework logic.</span>
+          </div>
+        </div>
+
+        <div class="gate-block">
+          <span class="gate-icon">⊡</span>
+          <div class="gate-body">
+            <div class="gate-label">Slice 4 exit gate — before integration testing</div>
+            <div class="gate-q">Does the full fund flow work end-to-end — claim purchase → settlement → platform fee deduction → claimant and Pool Operator payout?</div>
+            <div class="gate-desc">If yes: Pool Operator infrastructure is confirmed. Proceed to integration testing across all slices.<br>If no: Pool Operator contract structure or fund flow mechanics need adjustment. Implementation problem — does not require architectural redesign.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== SLICE 5 ===================== -->
+    <h2>Slice 5 — Defendant Escalation Path</h2>
+
+    <div class="slice-card">
+      <div class="slice-card-header">
+        <div class="slice-num">5</div>
+        <div class="slice-header-body">
+          <div class="slice-title">Defendant Escalation Path</div>
+          <div class="slice-what">What happens to the ~30–40% of defendants who do not settle in Slice 3? This slice is T3 only — operational design, not architectural. The volume through this path is determined by the CP3 settlement rate confirmed in Slice 3. Do not design the detail of this slice until CP3 pass rate is known, because the operational load is directly determined by it.</div>
+          <div class="slice-flows-row">
+            <span class="slice-label">Flows:</span>
+            <span class="tag tag-t3">OP3 (escalation leg) — T3</span>
+            <span class="tag tag-t3">OP6 — T3</span>
+          </div>
+        </div>
+      </div>
+      <div class="slice-card-body">
+
+        <div class="dep-note"><strong>Depends on Slice 3:</strong> Escalation volume = (1 − CP3 settlement rate) × claim throughput. Design the operational detail of this slice once CP3 rate is known from Slice 3 testing. If CP3 is 70%, ~30% of claims escalate. If CP3 is 60%, ~40% escalate — a materially different operational burden on this path.</div>
+
+        <div class="lower-flows">
+          <div class="lower-flows-label">All flows — T3 (implementation risk only)</div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">OP3</span>
+            <span class="lower-flow-name">Defendant notification and settlement system (escalation leg)</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Tracks D1 resolution rate. When defendant declines settlement, triggers escalation workflow. Standard CRM/notification logic.</span>
+          </div>
+          <div class="lower-flow-row">
+            <span class="lower-flow-id">OP6</span>
+            <span class="lower-flow-name">Territory compliance and management layer</span>
+            <span class="tag tag-t3" style="flex-shrink:0;">T3</span>
+            <span class="lower-flow-note">Compliance score ≥0.90, Poisson(0.1) regulatory incidents = 0. Standard compliance monitoring. T2 in terms of engineering complexity.</span>
+          </div>
+        </div>
+
+        <div class="gate-block">
+          <span class="gate-icon">⊡</span>
+          <div class="gate-body">
+            <div class="gate-label">Slice 5 exit gate — TRR entry condition</div>
+            <div class="gate-q">Is escalation operationally viable at the actual CP3 non-settlement rate?</div>
+            <div class="gate-desc">If yes: all five slices validated. Proceed to integration test planning (TRR preparation). Write the integration test plan against the validated slice designs.<br>If no: operational redesign of escalation path. Does not require architectural revision — adjusts operational staffing and process.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Cross-cutting T4 risks -->
+    <h2>Cross-cutting T4 risks</h2>
+    <p>Three T4 assumptions affect multiple slices simultaneously. They are named here because failure in one produces correlated failure across slices — not independent failure.</p>
+
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th style="width:60px;">Risk</th>
+          <th style="width:120px;">Flow</th>
+          <th>What it affects</th>
+          <th style="width:180px;">Why it's correlated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="risk-id">T4-1</td>
+          <td><span class="tag tag-t4">PartP1</span> ITP willingness to embed</td>
+          <td>Slices 1, 2, 3 — all require claim flow. If PartP1 fails, there are no real claimants to test CP1, WP2, or CP3 with. The entire right side of the architecture has no inputs.</td>
+          <td>Gating dependency. Not just Slice 1 — it's the precondition for all downstream slice testing.</td>
+        </tr>
+        <tr>
+          <td class="risk-id">T4-2</td>
+          <td><span class="tag tag-t4">WP2</span> EV accuracy and cost</td>
+          <td>Slices 2 and 3 — CP2 claimant activation depends on EV credibility; CP3 defendant settlement rate depends on EV credibility. An inaccurate EV collapses both simultaneously.</td>
+          <td>Correlated failure. Fixing EV accuracy fixes both downstream problems at once. Testing CP3 on an inaccurate EV produces meaningless results.</td>
+        </tr>
+        <tr>
+          <td class="risk-id">T4-3</td>
+          <td><span class="tag tag-t4">CP3</span> Defendant settlement rate</td>
+          <td>Slices 3, 4, 5 — the settlement rate determines the revenue model, the Pool Operator working capital requirement, and the escalation path volume. All three depend on CP3 being within the 60%+ band.</td>
+          <td>FMOS driver. If CP3 settles at 50%, FMOS falls below 60% threshold — the unit economics model fails and Slices 4 and 5 are being built on a broken foundation.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- What we don't build yet -->
+    <h2>What we explicitly don't build yet</h2>
+    <p>The rule: if a component depends on a T4 assumption that hasn't passed, don't build it. The list below names what is out of scope until the relevant slice gate clears.</p>
+
+    <div class="defer-list">
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>Full exchange platform (OP1)</strong> — ITP referral portal and CP1 intake
+          <span class="defer-why">Blocked by: Slice 1 gate (PartP1 T4). Don't build the portal before you know which ITP type embeds. The portal design depends on which referral mechanism the winning ITP type actually uses.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>Automated WP2 EV system at scale</strong>
+          <span class="defer-why">Blocked by: Slice 2 gate (WP2 T4 accuracy and cost). Don't invest in scaling the EV infrastructure until the manual/pilot version proves accuracy ±20% and cost ≤£16.28/claim.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>Pool Operator contractual commitments and platform build</strong>
+          <span class="defer-why">Blocked by: Slice 3 gate (CP3 T4). If defendant settlement rate fails, the Pool Operator's working capital model breaks and the contracts become liabilities. Do not commit.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>PP-C payment flow build</strong>
+          <span class="defer-why">Blocked by: BALM decision (PP-C revenue model — who holds the DBA). Cannot build the claimant payment flow until the legal form is confirmed. This is a CDR open condition, not a T4 test.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>Escalation path detailed design</strong>
+          <span class="defer-why">Blocked by: Slice 3 gate (CP3 settlement rate). Escalation volume is directly determined by CP3 — don't design the operational detail until you know what percentage of claims will route through it.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>Investor materials using the financial model</strong>
+          <span class="defer-why">Blocked by: PP-C BALM decision. P50 FMOS is 69.3% under the combined DBA model and ~9.3% under the defendant-only model. That gap cannot appear in investor materials unresolved.</span>
+        </div>
+      </div>
+      <div class="defer-item">
+        <span class="defer-icon">⊘</span>
+        <div class="defer-body">
+          <strong>38-LMU at-scale operating model</strong>
+          <span class="defer-why">Blocked by: all three T4s. The LMU replication model assumes all T4 assumptions have passed. Build the first LMU as a pilot; don't design replication until the single LMU unit economics are validated through the MRP.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Integration test note -->
+    <h2>After all five slices pass — integration test plan</h2>
+    <p>Once each slice clears its exit gate, the integration test plan can be written. It will define what the end-to-end workflow test verifies: a real claimant, through a real ITP channel, receiving a real EV, triggering a real defendant response, routed through real Pool Operator fund flows. The integration test is the TRR exit criterion — and the precondition for the MRP (ORR gate).</p>
+    <p>The integration test plan is not written here — it depends on what the slice tests reveal about the actual architecture being built. Write it after Slice 3 gate clears, when the operative flow designs are confirmed.</p>
+
+    <div class="principle" style="margin-top:24px;">
+      <div class="principle-label">Rule</div>
+      <p>Every build decision traces to a slice gate. If you cannot name which slice gate it serves and why it's the next thing that gate needs, the work doesn't belong in the current sprint. The slices are load-bearing — they are not a project management convenience.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

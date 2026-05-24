@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — IVE Conductor Report · 23 May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1; --surface: #ffffff; --text: #0f1923;
+      --text-secondary: #4a5568; --text-muted: #718096;
+      --border: #dde1e7; --accent: #1f4fa8; --accent-light: #e8eef8;
+      --panel-bg: #0f2744; --panel-text: #ffffff;
+      --warning-bg: #fff8e6; --warning-border: #d4820a;
+      --green-bg: #e6f4ec; --green-text: #166534; --green-border: #a7d4b8;
+      --red-bg: #fde8e8; --red-text: #991b1b; --red-border: #f0b4b4;
+      --yellow-bg: #fef9e6; --yellow-text: #854d0e; --yellow-border: #f0d98a;
+      --purple-bg: #f0ebfb; --purple-text: #5b21b6; --purple-border: #c4aff0;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 980px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 0 0 100px; background: var(--surface); }
+
+    /* Position panel */
+    .position-panel { background: var(--panel-bg); color: var(--panel-text); padding: 40px 40px 32px; }
+    .position-panel .eyebrow { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; font-weight: 600; }
+    .position-panel h1 { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 6px; line-height: 1.25; }
+    .position-panel .gate-line { font-size: 15px; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+    .gov-q { background: rgba(255,255,255,0.08); border-left: 3px solid rgba(255,255,255,0.25); padding: 14px 18px; font-family: var(--font-body); font-size: 15px; color: rgba(255,255,255,0.88); line-height: 1.65; font-style: italic; margin-bottom: 24px; }
+    .meta-row { display: flex; gap: 28px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; }
+    .meta-item { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .meta-item strong { color: rgba(255,255,255,0.85); font-weight: 600; margin-right: 4px; }
+
+    /* Gate tracker */
+    .tracker { padding: 28px 40px 20px; border-bottom: 1px solid var(--border); background: #fafaf9; }
+    .tracker-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 16px; }
+    .gates { display: flex; gap: 0; }
+    .gate { flex: 1; text-align: center; position: relative; }
+    .gate:not(:last-child)::after { content: '→'; position: absolute; right: -10px; top: 16px; font-size: 14px; color: var(--border); z-index: 1; }
+    .gate-pill { display: inline-block; padding: 8px 10px; font-size: 12px; font-weight: 600; border: 2px solid; border-radius: 4px; min-width: 70px; }
+    .gate-name { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+    .gate.passed .gate-pill { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .gate.current .gate-pill { background: #fff3cd; color: #664d03; border-color: #ffc107; font-size: 13px; }
+    .gate.future .gate-pill { background: #f1f3f5; color: var(--text-muted); border-color: var(--border); }
+    .gate.passed .gate-name { color: var(--green-text); }
+    .gate.current .gate-name { color: #664d03; font-weight: 600; }
+
+    /* Main content */
+    .main { padding: 36px 40px 0; }
+    h2 { font-size: 18px; font-weight: 600; margin: 36px 0 14px; border-top: 1px solid var(--border); padding-top: 24px; }
+    h2:first-child { margin-top: 0; border-top: none; padding-top: 0; }
+    h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: var(--text); }
+    p { font-family: var(--font-body); font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
+
+    /* Status items */
+    .status-list { list-style: none; padding: 0; margin: 0; }
+    .status-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 14px; align-items: flex-start; line-height: 1.55; }
+    .status-list li:last-child { border-bottom: none; }
+    .status-icon { flex-shrink: 0; font-size: 15px; margin-top: 1px; }
+    .status-body { flex: 1; }
+    .status-body strong { color: var(--text); font-family: var(--font-ui); font-weight: 600; }
+    .status-body .note { color: var(--text-muted); font-size: 13px; font-family: var(--font-ui); margin-top: 2px; display: block; }
+
+    /* Blocker items */
+    .blocker { border-left: 3px solid var(--warning-border); background: var(--warning-bg); padding: 14px 18px; margin-bottom: 12px; }
+    .blocker .blocker-head { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .blocker p { font-size: 13px; margin-bottom: 0; color: var(--text-secondary); line-height: 1.6; }
+    .blocker-gate { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--warning-border); margin-bottom: 6px; }
+
+    /* Next action */
+    .next-action { background: var(--panel-bg); color: var(--panel-text); padding: 22px 28px; margin: 20px 0; }
+    .next-action .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.45); margin-bottom: 10px; }
+    .next-action .action { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+    .next-action .why { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.65; margin-bottom: 12px; }
+    .next-action .skill-tag { display: inline-block; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.88); font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 3px; font-family: var(--font-ui); }
+
+    /* Capella panel */
+    .capella-panel { border: 1px solid var(--purple-border); background: var(--purple-bg); padding: 20px 24px; margin-bottom: 20px; }
+    .capella-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .capella-icon { font-size: 20px; }
+    .capella-title { font-size: 15px; font-weight: 600; color: var(--purple-text); }
+    .capella-status { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--purple-text); background: rgba(91,33,182,0.1); padding: 2px 8px; border-radius: 3px; }
+    .capella-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .capella-card { background: #fff; border: 1px solid var(--purple-border); padding: 12px 14px; }
+    .capella-card .cc-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--purple-text); margin-bottom: 4px; }
+    .capella-card .cc-value { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .capella-card .cc-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Consolidation items */
+    .consolidate-item { border: 1px solid var(--border); padding: 14px 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; }
+    .consolidate-item .ci-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+    .consolidate-item .ci-body { flex: 1; }
+    .consolidate-item .ci-head { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .consolidate-item .ci-desc { font-size: 13px; color: var(--text-secondary); font-family: var(--font-body); line-height: 1.55; }
+    .consolidate-item.needs-work { border-left: 3px solid var(--warning-border); background: var(--warning-bg); }
+    .consolidate-item.done { border-left: 3px solid var(--green-border); background: var(--green-bg); }
+
+    /* Horizon table */
+    table.horizon { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+    table.horizon thead th { background: var(--panel-bg); color: #fff; padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    table.horizon td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.horizon tr:last-child td { border-bottom: none; }
+    table.horizon .gate-cell { font-weight: 600; white-space: nowrap; }
+    table.horizon .gate-cell.current { color: #664d03; }
+    table.horizon .gate-cell.next { color: var(--text-muted); }
+
+    /* Tags */
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--tag-radius); border: 1px solid; white-space: nowrap; }
+    .tag-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-red { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+    .tag-purple { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+
+    /* Inset */
+    .inset { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 14px 18px; margin: 16px 0; }
+    .inset p { font-size: 14px; color: var(--text); margin-bottom: 0; line-height: 1.6; }
+    .inset-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); margin-bottom: 6px; }
+
+    /* Warning */
+    .warning-block { border-left: 4px solid var(--warning-border); background: var(--warning-bg); padding: 14px 18px; margin: 16px 0; }
+    .warning-block p { font-size: 14px; color: var(--text); margin-bottom: 0; }
+    .warning-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--warning-border); margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Position panel -->
+  <div class="position-panel">
+    <div class="eyebrow">IVE Conductor · Calmly · 23 May 2026</div>
+    <h1>CDR Passed → TRR Preparation</h1>
+    <div class="gate-line">Phase 5 — Implementation · Building and testing individual components</div>
+    <div class="gov-q">"Are individual components verified and the workflow integration test ready to run?"</div>
+    <div class="meta-row">
+      <div class="meta-item"><strong>CDR closed:</strong> 22 May 2026</div>
+      <div class="meta-item"><strong>FMOS P50:</strong> 69.3% (Stage 4, 17 flows)</div>
+      <div class="meta-item"><strong>Capella model:</strong> Calmly.capella · 18 functions · 12 ICDs</div>
+      <div class="meta-item"><strong>Open conditions:</strong> 2 (ITP pilot · PP-C BALM)</div>
+    </div>
+  </div>
+
+  <!-- Gate tracker -->
+  <div class="tracker">
+    <div class="tracker-label">V-model progress — Calmly</div>
+    <div class="gates">
+      <div class="gate passed">
+        <div class="gate-pill">✓ PCOR</div>
+        <div class="gate-name">PCO Review</div>
+      </div>
+      <div class="gate passed">
+        <div class="gate-pill">✓ AR</div>
+        <div class="gate-name">Architecture Review</div>
+      </div>
+      <div class="gate passed">
+        <div class="gate-pill">✓ PDR</div>
+        <div class="gate-name">Prelim Design</div>
+      </div>
+      <div class="gate passed">
+        <div class="gate-pill">✓ CDR</div>
+        <div class="gate-name">Critical Design</div>
+      </div>
+      <div class="gate current">
+        <div class="gate-pill">→ TRR</div>
+        <div class="gate-name">Test Readiness</div>
+      </div>
+      <div class="gate future">
+        <div class="gate-pill">· ORR</div>
+        <div class="gate-name">Op Readiness</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- What's done -->
+    <h2>What's done</h2>
+    <p>CDR closed 22 May 2026 with all five entry criteria met. The full design definition is on the left side of the V-model. The venture is now at the build point.</p>
+
+    <ul class="status-list">
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>PCO</strong> — UK SME disputes £10k–£50k. TAM established. First-principles filter passed.
+          <span class="note">Gate: PCOR ✓</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>All 10 BALM requirements designed</strong> — C1–C10 complete. BALM verification report: all 10 COMPLETE. Consistency audit: PASS.
+          <span class="note">Gate: AR ✓ (R1–R3 + FIT) and PDR ✓ (R4–R10 + audit) — source: balm-verification-2026-05-21.html, calmly-consistency-audit-2026-05-20.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>FMOS ≥60% confirmed</strong> — ARM cost floor £258/claim at 38 LMUs. Stage 3 P50 60.3%. Stage 4 P50 69.3% (17 flows, 10,000 iterations).
+          <span class="note">Gate: PDR ✓ and CDR ✓ — source: calmly-fin-sim-v4-2026-05-21.html, calmly-stage4-results.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>CTM complete</strong> — Customer Transformation Model v2. Phases: Becoming → Using → Integrating mapped across Claimant, Defendant, ITP, Pool Operator.
+          <span class="note">Gate: CDR ✓ — source: calmly-ctm-v2-2026-05-18.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>AOM complete</strong> — At-Scale Operational Model v4. 38 LMUs, 4-D product nodes (CP1, WP1–6, PP1, PartP1), all actors, LMU bracket, C8 lock-in confirmed.
+          <span class="note">Gate: CDR ✓ — source: calmly-aom-v4.html (23 May 2026)</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>ARM complete</strong> — Four cost layers: PVC £157.37/claim, RC £37.61/claim, SC+IC/HQ £62.26/claim. Total floor £258/claim.
+          <span class="note">Gate: CDR ✓ — source: calmly-resourcing-model-2026-05-21.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>17 flow specs complete</strong> — CP1, WP1–3, CP2–3, PP-C, PP-D, PartP1–3, OP1–6. Full 11-field format. Sourcing appendix and T4 pilot designs included.
+          <span class="note">Gate: CDR ✓ — source: calmly-design-definition-2026-05-22.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>RTM complete</strong> — C1–C10 all traced to at least one flow. C9: OP4, OP6, WP2. C10: OP2.
+          <span class="note">Gate: CDR ✓ — source: calmly-cdr-package-2026-05-22.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>12 ICDs defined and confirmed in Capella</strong> — ICD-01 through ICD-12. All registered in Calmly.capella as FunctionalExchanges. Canonical numbering propagated.
+          <span class="note">Gate: CDR ✓ — source: calmly-cdr-package-2026-05-22.html + Calmly_Model/Calmly.capella</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>Build sequence agreed</strong> — 9-step risk-ordered. Leads with PartP1 (ITP channel, T4), CP3 (defendant settlement, T4), WP2 (EV accuracy, T4).
+          <span class="note">Gate: CDR ✓ — source: calmly-design-definition-2026-05-22.html Section 4 Step 5</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>ITP due diligence pack written</strong> — 5 ITP types: CMCs, solicitors, IFAs, debt management, consumer orgs. T4 acceptance criteria and pilot design (25 participants).
+          <span class="note">CDR condition — source: calmly-itp-diligence-pack-2026-05-22.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>At-scale org structure</strong> — 5-layer org (Board → L1 → L2 → L3 → L4). 10 design assumptions, RASCI matrix, 7 trade-offs, 6 open questions.
+          <span class="note">CoWork 23 May — source: calmly-at-scale-org-structure-v1.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>Components map</strong> — 9 product flows: CP1, WP1–6, PP1, PartP1. Activities, HR owners, journey actors, modelling requirements per flow.
+          <span class="note">CoWork 23 May — source: calmly-components-map-v1.html</span>
+        </div>
+      </li>
+      <li>
+        <span class="status-icon">✓</span>
+        <div class="status-body">
+          <strong>Launch components map</strong> — 15 launch components in 7 categories (REG, ENT, CAP, PART, TRU, OPS, GOV). Owner tracks, slice dependencies, "done when" criteria per component.
+          <span class="note">CoWork 23 May — source: calmly-launch-components-map-v1.html</span>
+        </div>
+      </li>
+    </ul>
+
+    <!-- What's blocking TRR -->
+    <h2>What's blocking TRR</h2>
+    <p>TRR requires: (a) individual components built and tested against acceptance criteria, and (b) an integration test plan written. Neither exists yet — Calmly is at the start of Phase 5 (Implementation), not TRR entry.</p>
+
+    <div class="blocker">
+      <div class="blocker-gate">TRR exit criterion 1</div>
+      <div class="blocker-head">✗ No components built — build phase not yet started</div>
+      <p>The build sequence is agreed (PartP1 → CP3 → WP2 → …) but no component has been constructed. TRR cannot be entered until each component is built and individually tested against its acceptance criterion. The build point is now — the CDR gate is closed.</p>
+    </div>
+
+    <div class="blocker">
+      <div class="blocker-gate">TRR exit criterion 2</div>
+      <div class="blocker-head">✗ Integration test plan not written</div>
+      <p>What the end-to-end workflow test will verify — inputs, expected outputs, acceptance thresholds, pass/fail conditions across all 17 flows — has not been documented. This must be written before TRR can close, but can run in parallel with the early build steps.</p>
+    </div>
+
+    <div class="blocker">
+      <div class="blocker-gate">CDR condition (blocks platform build commitment)</div>
+      <div class="blocker-head">✗ T4 pilots not run — PartP1 (ITP channel) and CP3 (defendant settlement rate)</div>
+      <p>CDR closed with a condition: platform build must not commit to downstream flows until PartP1 ITP willingness-to-embed and CP3 defendant settlement rate (the primary FMOS driver — 36.0% failure rate in Stage 4) are tested. Build sequence position 1 is PartP1. Execution pending — pack is written.</p>
+    </div>
+
+    <div class="blocker">
+      <div class="blocker-gate">CDR condition (blocks fundraising use of financial model)</div>
+      <div class="blocker-head">✗ PP-C revenue model BALM decision outstanding</div>
+      <p>Does Calmly hold the DBA (PP-C is Calmly revenue, P50 FMOS 69.3%) or does the pool operator hold it (defendant-only model, P50 FMOS ~9.3%)? This is a legal form decision, not a modelling one. It does not block TRR but blocks any investor materials.</p>
+    </div>
+
+    <!-- Next action -->
+    <h2>Next action</h2>
+
+    <div class="next-action">
+      <div class="label">Highest-priority next step</div>
+      <div class="action">→ Execute PartP1 ITP pilot — 25 participants, CMC and IFA types first</div>
+      <div class="why">PartP1 is build sequence position 1 — highest-risk T4 flow and the primary C7 assumption. The ITP due diligence pack is written and the pilot design is specified (25 participants, 5 ITP types, SRA compliance review scope). CMC and IFA types should run first; solicitor type is behind the 3-week SRA opinion lag. Defendant settlement rate (CP3, position 2) cannot be tested until an ITP channel exists to generate claim flow.</div>
+      <span class="skill-tag">Session: ITP pilot execution — no skill exists; this is operational fieldwork</span>
+    </div>
+
+    <div class="next-action" style="background:#1a3a5c; margin-top: 12px;">
+      <div class="label">Parallel action (legal — does not require fieldwork)</div>
+      <div class="action">→ Resolve PP-C BALM decision with legal review</div>
+      <div class="why">Whether Calmly or the pool operator holds the DBA determines whether PP-C is Calmly platform revenue. The gap between the two models is 60 FMOS points. This must be resolved before any investor materials are produced. It requires a legal opinion on the claim-purchase structure — the same SRA opinion process that gates the solicitor ITP type.</div>
+      <span class="skill-tag">Session: BALM / legal review — PP-C revenue model clarification</span>
+    </div>
+
+    <!-- Capella model status -->
+    <h2>Capella model — current state and consolidation</h2>
+    <p>The Capella MBSE model was generated programmatically on 22 May 2026. Tom's prompt to "consolidate everything" is addressed here: what the model contains, what has been produced since, and what needs to be reconciled.</p>
+
+    <div class="capella-panel">
+      <div class="capella-header">
+        <span class="capella-icon">⬡</span>
+        <span class="capella-title">Calmly.capella — Capella 6.x MBSE Model</span>
+        <span class="capella-status">Generated 22 May 2026</span>
+      </div>
+      <p style="margin-bottom:12px;font-size:14px;color:var(--purple-text);">Generated by <code style="font-size:12px;background:rgba(91,33,182,0.1);padding:1px 4px;border-radius:2px;">generate_calmly_capella.py</code> · Read via <code style="font-size:12px;background:rgba(91,33,182,0.1);padding:1px 4px;border-radius:2px;">capella_reader.py</code> · Import: File → Existing Projects into Workspace → Calmly_Model/</p>
+      <div class="capella-grid">
+        <div class="capella-card">
+          <div class="cc-label">BALM requirements</div>
+          <div class="cc-value">10</div>
+          <div class="cc-desc">C1–C10 as GenericTrace elements with full requirement statements</div>
+        </div>
+        <div class="capella-card">
+          <div class="cc-label">Performance bounds</div>
+          <div class="cc-value">8</div>
+          <div class="cc-desc">PB-01–PB-08 (EV cost, EV accuracy, defendant settlement, pass rates, ITP time, FMOS)</div>
+        </div>
+        <div class="capella-card">
+          <div class="cc-label">System functions / flows</div>
+          <div class="cc-value">18</div>
+          <div class="cc-desc">17 CDR flows + WP3 pool matching. Each typed, tiered, and carrier-assigned</div>
+        </div>
+        <div class="capella-card">
+          <div class="cc-label">ICDs (FunctionalExchanges)</div>
+          <div class="cc-value">12</div>
+          <div class="cc-desc">ICD-01–ICD-12 all confirmed. Canonical numbering propagated to design definition</div>
+        </div>
+        <div class="capella-card">
+          <div class="cc-label">External actors</div>
+          <div class="cc-value">8</div>
+          <div class="cc-desc">Claimant, Defendant, ITP, Pool Operator, Assessment Org, FCA Insurer, Liability Buyout Operator, Legal Counsel</div>
+        </div>
+        <div class="capella-card">
+          <div class="cc-label">System components</div>
+          <div class="cc-value">14+</div>
+          <div class="cc-desc">PVC roles (4), SC roles (7), Technology (6 platforms). ARM-aligned.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Consolidation checklist — what to reconcile</h3>
+    <p>Five items need to be cross-checked between the Capella model and the work produced since 22 May. Items are categorised: done (consistent as-is), or needs work (requires model update or explicit reconciliation decision).</p>
+
+    <div class="consolidate-item done">
+      <span class="ci-icon">✓</span>
+      <div class="ci-body">
+        <div class="ci-head">ICD-08 through ICD-12 — confirmed in Capella</div>
+        <div class="ci-desc">CDR package (22 May) explicitly confirmed ICD-08 (CP3→PartP2), ICD-09 (WP1→OP7), ICD-10 (WP2→OP4), ICD-11 (WP2→OP2), ICD-12 (PartP1→OP5) are all FunctionalExchanges in the model. No action needed.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item done">
+      <span class="ci-icon">✓</span>
+      <div class="ci-body">
+        <div class="ci-head">WP1 Capella tier — corrected to T4</div>
+        <div class="ci-desc">WP1 was incorrectly T3 in an earlier model version. Corrected to T4 in generate_calmly_capella.py and model regenerated (closed 22 May). Consistent.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item needs-work">
+      <span class="ci-icon">⚠</span>
+      <div class="ci-body">
+        <div class="ci-head">OP7 reference — flow not in 17-flow spec</div>
+        <div class="ci-desc">ICD-09 is defined as "WP1→OP7 no-proceed dispatch". But OP7 does not appear in the 17-flow spec (flows run OP1–OP6). Either OP7 is an implicit operational notification (not needing a full spec) or it's a gap in the flow register. This must be resolved: either add OP7 to the flow register with a minimal spec, or reclassify ICD-09 as an internal system event rather than a named flow. Decision owner: Tom.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item needs-work">
+      <span class="ci-icon">⚠</span>
+      <div class="ci-body">
+        <div class="ci-head">AOM v4 actor refinements — not yet reflected in Capella</div>
+        <div class="ci-desc">AOM v4 was finalised today (23 May) with refined actor names, zone shading, and the PartP1 C8 lock-in confirmation. The Capella model uses the actor list from 22 May. The 8 external actors in the model should be cross-checked against AOM v4's actor perimeter — especially: (a) Pool Operator appears in AOM v4 as "1–3 regional Pool Operators" — model has single "Pool Operator" actor; (b) "Assessment Org" in AOM v4 vs "Independent Assessment Organisation" in Capella. No structural difference, but naming should be canonical.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item needs-work">
+      <span class="ci-icon">⚠</span>
+      <div class="ci-body">
+        <div class="ci-head">Components map (CoWork) vs Capella system components — partial overlap</div>
+        <div class="ci-desc">The components map (23 May CoWork) defines 9 product flows with detailed activity breakdowns and HR owners. The Capella model has system components as PVC/SC/IC roles drawn from the ARM. The two should be checked for consistency: (a) components map WP1 uses "Assessment Org" as direct producer but Capella has "EV Specialist (PVC)" as WP1 carrier — this is the AOM/ARM numbering divergence flagged in the previous session and still unresolved; (b) the components map shows the Law Student Assessor producing WP3 (in the ARM sense), but AOM v4 labels the equivalent node WP1. Naming must be resolved before the Capella model is used as a TRR verification source.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item needs-work">
+      <span class="ci-icon">⚠</span>
+      <div class="ci-body">
+        <div class="ci-head">AnyLogic digital twin spec — not yet built</div>
+        <div class="ci-desc">calmly-anylogic-spec-2026-05-23.html defines a full AnyLogic agent-based model specification: 10 sections covering agent definitions, process flow network, parameters, statistics, animation, Monte Carlo setup, and baseline validation. The spec is written; the AnyLogic model has not been built. This is the simulation tool for TRR-stage component verification — it needs to be built before integration testing can be run.</div>
+      </div>
+    </div>
+
+    <div class="consolidate-item done">
+      <span class="ci-icon">✓</span>
+      <div class="ci-body">
+        <div class="ci-head">Capella reader API — available for downstream tooling</div>
+        <div class="ci-desc">capella_reader.py provides a clean Python API exposing performance_bounds(), system_functions(), functional_exchanges(), and balm_requirements(). This is ready for integration with the AnyLogic spec or any simulation engine. No action needed.</div>
+      </div>
+    </div>
+
+    <!-- Skill note -->
+    <div class="inset" style="margin-top:24px;">
+      <div class="inset-label">Conductor discipline note</div>
+      <p>The file <code>incose-process-2026-05-21.html</code> referenced in the conductor skill as the "canonical process reference" does not exist on disk. The INCOSE/IVE V-model position in this report is derived directly from the CDR package and Vault documents. That file should be created as a reference document — or the conductor skill updated to point to the CDR package as the primary evidence source.</p>
+    </div>
+
+    <!-- Horizon -->
+    <h2>Horizon — gates ahead</h2>
+
+    <table class="horizon">
+      <thead>
+        <tr>
+          <th style="width:80px;">Gate</th>
+          <th style="width:200px;">What it requires</th>
+          <th>Current state</th>
+          <th style="width:120px;">Estimated effort</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="gate-cell current">→ TRR</td>
+          <td>All 17 components built + individually tested. Integration test plan written.</td>
+          <td>No components built. Build sequence agreed. Highest-risk T4 pilots (PartP1, CP3, WP2) must precede platform build commitment. Integration test plan not started.</td>
+          <td>Multiple sessions. T4 pilots are operational fieldwork.</td>
+        </tr>
+        <tr>
+          <td class="gate-cell next">· ORR</td>
+          <td>MRP run — real customers, real conditions. Unit economics validated at actual cost and actual settlement rate. NPV exceeds hurdle rate.</td>
+          <td>Not started. Requires TRR to pass. The PP-C revenue model decision must be resolved before ORR economics can be assessed.</td>
+          <td>Post-TRR. Requires Stage 1 capital (CAP1 launch component).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Footer -->
+    <div class="warning-block" style="margin-top:32px;">
+      <div class="warning-label">Conductor rule</div>
+      <p>Every task must trace to a gate exit criterion. The build point is now — CDR is closed. The only work that belongs in the next session is: (1) PartP1 ITP pilot execution planning (TRR exit criterion 1, build sequence position 1), or (2) PP-C BALM/legal decision (CDR condition 2, blocks fundraising). Any other work — design iteration, new modelling, additional audits — does not serve TRR and should be deferred or explicitly justified against a named gate criterion.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

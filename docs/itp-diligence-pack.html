@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly ITP Due Diligence Pack — v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 960px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: var(--width);
+      margin: 0 auto;
+      padding: 48px 32px 100px;
+      background: var(--surface);
+    }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 32px 32px 28px;
+      margin-bottom: 40px;
+    }
+
+    .panel .doc-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8fb3e0;
+      margin-bottom: 12px;
+    }
+
+    .panel h1 {
+      font-family: var(--font-ui);
+      font-size: 28px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .panel .subtitle {
+      font-family: var(--font-ui);
+      font-size: 16px;
+      color: #a8c4e0;
+      margin-bottom: 20px;
+    }
+
+    .panel .gate-box {
+      background: rgba(255,255,255,0.07);
+      border-left: 4px solid #e8a317;
+      padding: 14px 18px;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #f0d99a;
+      margin-bottom: 20px;
+    }
+
+    .panel .gate-box strong {
+      color: #fff;
+    }
+
+    .panel .meta-row {
+      display: flex;
+      gap: 24px;
+      font-size: 13px;
+      color: #7aa5cc;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding-top: 16px;
+      margin-top: 4px;
+    }
+
+    .panel .meta-row span strong {
+      color: #a8c4e0;
+    }
+
+    /* ── HEADINGS ── */
+    h2 {
+      font-family: var(--font-ui);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 48px 0 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3 {
+      font-family: var(--font-ui);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 32px 0 10px;
+    }
+
+    h4 {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin: 20px 0 8px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── BODY TEXT ── */
+    .prose {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .prose + .prose { margin-top: -4px; }
+
+    /* ── INSET ── */
+    .inset {
+      border-left: 4px solid var(--inset-border);
+      background: var(--accent-light);
+      padding: 14px 18px;
+      margin: 16px 0 20px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    /* ── WARNING ── */
+    .warning {
+      border-left: 4px solid var(--warning-border);
+      background: var(--warning-bg);
+      padding: 14px 18px;
+      margin: 16px 0 20px;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── TAGS ── */
+    .tag {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: var(--tag-radius);
+      border: 1px solid;
+    }
+
+    .tag-blue   { background: #e8eef8; color: #1f4fa8; border-color: #b8c8e8; }
+    .tag-green  { background: #e6f4ec; color: #166534; border-color: #a7d4b8; }
+    .tag-red    { background: #fde8e8; color: #991b1b; border-color: #f0b4b4; }
+    .tag-yellow { background: #fef9e6; color: #854d0e; border-color: #f0d98a; }
+    .tag-grey   { background: #f1f3f5; color: #4a5568; border-color: #d0d5dd; }
+    .tag-purple { background: #f0ebfb; color: #5b21b6; border-color: #c4aff0; }
+
+    /* ── SUMMARY LIST ── */
+    .summary-list {
+      width: 100%;
+      margin: 16px 0 24px;
+    }
+
+    .summary-list dt {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 10px 0 4px;
+    }
+
+    .summary-list dd {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── TABLES ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      margin: 20px 0 32px;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text);
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--border-strong);
+      background: #f8f8f6;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: #fafaf8; }
+
+    /* ── FLOW DIAGRAM ── */
+    .flow-diagram {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      margin: 24px 0;
+      padding: 24px 28px;
+      background: #f8f9fb;
+      border: 1px solid var(--border);
+    }
+
+    .flow-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .flow-node {
+      background: var(--accent-light);
+      border: 1.5px solid #b8c8e8;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    .flow-node.dark {
+      background: var(--panel-bg);
+      border-color: var(--panel-bg);
+      color: #fff;
+    }
+
+    .flow-node.green {
+      background: #e6f4ec;
+      border-color: #a7d4b8;
+      color: #166534;
+    }
+
+    .flow-node.yellow {
+      background: #fef9e6;
+      border-color: #f0d98a;
+      color: #854d0e;
+    }
+
+    .flow-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      color: var(--text-muted);
+      font-size: 18px;
+      line-height: 37px;
+    }
+
+    .flow-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 4px 10px 0;
+      align-self: center;
+    }
+
+    .flow-divider {
+      width: 100%;
+      border: none;
+      border-top: 1px dashed var(--border-strong);
+      margin: 12px 0;
+    }
+
+    /* ── ITP PROFILE BLOCK ── */
+    .itp-profile {
+      border: 1px solid var(--border);
+      margin: 28px 0;
+      background: var(--surface);
+    }
+
+    .itp-header {
+      background: #f2f4f8;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .itp-header-left h3 {
+      margin: 0 0 4px;
+      font-size: 17px;
+    }
+
+    .itp-header-left .regulator {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+    }
+
+    .itp-header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .itp-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 680px) {
+      .itp-body { grid-template-columns: 1fr; }
+    }
+
+    .itp-field label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .itp-field .value {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .itp-field .value.ui {
+      font-family: var(--font-ui);
+    }
+
+    .itp-field.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .two-sided-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .two-sided-cell {
+      padding: 10px 14px;
+      border-radius: 3px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .two-sided-cell .cell-label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .two-sided-cell.pass { background: #e6f4ec; color: #166534; }
+    .two-sided-cell.pass .cell-label { color: #166534; }
+    .two-sided-cell.partial { background: #fef9e6; color: #854d0e; }
+    .two-sided-cell.partial .cell-label { color: #854d0e; }
+    .two-sided-cell.concern { background: #fde8e8; color: #991b1b; }
+    .two-sided-cell.concern .cell-label { color: #991b1b; }
+
+    /* ── PROTOCOL STEPS ── */
+    .protocol-steps {
+      counter-reset: step;
+      margin: 16px 0;
+      list-style: none;
+      padding: 0;
+    }
+
+    .protocol-steps li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 44px;
+      margin-bottom: 20px;
+    }
+
+    .protocol-steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 50%;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .protocol-steps li .step-title {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .protocol-steps li .step-desc {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ── DISPOSITION TABLE ── */
+    .disposition-table td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ── SECTION NUMBER ── */
+    .section-num {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* ── PILOT SUMMARY ── */
+    .pilot-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 680px) {
+      .pilot-summary-grid { grid-template-columns: 1fr; }
+    }
+
+    .pilot-card {
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+
+    .pilot-card .card-label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    .pilot-card .card-value {
+      font-family: var(--font-ui);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .pilot-card .card-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    ul.bullet-list {
+      padding-left: 1.5rem;
+      margin: 10px 0 16px;
+      list-style: disc;
+    }
+
+    ul.bullet-list li {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      line-height: 1.55;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 48px 0 0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 1 — HEADER                            -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <div class="panel">
+    <div class="doc-label">FinTech Justice — Calmly Exchange · Due Diligence</div>
+    <h1>Calmly ITP Due Diligence Pack</h1>
+    <div class="subtitle">C7 open item — TP-4 closure protocol</div>
+
+    <div class="gate-box">
+      <strong>CDR gate condition.</strong> ITP willingness to embed Calmly as a standard operational procedure must be validated before the referral portal is built. <strong>FAIL = C7 architecture requires redesign</strong> — the gateway model collapses and the exchange reverts to direct-to-claimant origination via consumer org anchor only.
+    </div>
+
+    <div class="meta-row">
+      <span><strong>Version</strong> v1.0</span>
+      <span><strong>Date</strong> 22 May 2026</span>
+      <span><strong>Gate</strong> CDR — C7</span>
+      <span><strong>Phase</strong> TP-4 closure</span>
+      <span><strong>Owner</strong> Calmly founding team</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 2 — ITP FUNCTION AND TWO-SIDED TEST   -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <span class="section-num">Section 2</span>
+  <h2>ITP function and the two-sided test</h2>
+
+  <p class="prose">The ITP is not a distribution channel. A distribution channel passes volume — it cannot change what a defendant believes about their liability. The ITP is a gateway partner: an institution with a pre-existing relationship with both the claimant (as client) and, critically, with the defendant (as regulatory peer, trade counterparty, or institutional correspondent).</p>
+
+  <p class="prose">That second relationship is the structural advantage. When a defendant bank receives a Calmly notification forwarded through a firm it already has an account relationship or institutional standing with, it is not reading a demand from an unknown fintech. It is receiving a structured prompt from a counterpart whose credibility is already priced in. The defendant's conviction about liability shifts before any legal process begins.</p>
+
+  <p class="prose">This two-sided function must both work. Claimant origination without defendant notification advantage means Calmly competes on volume only — structurally identical to a CMC aggregator and indistinguishable from conventional BFF. Defendant notification without claimant origination means the ITP is forwarding notifications for claims sourced elsewhere, which neither creates supply nor tests the ITP's client-facing workflow. Both sides must pass in the same pilot.</p>
+
+  <div class="inset">
+    <strong>The test is operational, not aspirational.</strong> The CDR gate requires demonstrated willingness at the staff level — not executive buy-in. An ITP whose compliance team approves the template but whose frontline staff find the referral form too complex has not passed. The pilot is designed to surface that gap before the portal is built.
+  </div>
+
+  <h3>Flow: the two-sided gateway protocol</h3>
+
+  <div class="flow-diagram">
+    <div class="flow-row">
+      <div class="flow-node dark">ITP staff member</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Referral form<br><small style="font-weight:400;font-size:11px;">≤5 min · no errors</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node green">CP1 queue<br><small style="font-weight:400;font-size:11px;">≤2 min routing</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Claim record created<br><small style="font-weight:400;font-size:11px;">ITP source ID attached</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Confirmation<br><small style="font-weight:400;font-size:11px;">ITP + claimant notified</small></div>
+    </div>
+
+    <div class="flow-label" style="margin: 4px 0 0 0;">Claimant origination side ↑</div>
+    <hr class="flow-divider">
+    <div class="flow-label" style="margin: 0 0 8px 0;">Defendant notification side ↓</div>
+
+    <div class="flow-row">
+      <div class="flow-node green">WP3 match triggered</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">Notification template<br><small style="font-weight:400;font-size:11px;">ITP-reviewable · no legal counsel required</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node dark">ITP forwards<br><small style="font-weight:400;font-size:11px;">through institutional channel</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node yellow">Defendant receives<br><small style="font-weight:400;font-size:11px;">demand from ITP, not Calmly</small></div>
+    </div>
+  </div>
+
+  <p class="prose">The notification template must be structured as an informational document only. It must not constitute commencement of proceedings, legal advice to the defendant, or regulated legal services under the Legal Services Act 2007. The ITP forwards it through their own institutional channel — the defendant's response to institutional vs. fintech-direct demand is the mechanism by which Calmly's settlement rate advantage over conventional BFF is produced.</p>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 3 — FIVE ITP TYPE PROFILES            -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <hr class="section-divider">
+  <span class="section-num">Section 3</span>
+  <h2>Five ITP type profiles</h2>
+
+  <p class="prose">Five types are assessed for the due diligence pilot. The selection covers the range of regulatory frameworks, client access points, and commercial structures that Calmly will encounter at scale. No single type is assumed to dominate — concentration limits (≤30% from any single type) require at minimum three types to pass the pilot.</p>
+
+
+  <!-- ITP 1: CMCs -->
+  <div class="itp-profile">
+    <div class="itp-header">
+      <div class="itp-header-left">
+        <h3>1. Claims management companies (CMCs)</h3>
+        <div class="regulator">Regulated by: Financial Conduct Authority · FSMA 2000 · CMC authorisation</div>
+      </div>
+      <div class="itp-header-right">
+        <span class="tag tag-green">Pilot priority: High</span>
+        <span class="tag tag-blue">Volume: High</span>
+      </div>
+    </div>
+    <div class="itp-body">
+      <div class="itp-field full-width">
+        <label>Why they are a natural gateway</label>
+        <div class="value">CMCs are the most structurally aligned ITP type. Financial mis-selling origination is their core business — they already run intake workflows, assess claim validity, and manage claimant expectations. Many hold historical dispute databases from PPI and packaged account cycles. Embedding Calmly as a resolution channel supplements their existing operation rather than displacing it: they retain the claimant relationship while Calmly performs the matching and settlement function.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Two-sided function assessment</label>
+        <div class="two-sided-grid">
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Claimant origination</span>
+            Existing intake infrastructure. Staff trained in financial mis-selling assessment. Referral form completion expected to be fastest of all five types — prior experience with structured intake processes.
+          </div>
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Defendant notification</span>
+            CMCs have existing institutional relationships with defendant banks through prior settlement activity. Forwarding a structured notification template is operationally routine. High forwarding rate expected.
+          </div>
+        </div>
+      </div>
+      <div class="itp-field">
+        <label>Primary compliance constraint</label>
+        <div class="value">CMC must not conduct "claims management activity" (FSMA s.419A) beyond what its FCA authorisation covers — Calmly's FCA authorisation holds for the exchange function; the split of activity must be documented to avoid regulatory overlap.</div>
+      </div>
+      <div class="itp-field">
+        <label>Commercial model</label>
+        <div class="value ui">Outcomes-linked referral fee (FCA-permissible). Fee triggered on successful WP3 match and accepted settlement, not on claim submission. Flat per-referral fee acceptable as secondary structure for volume commitments.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Pilot rationale</label>
+        <div class="value">Highest expected pass rate on both sides. Sets the operational benchmark against which other types are compared. First to recruit for pilot cohort.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ITP 2: Solicitors -->
+  <div class="itp-profile">
+    <div class="itp-header">
+      <div class="itp-header-left">
+        <h3>2. Solicitors and law firms</h3>
+        <div class="regulator">Regulated by: Solicitors Regulation Authority · SRA Code of Conduct 2019</div>
+      </div>
+      <div class="itp-header-right">
+        <span class="tag tag-yellow">Pilot priority: High</span>
+        <span class="tag tag-blue">Volume: Medium–High</span>
+      </div>
+    </div>
+    <div class="itp-body">
+      <div class="itp-field full-width">
+        <label>Why they are a natural gateway</label>
+        <div class="value">High-street general practice and specialist financial litigation firms encounter historical mis-selling claims during client reviews and estate matters. Clients rarely surface these claims proactively — they emerge during conveyancing, probate, or debt restructuring when documentation is reviewed. The solicitor is the trusted professional who surfaces the claim; embedding a Calmly referral path at that moment converts a passive discovery into an active submission. Specialist financial litigation firms are particularly valuable: they already assess claim merit and hold institutional credibility with defendant banks.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Two-sided function assessment</label>
+        <div class="two-sided-grid">
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Claimant origination</span>
+            Natural — the solicitor's professional duty already includes identifying claims the client may not have raised. Referral form completion requires brief training on which claim types qualify, but the workflow integration is low-friction.
+          </div>
+          <div class="two-sided-cell partial">
+            <span class="cell-label">Defendant notification</span>
+            Structurally strong — solicitors hold institutional credibility with defendant banks. However, forwarding a Calmly-drafted template requires the solicitor to confirm it does not constitute regulated legal services on their behalf. Legal opinion required before this is tested.
+          </div>
+        </div>
+      </div>
+      <div class="itp-field">
+        <label>Primary compliance constraint</label>
+        <div class="value">SRA Code 2019, r.5.1: referral to a non-SRA firm for a fee requires disclosure to the client and client consent. LASPO referral fee ban does not apply to financial services claims (confirmed — but legal opinion required for FCA file). Template forwarding must not constitute regulated legal services.</div>
+      </div>
+      <div class="itp-field">
+        <label>Commercial model</label>
+        <div class="value ui">Outcomes-linked referral fee with SRA-compliant disclosure mechanism built into referral form. Client consent captured at point of referral. Fixed per-referral alternative available for high-volume firms.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Pilot rationale</label>
+        <div class="value">SRA compliance review is on the critical path before solicitor types can be engaged. Pilot should be sequenced after legal opinion is received (10 working days). High priority because solicitor-forwarded notifications carry the strongest defendant conviction shift — institutional credibility is highest of all five types.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ITP 3: IFAs -->
+  <div class="itp-profile">
+    <div class="itp-header">
+      <div class="itp-header-left">
+        <h3>3. Independent financial advisers (IFAs)</h3>
+        <div class="regulator">Regulated by: Financial Conduct Authority · FCA Handbook · IFA authorisation</div>
+      </div>
+      <div class="itp-header-right">
+        <span class="tag tag-blue">Pilot priority: Medium</span>
+        <span class="tag tag-grey">Volume: Low–Medium</span>
+      </div>
+    </div>
+    <div class="itp-body">
+      <div class="itp-field full-width">
+        <label>Why they are a natural gateway</label>
+        <div class="value">IFAs conduct regular client reviews and suitability assessments. These reviews routinely surface prior-adviser recommendations that would not pass current suitability standards — packaged account mis-selling, unsuitable investment advice, or products sold without adequate disclosure. The IFA is in a position of trust and has the full picture of the client's financial history. This makes claim identification accurate and claim quality high. Volume per IFA firm is low, but false-positive rate is minimal.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Two-sided function assessment</label>
+        <div class="two-sided-grid">
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Claimant origination</span>
+            High quality, lower volume. IFAs identify genuine claims with high precision. Referral form completion is well within capability — IFAs already produce structured client documentation.
+          </div>
+          <div class="two-sided-cell partial">
+            <span class="cell-label">Defendant notification</span>
+            Moderate institutional credibility with defendant banks — less than solicitors, comparable to CMCs. Forwarding a notification template is operationally feasible but may require internal compliance sign-off per firm.
+          </div>
+        </div>
+      </div>
+      <div class="itp-field">
+        <label>Primary compliance constraint</label>
+        <div class="value">IFAs must not conduct claims management activity without FCA CMC authorisation (FSMA s.419A). The referral must be clearly structured as client signposting, not claims assessment or management on Calmly's behalf.</div>
+      </div>
+      <div class="itp-field">
+        <label>Commercial model</label>
+        <div class="value ui">Outcomes-linked referral fee. Volume is low per firm, so fee level must be meaningful per accepted claim. Aggregation across IFA networks (e.g. via network head) is the preferred scale mechanism.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Pilot rationale</label>
+        <div class="value">Medium priority — valuable for claim quality, not volume. Best piloted after CMC type establishes the operational baseline. IFA networks (St. James's Place, Openwork, Quilter) should be approached as aggregate pilots rather than individual firms.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ITP 4: Debt management / IVA -->
+  <div class="itp-profile">
+    <div class="itp-header">
+      <div class="itp-header-left">
+        <h3>4. Debt management and IVA practitioners</h3>
+        <div class="regulator">Regulated by: FCA (debt management) · Insolvency Practitioners Association (IVA)</div>
+      </div>
+      <div class="itp-header-right">
+        <span class="tag tag-yellow">Pilot priority: Medium</span>
+        <span class="tag tag-blue">Volume: High</span>
+      </div>
+    </div>
+    <div class="itp-body">
+      <div class="itp-field full-width">
+        <label>Why they are a natural gateway</label>
+        <div class="value">Debt management and IVA practitioners work daily with financially distressed households — the same population most likely to have embedded mis-selling claims from the packaged account and PPI era. These practitioners hold full financial history for their clients and have a professional incentive to reduce the debt burden: a successful Calmly settlement reduces outstanding liability and improves the IVA or debt plan outcome. The complementarity with C5 (claim management removes the litigation burden from a distressed household) is structurally clean. This is a natural extension of an existing client service, not a new activity.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Two-sided function assessment</label>
+        <div class="two-sided-grid">
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Claimant origination</span>
+            Very strong. Practitioners have full client financial history and can identify qualifying claims as part of standard onboarding. Volume per firm is highest of all five types — distressed client bases are dense with historical mis-selling exposure.
+          </div>
+          <div class="two-sided-cell concern">
+            <span class="cell-label">Defendant notification</span>
+            Weaker institutional credibility with defendant banks in this capacity — debt management firms are creditors' agents in IVA context, which may create adversarial framing. Template forwarding feasible but defendant conviction effect may be lower than solicitor or IFA types.
+          </div>
+        </div>
+      </div>
+      <div class="itp-field">
+        <label>Primary compliance constraint</label>
+        <div class="value">FCA debt management authorisation does not cover claims management activity — the referral must be clearly outside FSMA s.419A scope. IPA-regulated IVA practitioners face additional considerations around client consent where the estate is already subject to insolvency proceedings.</div>
+      </div>
+      <div class="itp-field">
+        <label>Commercial model</label>
+        <div class="value ui">Outcomes-linked referral fee. Fee structure must account for the possibility that a successful claim offsets creditor recovery — needs legal review to confirm no conflict with IVA supervisor duties. Volume-tiered fee schedule preferred.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Pilot rationale</label>
+        <div class="value">High volume potential justifies medium priority despite defendant notification concern. Pilot should assess whether defendant conviction effect is sufficient — if not, this type is claimant-origination only, with defendant notification routed through a different ITP type for the same claim.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ITP 5: Consumer orgs -->
+  <div class="itp-profile">
+    <div class="itp-header">
+      <div class="itp-header-left">
+        <h3>5. Consumer organisations and trade bodies</h3>
+        <div class="regulator">Not referral-fee regulated in same manner · varies by organisation type</div>
+      </div>
+      <div class="itp-header-right">
+        <span class="tag tag-blue">Pilot priority: Medium</span>
+        <span class="tag tag-grey">Volume: Low</span>
+      </div>
+    </div>
+    <div class="itp-body">
+      <div class="itp-field full-width">
+        <label>Why they are a natural gateway</label>
+        <div class="value">Which?, trade unions, credit unions, and professional associations hold high public trust and are already positioned as consumer advocates. Their involvement creates a legitimacy signal that neither CMCs nor solicitors can replicate — a Calmly referral from Which? carries consumer endorsement, not legal or commercial pressure. For the defendant notification side, institutional credibility with banks is strong: major consumer organisations have established dialogue channels with defendant institutions through FCA mediation and parliamentary processes. These are strategic anchor clients — low volume but outsized legitimacy effect.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Two-sided function assessment</label>
+        <div class="two-sided-grid">
+          <div class="two-sided-cell partial">
+            <span class="cell-label">Claimant origination</span>
+            Moderate. Consumer orgs receive and log member complaints but lack structured intake workflows. Referral form must be very simple — the staff completing it are general caseworkers, not claims specialists. Completion time pilot most critical for this type.
+          </div>
+          <div class="two-sided-cell pass">
+            <span class="cell-label">Defendant notification</span>
+            Strong. Consumer orgs already communicate with defendant institutions through established channels. A Calmly notification forwarded through Which? or a trade union carries institutional weight that fintech-direct demand cannot match. Forwarding rate expected to be high once template is approved internally.
+          </div>
+        </div>
+      </div>
+      <div class="itp-field">
+        <label>Primary compliance constraint</label>
+        <div class="value">Consumer organisations are not typically referral-fee regulated in the same way as SRA or FCA firms, but must confirm their charitable or membership constitution permits fee-based referral activity. Which? as a commercial trading arm operates differently from a trade union — each organisation type requires a separate constitutional review.</div>
+      </div>
+      <div class="itp-field">
+        <label>Commercial model</label>
+        <div class="value ui">Donation or partnership model preferred over direct referral fee for charitable/membership organisations. Commercial trading arms (e.g. Which? Ltd) can accept outcomes-linked fees. Trade unions: member benefit framing, fee-sharing with central fund.</div>
+      </div>
+      <div class="itp-field full-width">
+        <label>Pilot rationale</label>
+        <div class="value">Strategic anchor clients — C7 FAIL fallback architecture depends on consumer org direct model. Even if solicitor and CMC types pass, at least one consumer org should be in the pilot to validate the legitimacy-signalling hypothesis and to de-risk C7 architecture against concentration risk.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 4 — DUE DILIGENCE PROTOCOL            -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <hr class="section-divider">
+  <span class="section-num">Section 4</span>
+  <h2>Due diligence protocol</h2>
+
+  <p class="prose">Each ITP type goes through the same five-step protocol. The sequence is deliberate: commercial assessment gates operational assessment; operational assessment gates the pilot. No ITP type proceeds to referral form pilot without clearing compliance assessment first.</p>
+
+  <ol class="protocol-steps">
+    <li>
+      <span class="step-title">Commercial assessment</span>
+      <span class="step-desc">Establish referral fee structure, volume commitment, and exclusivity position. Confirm that the ITP type's regulatory framework permits the proposed commercial relationship. For FCA-authorised types, confirm the outcomes-linked fee does not constitute regulated activity on the ITP's part. For SRA-regulated types, confirm referral fee disclosure mechanism is built into the workflow. Document volume commitment (minimum referrals per quarter) and exclusivity terms — Calmly's concentration limit policy (≤30% from any single type) means no exclusivity at type level, but firm-level exclusivity is permissible.</span>
+    </li>
+    <li>
+      <span class="step-title">Operational assessment</span>
+      <span class="step-desc">Assess staff capacity available for referral activity, systems access requirements (does the referral portal need to integrate with an existing case management system?), and workflow integration points. Identify who within the firm will complete referral forms — frontline caseworkers vs. specialist staff changes the training requirement. Map the defendant notification forwarding chain: who approves the template, who sends it, through which channel, and what internal compliance sign-off is required before forwarding.</span>
+    </li>
+    <li>
+      <span class="step-title">Compliance assessment</span>
+      <span class="step-desc">Review regulatory status, referral fee rules specific to ITP type, and confirm whether SRA or FCA legal opinion is required before engagement. For solicitor types, the compliance assessment is blocked on SRA legal opinion (Section 6 below). For other types, confirm FSMA s.419A scope is not breached. Confirm the defendant notification template does not constitute commencement of proceedings, legal advice, or regulated legal services under the Legal Services Act 2007 for the forwarding ITP.</span>
+    </li>
+    <li>
+      <span class="step-title">Referral form pilot</span>
+      <span class="step-desc">Test with 5 untrained staff members per ITP type. Measure: completion time (pass: ≤5 minutes), error rate (pass: zero critical errors), and drop-out rate (pass: 100% completion). Critical error is defined as any field entry that would cause incorrect claim routing or create an invalid claim record. Non-critical errors (formatting, optional field omissions) are logged but do not count against the pass criteria. All 5 participants must pass. A single failure triggers a form redesign iteration before the type is re-tested.</span>
+    </li>
+    <li>
+      <span class="step-title">Defendant notification pilot</span>
+      <span class="step-desc">Test forwarding of the notification template in a structured pilot. Measure: forwarding rate (pass: ≥90% of staff forward without modification), legal review time (pass: template reviewable without ITP's own legal counsel — target under 2 hours for an individual ITP staff member), and modifications requested (pass: zero substantive modifications — cosmetic letterhead additions are permitted). If modifications are requested, document the specific change and assess whether it is acceptable within the template structure. A pattern of similar modification requests across ITP types informs a template revision.</span>
+    </li>
+  </ol>
+
+  <h3>Compliance matrix</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ITP type</th>
+        <th>Referral fee rule</th>
+        <th>Key regulatory instrument</th>
+        <th>SRA review required?</th>
+        <th>FCA DISP exposure</th>
+        <th>Legal opinion scope</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CMC</strong></td>
+        <td>Outcomes-linked fee permissible under FCA authorisation</td>
+        <td>FSMA 2000, CMCAR 2018</td>
+        <td>No</td>
+        <td>Low — CMC already within DISP framework</td>
+        <td>Confirm activity split does not duplicate authorised activity</td>
+      </tr>
+      <tr>
+        <td><strong>Solicitor / law firm</strong></td>
+        <td>Fee permissible with disclosure + client consent; LASPO ban does not apply to financial services claims</td>
+        <td>SRA Code 2019, r.5.1; LASPO 2012 Part 2</td>
+        <td><strong>Yes — required before engagement</strong></td>
+        <td>Medium — if notification template triggers Legal Services Act 2007 regulated activity</td>
+        <td>r.5.1 compliance; template characterisation; LASPO scope confirmation; agency liability for forwarding ITP</td>
+      </tr>
+      <tr>
+        <td><strong>IFA</strong></td>
+        <td>Outcomes-linked fee permissible; must not constitute CMC activity (FSMA s.419A)</td>
+        <td>FSMA 2000, FCA Handbook COBS</td>
+        <td>No</td>
+        <td>Low — referral framed as client signposting, not claims management</td>
+        <td>s.419A boundary confirmation; confirm IFA referral does not breach COBS suitability obligations</td>
+      </tr>
+      <tr>
+        <td><strong>Debt management / IVA</strong></td>
+        <td>Outcomes-linked fee permissible for FCA-regulated debt management; IVA supervisor duty conflict requires review</td>
+        <td>FSMA 2000, Insolvency Act 1986, IPA code</td>
+        <td>No</td>
+        <td>Medium — if IVA supervisor's referral creates conflict with creditor interests</td>
+        <td>IVA supervisor conflict analysis; s.419A scope; client consent in insolvency proceedings</td>
+      </tr>
+      <tr>
+        <td><strong>Consumer org / trade body</strong></td>
+        <td>Not referral-fee regulated in same manner; constitutional review required per organisation</td>
+        <td>Varies — Charities Act 2011, Co-operative and Community Benefit Societies Act 2014, membership constitutions</td>
+        <td>No</td>
+        <td>Low — not conducting claims management activity</td>
+        <td>Constitutional scope for fee-based referral; confirm not-for-profit restrictions where applicable</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 5 — T4 ACCEPTANCE CRITERIA            -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <hr class="section-divider">
+  <span class="section-num">Section 5</span>
+  <h2>T4 acceptance criteria and pilot design</h2>
+
+  <div class="pilot-summary-grid">
+    <div class="pilot-card">
+      <span class="card-label">Total participants</span>
+      <div class="card-value">25</div>
+      <div class="card-desc">5 ITP types × 5 untrained staff per type</div>
+    </div>
+    <div class="pilot-card">
+      <span class="card-label">Pass criteria (referral form)</span>
+      <div class="card-value">≤5 min</div>
+      <div class="card-desc">Zero critical errors · 100% completion rate</div>
+    </div>
+    <div class="pilot-card">
+      <span class="card-label">Pass criteria (notification)</span>
+      <div class="card-value">≥90%</div>
+      <div class="card-desc">Of staff forward without substantive modification</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ITP type</th>
+        <th>Referral form: pass threshold</th>
+        <th>Notification forwarding: pass threshold</th>
+        <th>Routing to CP1: pass threshold</th>
+        <th>SRA review required before pilot?</th>
+        <th>Type verdict</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>CMC</strong></td>
+        <td>All 5 staff ≤5 min, zero critical errors</td>
+        <td>≥5 of 5 forward unmodified (90%+)</td>
+        <td>Claimant details in CP1 queue within 2 minutes of form submission</td>
+        <td>No</td>
+        <td><span class="tag tag-green">Priority pilot</span></td>
+      </tr>
+      <tr>
+        <td><strong>Solicitor / law firm</strong></td>
+        <td>All 5 staff ≤5 min, zero critical errors</td>
+        <td>≥5 of 5 forward unmodified (90%+)</td>
+        <td>≤2 minutes</td>
+        <td><strong>Yes — legal opinion first</strong></td>
+        <td><span class="tag tag-yellow">Sequenced after opinion</span></td>
+      </tr>
+      <tr>
+        <td><strong>IFA</strong></td>
+        <td>All 5 staff ≤5 min, zero critical errors</td>
+        <td>≥5 of 5 forward unmodified (90%+)</td>
+        <td>≤2 minutes</td>
+        <td>No</td>
+        <td><span class="tag tag-blue">Second cohort</span></td>
+      </tr>
+      <tr>
+        <td><strong>Debt management / IVA</strong></td>
+        <td>All 5 staff ≤5 min, zero critical errors</td>
+        <td>≥5 of 5 forward unmodified (90%+)</td>
+        <td>≤2 minutes</td>
+        <td>No</td>
+        <td><span class="tag tag-blue">Second cohort</span></td>
+      </tr>
+      <tr>
+        <td><strong>Consumer org / trade body</strong></td>
+        <td>All 5 staff ≤5 min, zero critical errors</td>
+        <td>≥5 of 5 forward unmodified (90%+)</td>
+        <td>≤2 minutes</td>
+        <td>No — but constitutional review required</td>
+        <td><span class="tag tag-blue">Parallel to second cohort</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Fail protocol</h3>
+
+  <p class="prose">A single ITP type failure does not constitute a C7 fail. The type is excluded from the scale architecture — Calmly's concentration limit framework absorbs the loss provided ≥3 types pass.</p>
+
+  <div class="inset">
+    <strong>C7 overall PASS condition:</strong> ≥3 ITP types pass both referral form and defendant notification sides. The concentration constraint (≤30% per type) is satisfiable with 3 types at roughly equal volume contribution. A 4- or 5-type pass gives additional resilience.
+  </div>
+
+  <div class="warning">
+    <strong>⚠ C7 FAIL condition:</strong> fewer than 3 ITP types pass either side, or the two-sided function is demonstrably impossible across all five types (e.g. defendant notification forwarding rate is below 50% across all types). FAIL triggers a gateway architecture redesign — replace ITP model with direct-to-claimant origination via consumer org anchor and defendant notification via Calmly's own institutional channel. This is the fallback, not the preference: it removes the defendant conviction mechanism that drives the settlement rate advantage.
+  </div>
+
+  <p class="prose">If a single side fails for a given type (referral form passes, notification fails), that type is recorded as claimant-origination only. It contributes to supply volume but not to defendant notification — the notification function for claims it originates is routed through a passing type where an institutional relationship exists with the same defendant bank.</p>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 6 — SRA COMPLIANCE REVIEW             -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <hr class="section-divider">
+  <span class="section-num">Section 6</span>
+  <h2>SRA compliance review protocol</h2>
+
+  <p class="prose">The solicitor ITP type is on the critical path for two reasons: it carries the highest defendant conviction effect of any type, and it requires a documented legal opinion before any firm can be engaged. The opinion cannot be substituted by internal Calmly legal review — it must come from an independent firm instructed specifically on the questions below.</p>
+
+  <h3>Scope of the legal opinion</h3>
+
+  <ol class="protocol-steps">
+    <li>
+      <span class="step-title">SRA Code 2019, r.5.1 compliance</span>
+      <span class="step-desc">Does Calmly's referral fee structure breach r.5.1 of the SRA Code of Conduct 2019 when the ITP is a solicitor or law firm? Specifically: does the outcomes-linked fee structure satisfy the disclosure requirement to the client, and what form must that disclosure take to avoid a conduct breach? What consent mechanism is required at point of referral form completion?</span>
+    </li>
+    <li>
+      <span class="step-title">Defendant notification template characterisation</span>
+      <span class="step-desc">Does forwarding Calmly's defendant notification template, in its current form, constitute (a) commencement of proceedings under CPR Part 7 or a pre-action protocol, (b) legal advice to the defendant under the Legal Services Act 2007, or (c) regulated legal services requiring the forwarding solicitor to take responsibility for the content? The opinion must address each limb separately. If any limb is positive, a redrafted template must be produced and reviewed.</span>
+    </li>
+    <li>
+      <span class="step-title">LASPO referral fee ban — scope confirmation</span>
+      <span class="step-desc">Confirm on the record that the LASPO 2012 Part 2 ban on referral fees in personal injury litigation does not extend to financial services mis-selling claims. This is understood to be the position, but a documented legal opinion is required for Calmly's FCA regulatory file. The opinion should cite the relevant statutory provision and any Law Society guidance that confirms the position for financial services claims specifically.</span>
+    </li>
+    <li>
+      <span class="step-title">Agency liability — defendant notification forwarding</span>
+      <span class="step-desc">Does the solicitor ITP's act of forwarding the notification template through its institutional channel create any agency liability toward the defendant? Specifically: does the defendant acquire a legal relationship with the forwarding solicitor by virtue of having received the notification through that channel? And does the solicitor ITP incur any professional duty to the defendant by acting as the notification conduit?</span>
+    </li>
+  </ol>
+
+  <div class="inset">
+    <strong>Timeline:</strong> legal opinion commissioned within 5 working days of CDR gate approval. Opinion delivered within 10 working days. Solicitor ITP pilot cohort assembled in parallel but held pending opinion. If opinion identifies a template defect, a revised template is produced within 5 working days and reviewed internally before solicitor pilot commences.
+  </div>
+
+  <div class="warning">
+    <strong>⚠ Sequencing constraint.</strong> No solicitor or law firm ITP may be engaged — commercially or operationally — until the legal opinion is received and reviewed. Any engagement before that date creates an undocumented compliance exposure in Calmly's FCA authorisation file.
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════ -->
+  <!-- SECTION 7 — CDR OPEN ITEM DISPOSITION         -->
+  <!-- ══════════════════════════════════════════════ -->
+
+  <hr class="section-divider">
+  <span class="section-num">Section 7</span>
+  <h2>CDR open item disposition</h2>
+
+  <table class="disposition-table">
+    <thead>
+      <tr>
+        <th>State</th>
+        <th>C7 status</th>
+        <th>Condition</th>
+        <th>Next action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Before this pack</td>
+        <td><span class="tag tag-yellow">Open</span></td>
+        <td>ITP willingness unvalidated. Portal build blocked.</td>
+        <td>Commission legal opinion. Recruit CMC pilot cohort.</td>
+      </tr>
+      <tr>
+        <td>After successful pilot</td>
+        <td><span class="tag tag-green">Closed</span></td>
+        <td>≥3 ITP types pass both sides. Concentration constraints satisfiable.</td>
+        <td>Update CDR gate package. Proceed to referral portal build. TP-4 closed.</td>
+      </tr>
+      <tr>
+        <td>Partial pass (1–2 types pass)</td>
+        <td><span class="tag tag-yellow">Conditional</span></td>
+        <td>Fewer than 3 types pass. Architecture requires amendment.</td>
+        <td>Redesign concentration framework. Escalate to Calmly board. Assess whether gateway model is viable with ≤2 types or revert to consumer org anchor direct model.</td>
+      </tr>
+      <tr>
+        <td>FAIL condition</td>
+        <td><span class="tag tag-red">Fail</span></td>
+        <td>Zero or 1 types pass, or two-sided function impossible across all types.</td>
+        <td>Trigger C7 architecture redesign. Replace gateway ITP model with direct-to-claimant via consumer org anchor. Defendant notification routed through Calmly's own institutional channel. Escalate to CDR gate owner immediately.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Escalation path</h3>
+
+  <ul class="bullet-list">
+    <li>PASS → Calmly founding team updates CDR gate package and confirms TP-4 closure. Referral portal build commences in Phase II per OP1 spec.</li>
+    <li>CONDITIONAL (1–2 types) → founding team presents amended architecture to CDR gate owner within 5 working days. If amended architecture is acceptable, C7 closes conditionally. If not, treat as FAIL.</li>
+    <li>FAIL → CDR gate owner convenes architecture review within 3 working days. Fallback architecture (consumer org anchor, direct defendant notification) is presented with revised Phase II timeline. No portal build commences until revised architecture is approved.</li>
+  </ul>
+
+  <div class="inset">
+    <strong>This pack is the TP-4 closure artefact for C7.</strong> It does not close C7 — the pilot closes C7. This pack defines the protocol that the pilot must follow and the criteria the pilot must satisfy. An engagement manager at any regulated firm receiving this pack should be able to initiate steps 1–3 of the due diligence protocol (commercial, operational, compliance) without further briefing from Calmly.
+  </div>
+
+</div>
+</body>
+</html>

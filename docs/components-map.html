@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — Component / Activity / Owner / Journey Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+
+      /* Product colours */
+      --c-cp: #1d4ed8;       --c-cp-bg: #dbeafe;     --c-cp-border: #b8c8e8;
+      --c-wp: #dc2626;       --c-wp-bg: #fee2e2;     --c-wp-border: #f0b4b4;
+      --c-pp: #16a34a;       --c-pp-bg: #dcfce7;     --c-pp-border: #a7d4b8;
+      --c-parp: #7c3aed;     --c-parp-bg: #ede9fe;   --c-parp-border: #c4aff0;
+
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 1080px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 0 0 80px; background: var(--surface); }
+
+    /* Header */
+    .doc-header { background: var(--panel-bg); color: var(--panel-text); padding: 40px 40px 32px; }
+    .doc-header .eyebrow { font-size: 12px; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; font-weight: 500; }
+    .doc-header h1 { font-size: 30px; font-weight: 600; color: #fff; margin-bottom: 8px; line-height: 1.25; }
+    .doc-header .subtitle { font-family: var(--font-body); font-size: 16px; color: rgba(255,255,255,0.78); max-width: 820px; line-height: 1.7; margin-bottom: 24px; }
+    .meta-row { display: flex; gap: 24px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.14); padding-top: 18px; }
+    .meta-item { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .meta-item strong { color: rgba(255,255,255,0.88); font-weight: 600; margin-right: 4px; }
+
+    /* Main */
+    .main { padding: 40px 40px 0; }
+    h2 { font-size: 22px; font-weight: 600; margin: 48px 0 16px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+    h2:first-child { margin-top: 0; }
+    h3 { font-size: 17px; font-weight: 600; margin: 24px 0 10px; }
+    p { font-family: var(--font-body); font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 14px; }
+
+    /* Governing panel */
+    .gov-panel { background: var(--panel-bg); color: var(--panel-text); padding: 24px 28px; margin-bottom: 32px; }
+    .gov-panel-label { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 10px; }
+    .gov-panel p { color: rgba(255,255,255,0.88); font-family: var(--font-body); font-size: 16px; line-height: 1.7; margin-bottom: 0; }
+
+    /* Inset block */
+    .inset { border-left: 4px solid var(--inset-border); background: var(--accent-light); padding: 14px 18px; margin: 16px 0; }
+    .inset p { margin-bottom: 0; font-size: 15px; color: var(--text); }
+    .inset-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin-bottom: 6px; }
+
+    /* Legend */
+    .legend { background: #fafaf8; border: 1px solid var(--border); padding: 18px 20px; margin-bottom: 36px; }
+    .legend-title { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .legend-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .legend-group h4 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px; }
+    .legend-row { font-size: 13px; color: var(--text-secondary); padding: 3px 0; display: flex; gap: 8px; align-items: baseline; }
+
+    /* Chips */
+    .chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--tag-radius); margin: 1px 2px 1px 0; letter-spacing: 0.02em; white-space: nowrap; border: 1px solid; }
+    .chip-cp { background: var(--c-cp-bg); color: var(--c-cp); border-color: var(--c-cp-border); }
+    .chip-wp { background: var(--c-wp-bg); color: var(--c-wp); border-color: var(--c-wp-border); }
+    .chip-pp { background: var(--c-pp-bg); color: var(--c-pp); border-color: var(--c-pp-border); }
+    .chip-parp { background: var(--c-parp-bg); color: var(--c-parp); border-color: var(--c-parp-border); }
+
+    /* Role tags */
+    .role-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+    .role-direct { background: #fde8e8; color: #991b1b; }
+    .role-managerial { background: #fef9e6; color: #854d0e; }
+    .role-support { background: #f0ebfb; color: #5b21b6; }
+    .role-venture { background: #f1f3f5; color: #4a5568; }
+
+    /* Actor pills */
+    .actor { display: inline-block; font-size: 12px; padding: 2px 9px; border: 1px solid var(--border); background: #fafaf8; color: var(--text-secondary); border-radius: 3px; margin: 1px 3px 1px 0; }
+    .actor-customer { border-color: #b8c8e8; background: #eff6ff; color: #1e3a8a; }
+    .actor-partner { border-color: #c4aff0; background: #f5f3ff; color: #5b21b6; }
+    .actor-external { border-color: #d0d5dd; background: #f1f3f5; color: #4a5568; }
+
+    /* Overview table */
+    table.overview { width: 100%; border-collapse: collapse; margin-bottom: 32px; font-size: 13px; }
+    table.overview thead th { background: var(--panel-bg); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+    table.overview td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; font-family: var(--font-body); }
+    table.overview tr:nth-child(even) td { background: #fafaf8; }
+    table.overview .id-cell { font-family: var(--font-ui); font-weight: 600; }
+
+    /* Component cards */
+    .component { border: 1px solid var(--border); margin-bottom: 28px; }
+    .component-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+    .component-header.cp { background: var(--c-cp-bg); border-bottom-color: var(--c-cp-border); }
+    .component-header.wp { background: var(--c-wp-bg); border-bottom-color: var(--c-wp-border); }
+    .component-header.pp { background: var(--c-pp-bg); border-bottom-color: var(--c-pp-border); }
+    .component-header.parp { background: var(--c-parp-bg); border-bottom-color: var(--c-parp-border); }
+    .component-id { font-size: 18px; font-weight: 600; letter-spacing: 0.02em; }
+    .component-id.cp { color: var(--c-cp); }
+    .component-id.wp { color: var(--c-wp); }
+    .component-id.pp { color: var(--c-pp); }
+    .component-id.parp { color: var(--c-parp); }
+    .component-name { font-size: 17px; font-weight: 600; color: var(--text); flex: 1; }
+    .component-type { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
+
+    .component-body { padding: 20px 24px; }
+    .state-change { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); font-style: italic; margin-bottom: 18px; padding: 10px 14px; background: #fafaf8; border-left: 3px solid var(--border-strong); }
+    .state-change strong { color: var(--text); font-style: normal; font-family: var(--font-ui); font-weight: 600; }
+
+    .section-block { margin-top: 18px; }
+    .section-block-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+
+    /* Activity lists */
+    .activity-list { list-style: none; padding-left: 0; }
+    .activity-list li { padding: 6px 0 6px 22px; border-bottom: 1px dashed var(--border); position: relative; font-size: 14px; font-family: var(--font-body); color: var(--text); line-height: 1.55; }
+    .activity-list li:last-child { border-bottom: none; }
+    .activity-list li::before { content: "→"; position: absolute; left: 4px; color: var(--text-muted); font-size: 13px; top: 6px; }
+    .activity-list.subrole { margin-top: 6px; }
+    .activity-subhead { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent); margin: 12px 0 4px; }
+    .activity-subhead:first-child { margin-top: 0; }
+
+    /* Requirement grid */
+    .req-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+    .req-card { border: 1px solid var(--border); padding: 12px 14px; background: #fafaf8; }
+    .req-card .req-cat { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .req-card p { font-size: 13px; margin-bottom: 0; line-height: 1.55; color: var(--text); }
+    .req-card.full { grid-column: 1 / -1; }
+
+    /* HR row */
+    .hr-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+    .hr-pair { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: #fafaf8; border: 1px solid var(--border); border-radius: 3px; font-size: 13px; }
+    .hr-pair .role-tag { font-size: 9px; }
+    .hr-pair .role-name { font-weight: 500; color: var(--text); font-family: var(--font-ui); }
+
+    /* Actor row */
+    .actor-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+
+    /* Cross-ref tables */
+    table.crossref { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 14px; }
+    table.crossref thead th { background: #f7f7f6; color: var(--text-muted); padding: 10px 12px; text-align: left; font-weight: 600; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 2px solid var(--border); }
+    table.crossref td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    table.crossref tr:last-child td { border-bottom: none; }
+    table.crossref td.role-cell { font-family: var(--font-ui); font-weight: 600; width: 220px; }
+    table.crossref td.role-cell .role-tag { font-size: 9px; margin-left: 6px; vertical-align: middle; }
+    table.crossref td.touches { font-family: var(--font-body); }
+    table.crossref td.touches .chip { font-family: var(--font-ui); margin: 2px 4px 2px 0; }
+    table.crossref .summary-note { font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: 4px; display: block; }
+
+    /* Footnote */
+    .footnote { font-size: 12px; color: var(--text-muted); font-family: var(--font-body); margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--border); line-height: 1.65; }
+    .footnote strong { color: var(--text-secondary); font-family: var(--font-ui); }
+
+    @media (max-width: 820px) {
+      .doc-header, .main { padding-left: 24px; padding-right: 24px; }
+      .legend-grid { grid-template-columns: 1fr; gap: 16px; }
+      .req-grid { grid-template-columns: 1fr; }
+      .component-body { padding: 16px 18px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="eyebrow">Calmly · IVE Design Tools · Components Map</div>
+    <h1>Component / Activity / Owner / Journey Map</h1>
+    <p class="subtitle">A cross-referenced view of the nine product flows that constitute Calmly at scale. For each flow: the activities required to produce and deliver it, the requirements drawn from the modelling, the HR positions accountable, and the customer or partner journeys in which it appears. Components are the products; activities are what HR roles do to make and manage each flow.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>PCO:</strong> Commercial fast track — UK SME disputes £10k–£50k</div>
+      <div class="meta-item"><strong>Traced from:</strong> CTM · AOM v4 · ARM · Fin Sim v4</div>
+      <div class="meta-item"><strong>Version:</strong> v1</div>
+      <div class="meta-item"><strong>Date:</strong> 23 May 2026</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Governing thought -->
+    <div class="gov-panel">
+      <div class="gov-panel-label">What this document is</div>
+      <p>Reading the AOM, ARM and Fin Sim together exposes a structure that no single document carries: which HR positions touch which journeys, where dual-production chains create supervision dependencies, and where the LASPO regulatory floor sits. The AOM gives the at-scale flows between products. The ARM gives the personnel who make and manage them. The Fin Sim gives the unit economics that constrain volume and pricing. The CTM gives the state changes each product drives. This page is the synthesis — one row per component, with everything cross-referenced.</p>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-title">Legend</div>
+      <div class="legend-grid">
+        <div class="legend-group">
+          <h4>Product types</h4>
+          <div class="legend-row"><span class="chip chip-cp">CP</span> Communications product — drives awareness</div>
+          <div class="legend-row"><span class="chip chip-wp">WP</span> Working product — drives state change in case</div>
+          <div class="legend-row"><span class="chip chip-pp">PP</span> Payment product — money flows</div>
+          <div class="legend-row"><span class="chip chip-parp">PartP</span> Partner product — partner-facing output</div>
+        </div>
+        <div class="legend-group">
+          <h4>HR role types</h4>
+          <div class="legend-row"><span class="role-tag role-direct">Direct</span> Produces or delivers the product</div>
+          <div class="legend-row"><span class="role-tag role-managerial">Managerial</span> Oversees the producing role</div>
+          <div class="legend-row"><span class="role-tag role-support">Support</span> Enables execution, not in chain</div>
+          <div class="legend-row"><span class="role-tag role-venture">Venture-wide</span> Strategic / one per venture</div>
+        </div>
+        <div class="legend-group">
+          <h4>Journey actors</h4>
+          <div class="legend-row"><span class="actor actor-customer">Claimant</span> SME with the dispute</div>
+          <div class="legend-row"><span class="actor actor-customer">Defendant</span> Debtor / settlement payer</div>
+          <div class="legend-row"><span class="actor actor-partner">ITP</span> Insolvency tribunal practitioner</div>
+          <div class="legend-row"><span class="actor actor-partner">Assessment Org</span> EV scoring body</div>
+          <div class="legend-row"><span class="actor actor-partner">Pool Operator</span> Claim portfolio mgmt</div>
+          <div class="legend-row"><span class="actor actor-partner">Law school</span> Student supply</div>
+          <div class="legend-row"><span class="actor actor-external">Court</span> Escalation only</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master overview table -->
+    <h2>Overview — nine components at scale</h2>
+    <table class="overview">
+      <thead>
+        <tr>
+          <th style="width:80px;">ID</th>
+          <th style="width:240px;">Name</th>
+          <th>State change driven</th>
+          <th style="width:180px;">Direct producer</th>
+          <th style="width:160px;">Primary journey actor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id-cell"><span class="chip chip-cp">CP1</span></td>
+          <td>Marketing &amp; lead generation</td>
+          <td>Unaware SME → aware claimant</td>
+          <td>Marketing Manager</td>
+          <td><span class="actor actor-customer">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP1</span></td>
+          <td>Case analysis &amp; valuation report</td>
+          <td>Interested → committed claimant</td>
+          <td>Litigation Associate</td>
+          <td><span class="actor actor-customer">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP2</span></td>
+          <td>Claim purchase contract</td>
+          <td>Committed → contracted claimant</td>
+          <td>Litigation Associate</td>
+          <td><span class="actor actor-customer">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP3</span></td>
+          <td>C3 EV assessment report</td>
+          <td>Anchored → aware defendant</td>
+          <td>Law Student Assessor + Qualified Supervisor</td>
+          <td><span class="actor actor-customer">Defendant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP4</span></td>
+          <td>Settlement offer + negotiation timeline</td>
+          <td>Notified → motivated defendant</td>
+          <td>Litigation Associate</td>
+          <td><span class="actor actor-customer">Defendant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP5</span></td>
+          <td>Settlement proceeds distribution</td>
+          <td>Settled case → completed transaction</td>
+          <td>Litigation Associate</td>
+          <td><span class="actor actor-customer">Claimant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-wp">WP6</span></td>
+          <td>Escalating settlement offer (C2)</td>
+          <td>Non-responding → motivated defendant</td>
+          <td>Litigation Associate</td>
+          <td><span class="actor actor-customer">Defendant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-pp">PP1</span></td>
+          <td>Claim purchase + settlement payment</td>
+          <td>Contracted → paid; settled → closed</td>
+          <td>Litigation Associate + Ops &amp; Finance</td>
+          <td><span class="actor actor-customer">Claimant</span> <span class="actor actor-customer">Defendant</span></td>
+        </tr>
+        <tr>
+          <td class="id-cell"><span class="chip chip-parp">PartP1</span></td>
+          <td>Outcomes report (ITP data)</td>
+          <td>ITP relationship → C8 lock-in</td>
+          <td>Ops &amp; Finance + Head of Legal &amp; Ops</td>
+          <td><span class="actor actor-partner">ITP</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset">
+      <div class="inset-label">How to read the detail cards</div>
+      <p>Each component below carries the activities required to produce or deliver it (drawn from ARM Section 2), the requirements derived from the modelling (categorised by volume, regulatory, financial, structural, quality), the HR positions accountable (direct producer, managerial oversight, support roles), and the journey actors who experience the product. WP3 is the only component with a dual-role production chain.</p>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- COMPONENT DETAIL SECTIONS              -->
+    <!-- ====================================== -->
+
+    <h2>Component detail — flows, activities, requirements, owners</h2>
+
+    <!-- CP1 -->
+    <div class="component">
+      <div class="component-header cp">
+        <span class="component-id cp">CP1</span>
+        <span class="component-name">Marketing &amp; lead generation</span>
+        <span class="component-type">Communications product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Unaware SME with active dispute → aware of Calmly as a viable route. <strong>Recipient:</strong> Claimant (SME).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Create and manage paid search / social campaigns targeting SMEs with active disputes</li>
+            <li>Produce and publish content (guides, landing pages, case study formats)</li>
+            <li>Monitor and optimise lead acquisition cost per qualified inquiry</li>
+            <li>Qualify inbound inquiries against eligibility criteria (claim value, dispute type, jurisdiction)</li>
+            <li>Hand qualified leads to Litigation Associate for WP1 assessment</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Volume</div><p>Must generate ~36,480 qualified inquiries/year at full scale to support 18,240 purchased claims (×2 driver from 50% conversion rate).</p></div>
+            <div class="req-card"><div class="req-cat">Cost</div><p>Blended CAC £22.20/claim at scale: 60% ITP-referred at £25 NTP fee, 40% organic at £18 (Fin Sim C7).</p></div>
+            <div class="req-card"><div class="req-cat">Eligibility filter</div><p>Claim value, dispute type, jurisdiction must align with PCO (commercial fast track, £10k–£50k UK SME disputes).</p></div>
+            <div class="req-card"><div class="req-cat">Structural — C7</div><p>Blended channel strategy: ITP gateway provides credibility and lower CAC; organic provides volume floor not dependent on ITP relationships.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Marketing Manager</span></div>
+            <div class="hr-pair"><span class="role-tag role-venture">Venture-wide</span> <span class="role-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">external positioning</span></div>
+            <div class="hr-pair"><span class="role-tag role-support">Support</span> <span class="role-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">CRM, tech stack</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Claimant (SME)</span>
+            <span class="actor actor-partner">ITP</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— ITP referrals appear here, but the ITP's own onboarding sits in PartP1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP1 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP1</span>
+        <span class="component-name">Case analysis &amp; valuation report</span>
+        <span class="component-type">Working product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Interested claimant → committed claimant. Knows risk-weighted value of selling the claim, trusts the assessment enough to sign WP2. <strong>Recipient:</strong> Claimant (SME).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Gather claim details from claimant (intake interview, document collection)</li>
+            <li>Categorise legal standing of the claim</li>
+            <li>Quantify dispute value from documentary evidence</li>
+            <li>Gather and weight supporting evidence</li>
+            <li>Cross-check defendant position (financial capacity, prior conduct, enforcement risk)</li>
+            <li>Assess probability of verdict (RCF base-rate methodology)</li>
+            <li>Assess probability of enforcement</li>
+            <li>Share analysis with claimant and agree purchase price</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Volume — ×2 driver</div><p>50% purchase conversion means 2 WP1 assessments per purchased claim. At scale: ~36,480 assessments/year vs 18,240 purchases. Staffing must size to inquiry volume not purchase volume (ARM Constraint 3).</p></div>
+            <div class="req-card"><div class="req-cat">Quality</div><p>Risk-weighted valuation must be defensible — it becomes the basis for the WP2 purchase price the claimant signs against.</p></div>
+            <div class="req-card"><div class="req-cat">Trust</div><p>Claimant must trust the assessment enough to assign the claim. Defensibility of method matters as much as the number.</p></div>
+            <div class="req-card"><div class="req-cat">Throughput</div><p>Process per Litigation Associate FTE: total activity hours at scale ÷ hours/FTE/year. Bottleneck for case pipeline.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Litigation Associate</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Managerial</span> <span class="role-name">Claims Manager</span> <span style="font-size:11px;color:var(--text-muted);">complex/stalled intake</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Managerial</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">standards, templates</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Claimant (SME)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP2 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP2</span>
+        <span class="component-name">Claim purchase contract</span>
+        <span class="component-type">Working product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Committed claimant → contracted claimant. Legally transfers the claim to Calmly. <strong>Recipient:</strong> Claimant (SME).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Generate claim purchase contract (templated, parameterised from WP1)</li>
+            <li>Share with claimant for signature</li>
+            <li>File executed contract</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Legal — SRA</div><p>Contract must be a valid, SRA-compliant claim assignment. The legal transfer is what makes Calmly the party-in-interest for WP3–WP6.</p></div>
+            <div class="req-card"><div class="req-cat">Trigger sequence</div><p>Only generated after WP1 purchase price is agreed. Premature generation breaks the trust chain.</p></div>
+            <div class="req-card"><div class="req-cat">Audit</div><p>Executed contract must be retrievable as an auditable record for compliance and Pool Operator portfolio assurance.</p></div>
+            <div class="req-card"><div class="req-cat">Speed</div><p>Time from WP1 agreement to WP2 execution is a working-capital input: longer = larger WC float on assessment org payment lag.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Litigation Associate</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Compliance</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">LASPO/SRA</span></div>
+            <div class="hr-pair"><span class="role-tag role-support">Support</span> <span class="role-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">filing, records</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Claimant (SME)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP3 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP3</span>
+        <span class="component-name">C3 EV assessment report</span>
+        <span class="component-type">Working product · Dual-role production</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Overconfident / motivated-reasoning defendant → aware defendant. An independent, financially-committed party has assessed their probability of winning as lower than they believe. <strong>Recipient:</strong> Defendant. <strong>Special:</strong> The only component with a two-role production chain at the direct level.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+
+          <div class="activity-subhead">Draft — Law Student Assessor</div>
+          <ul class="activity-list subrole">
+            <li>Receive brief and case file from Litigation Associate</li>
+            <li>Research comparable cases using Reference Class Forecasting methodology</li>
+            <li>Analyse factual position of claimant and defendant</li>
+            <li>Apply RCF base-rate scoring to produce probability-of-verdict estimate</li>
+            <li>Draft EV assessment report to Calmly template (defendant-facing)</li>
+            <li>Submit draft to Qualified Supervisor for review and sign-off</li>
+          </ul>
+
+          <div class="activity-subhead">Sign-off — Qualified Supervisor</div>
+          <ul class="activity-list subrole">
+            <li>Review student draft for factual accuracy and methodology compliance</li>
+            <li>Correct errors or return for revision with specific notes</li>
+            <li>Apply professional sign-off (LASPO/SRA requirement)</li>
+            <li>Dispatch finalised WP3 to Litigation Associate for inclusion in WP4 settlement pack</li>
+            <li>Monitor student quality across the cohort; flag patterns to Claims Manager</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Regulatory — LASPO</div><p>Qualified Supervisor sign-off required regardless of volume (ARM Constraint 1). Creates a cost floor that does not respond to volume — efficient only at 200+ cases/year.</p></div>
+            <div class="req-card"><div class="req-cat">Methodology</div><p>RCF base-rate scoring; explicit independence from claimant; defendant-facing template that establishes financial commitment of the assessor.</p></div>
+            <div class="req-card"><div class="req-cat">Volume seasonality</div><p>Student capacity batched to term-time (ARM Constraint 2). Either buffer WP3 production ahead of settlement timelines or partner with multiple universities to smooth supply.</p></div>
+            <div class="req-card"><div class="req-cat">Mechanism — C3</div><p>Disrupts defendant motivated reasoning. The report is structurally different from a settlement demand — it is an independent probability assessment from a party with money at stake.</p></div>
+            <div class="req-card full"><div class="req-cat">Pipeline dependency</div><p>WP3 is the input that makes WP4 work. Without finalised, signed-off WP3, the WP4 settlement demand has no anchor to disrupt defendant anchoring.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct (draft)</span> <span class="role-name">Law Student Assessor</span></div>
+            <div class="hr-pair"><span class="role-tag role-direct">Direct (sign-off)</span> <span class="role-name">Qualified Supervisor</span></div>
+            <div class="hr-pair"><span class="role-tag role-venture">Strategic</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">law school partnerships, LASPO</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Defendant</span>
+            <span class="actor actor-partner">Law school</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— Law school supplies the student labour pipeline; not a direct recipient of WP3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP4 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP4</span>
+        <span class="component-name">Settlement offer + negotiation timeline</span>
+        <span class="component-type">Working product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Notified defendant → defendant with explicit, escalating cost-of-delay. Settling now becomes financially rational. <strong>Recipient:</strong> Defendant.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Prepare settlement demand letter incorporating C3 EV report (WP3) and negotiation timeline</li>
+            <li>Send to defendant (SRA-compliant delivery)</li>
+            <li>Log receipt and response</li>
+            <li>Advance timeline milestones — each milestone tied to escalating offer terms (links to WP6)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Bundle dependency</div><p>Must incorporate signed-off WP3. Sequencing WP4 ahead of WP3 sign-off breaks the C3 mechanism.</p></div>
+            <div class="req-card"><div class="req-cat">Regulatory — SRA</div><p>Defendant notification must be SRA-compliant in form and content.</p></div>
+            <div class="req-card"><div class="req-cat">Mechanism — C2 timeline</div><p>Explicit, escalating cost-of-delay is the design innovation. Without it, WP4 is a static demand letter.</p></div>
+            <div class="req-card"><div class="req-cat">Tracking</div><p>Receipt logging and response capture feed Pool Operator portfolio data and WP6 escalation triggers.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Litigation Associate</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Managerial</span> <span class="role-name">Claims Manager</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Strategic</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">standards, pricing</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Defendant</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP5 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP5</span>
+        <span class="component-name">Settlement proceeds distribution</span>
+        <span class="component-type">Working product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Settled case → completed transaction. Claimant receives net proceeds; case is closed. <strong>Recipient:</strong> Claimant (SME).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Receive settlement funds (from defendant via PP1)</li>
+            <li>Calculate net proceeds after Calmly platform fee</li>
+            <li>Pay claimant</li>
+            <li>Close case record (feeds outcomes data to PartP1)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Financial</div><p>Platform fee at 25% FMOS target = £344/claim (revised cost floor £258 ÷ (1 − 0.25)). At average settlement of £3,000 this is 11.5% (Fin Sim).</p></div>
+            <div class="req-card"><div class="req-cat">Reconciliation</div><p>Settlement funds must be tracked through Pool Operator before distribution — protects portfolio assurance position.</p></div>
+            <div class="req-card"><div class="req-cat">Speed — WC</div><p>Cash cycle affects WC peak (~£2.2M at scale). Faster proceeds turnaround reduces capital tied up.</p></div>
+            <div class="req-card"><div class="req-cat">Closure data</div><p>Case record at closure populates outcomes data feeding PartP1 and securitisation-readiness pack (Fin Sim Gate 2→3).</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Litigation Associate</span></div>
+            <div class="hr-pair"><span class="role-tag role-support">Support</span> <span class="role-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">payment execution</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Claimant (SME)</span>
+            <span class="actor actor-partner">Pool Operator</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WP6 -->
+    <div class="component">
+      <div class="component-header wp">
+        <span class="component-id wp">WP6</span>
+        <span class="component-name">Escalating settlement offer (C2)</span>
+        <span class="component-type">Working product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Non-responding defendant → defendant with revised, higher-cost offer tied to timeline milestone. Each delay costs more. <strong>Recipient:</strong> Defendant.</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Prepare and send revised settlement offers at each timeline milestone</li>
+            <li>Record defendant response</li>
+            <li>Assess whether to continue negotiation or escalate to court proceedings</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Trigger</div><p>Activated for non-responding defendants after WP4. Tied to negotiation timeline milestones, not arbitrary cadence.</p></div>
+            <div class="req-card"><div class="req-cat">Escalation logic</div><p>Each revised offer tied to a specific milestone with higher cost. Withdrawal of escalation must follow a documented decision path.</p></div>
+            <div class="req-card"><div class="req-cat">Court escalation</div><p>Decision to escalate to court must be approved by Claims Manager. ~25% of cases reach court (Fin Sim assumption).</p></div>
+            <div class="req-card"><div class="req-cat">Cost</div><p>Court-stage external counsel costs sit under Head of Legal &amp; Ops consumables — modelled separately in Fin Sim as <code>court_external_cost_per_case</code>. Not in direct labour model.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Litigation Associate</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Managerial</span> <span class="role-name">Claims Manager</span> <span style="font-size:11px;color:var(--text-muted);">court escalation approval</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Strategic</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">external counsel</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Defendant</span>
+            <span class="actor actor-external">Court</span>
+            <span style="font-size:12px;color:var(--text-muted);font-style:italic;">— court only for the 25% that escalate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PP1 -->
+    <div class="component">
+      <div class="component-header pp">
+        <span class="component-id pp">PP1</span>
+        <span class="component-name">Claim purchase payment + settlement receipt</span>
+        <span class="component-type">Payment product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> Contracted claimant → paid claimant; settled defendant → closed transaction. <strong>Recipients:</strong> Claimant (purchase price), Defendant (settlement receipt).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Process claim purchase payment to claimant (immediately after WP2 execution)</li>
+            <li>Receive settlement payment from defendant (after WP5 negotiation closes)</li>
+            <li>Reconcile flows through Pool Operator portfolio accounts</li>
+            <li>Manage payment processing relationships (banking, settlement rails)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Pool Operator integration</div><p>1–3 regional Pool Operators at scale (AOM). All PP1 flows route through Pool Operator accounts — Calmly platform fee is deducted at this point.</p></div>
+            <div class="req-card"><div class="req-cat">WC investment cost</div><p>£16.28 × (8% CoC ÷ 12) × 4.65 months weighted avg = £0.50/claim at 8% CoC (Fin Sim). Peak WC at full scale: ~£2.2M outstanding.</p></div>
+            <div class="req-card"><div class="req-cat">Payment processing</div><p>Banking and payment processing fees sit as consumables under Operations &amp; Finance.</p></div>
+            <div class="req-card"><div class="req-cat">Working capital sizing</div><p>WC requirement compounds at Stage 1 (litigation funder capital, 25–30% CoC) — informs the Stage 1 capital raise (~£475–700k per Fin Sim Model 2).</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Operations &amp; Finance</span></div>
+            <div class="hr-pair"><span class="role-tag role-direct">Coordination</span> <span class="role-name">Litigation Associate</span> <span style="font-size:11px;color:var(--text-muted);">case-level</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-customer">Claimant (SME)</span>
+            <span class="actor actor-customer">Defendant</span>
+            <span class="actor actor-partner">Pool Operator</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PartP1 -->
+    <div class="component">
+      <div class="component-header parp">
+        <span class="component-id parp">PartP1</span>
+        <span class="component-name">Outcomes report (ITP data — C8 lock-in)</span>
+        <span class="component-type">Partner product</span>
+      </div>
+      <div class="component-body">
+        <div class="state-change"><strong>State change:</strong> ITP referral relationship → C8 lock-in. ITP dependency on outcomes data increases switching cost over time. <strong>Recipient:</strong> ITP (Insolvency Tribunal Practitioner).</div>
+
+        <div class="section-block">
+          <div class="section-block-label">Activities required</div>
+          <ul class="activity-list">
+            <li>Aggregate case outcomes data across LMUs (settlement rate, recovery rate, time-to-resolution)</li>
+            <li>Produce periodic outcomes report formatted per ITP partner requirements</li>
+            <li>Deliver via platform integration (digital, scheduled cadence)</li>
+            <li>Maintain ITP partner relationships; expand to 3+ partnerships by Stage 2 gate</li>
+            <li>Govern data quality and audit trail (links to C10)</li>
+          </ul>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Requirements derived from modelling</div>
+          <div class="req-grid">
+            <div class="req-card"><div class="req-cat">Mechanism — C8 lock-in</div><p>The outcomes report creates ITP switching cost via data dependency (AOM v4). Once ITPs use Calmly outcomes data in their own workflow, switching to a competitor means losing the historical view.</p></div>
+            <div class="req-card"><div class="req-cat">Aggregation</div><p>Cross-LMU outcomes — requires data infrastructure that spans all 38 modules with consistent definitions.</p></div>
+            <div class="req-card"><div class="req-cat">Cadence</div><p>Periodic delivery (frequency TBD). High enough to be useful to ITPs, low enough to keep ops cost down.</p></div>
+            <div class="req-card"><div class="req-cat">Quality — Gate 2→3</div><p>Must be investor-grade — feeds the securitisation-readiness pack at the Stage 2 to Stage 3 gate. ITP concentration limits (no single ITP &gt;30% of claim supply) protect the data narrative.</p></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">HR positions</div>
+          <div class="hr-row">
+            <div class="hr-pair"><span class="role-tag role-direct">Direct</span> <span class="role-name">Operations &amp; Finance</span> <span style="font-size:11px;color:var(--text-muted);">production</span></div>
+            <div class="hr-pair"><span class="role-tag role-managerial">Strategic</span> <span class="role-name">Head of Legal &amp; Ops</span> <span style="font-size:11px;color:var(--text-muted);">data governance, C10</span></div>
+            <div class="hr-pair"><span class="role-tag role-venture">Venture-wide</span> <span class="role-name">Founder / CEO</span> <span style="font-size:11px;color:var(--text-muted);">ITP partnerships</span></div>
+          </div>
+        </div>
+
+        <div class="section-block">
+          <div class="section-block-label">Journey actors</div>
+          <div class="actor-row">
+            <span class="actor actor-partner">ITP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- CROSS-REFERENCE: BY ROLE               -->
+    <!-- ====================================== -->
+
+    <h2>Cross-reference — which components each HR position touches</h2>
+    <p>One row per HR position. The chips show every component the role is accountable for (direct or supervisory).</p>
+
+    <table class="crossref">
+      <thead>
+        <tr>
+          <th>HR position</th>
+          <th>Components touched</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role-cell">Marketing Manager <span class="role-tag role-direct">Direct</span></td>
+          <td class="touches">
+            <span class="chip chip-cp">CP1</span>
+            <span class="summary-note">Sole direct producer. One per venture, not volume-dependent.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Litigation Associate <span class="role-tag role-direct">Direct</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP1</span>
+            <span class="chip chip-wp">WP2</span>
+            <span class="chip chip-wp">WP4</span>
+            <span class="chip chip-wp">WP5</span>
+            <span class="chip chip-wp">WP6</span>
+            <span class="chip chip-pp">PP1</span>
+            <span class="summary-note">Owns the full claim-lifecycle production chain. Headcount scales with case volume × 2 (50% conversion).</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Law Student Assessor <span class="role-tag role-direct">Direct</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP3</span>
+            <span class="summary-note">Drafts only. Scales with purchased claim volume; capacity batched to term-time.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Qualified Supervisor <span class="role-tag role-direct">Direct</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP3</span>
+            <span class="summary-note">Sign-off only. 1 supervisor per 10–15 active students. Minimum 0.5 FTE for LASPO compliance regardless of volume.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Claims Manager <span class="role-tag role-managerial">Managerial</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP1</span>
+            <span class="chip chip-wp">WP4</span>
+            <span class="chip chip-wp">WP6</span>
+            <span class="summary-note">Supervises Litigation Associates. Approves court escalations (WP6). 1 per 8–10 associates.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Head of Legal &amp; Operations <span class="role-tag role-managerial">Managerial</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP1</span>
+            <span class="chip chip-wp">WP2</span>
+            <span class="chip chip-wp">WP3</span>
+            <span class="chip chip-wp">WP4</span>
+            <span class="chip chip-wp">WP6</span>
+            <span class="chip chip-parp">PartP1</span>
+            <span class="summary-note">Owns LASPO/SRA compliance position, law school partnerships, court strategy, data governance. One per venture; scales to geography/segment at Phase II.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Operations &amp; Finance <span class="role-tag role-support">Support</span></td>
+          <td class="touches">
+            <span class="chip chip-cp">CP1</span>
+            <span class="chip chip-wp">WP2</span>
+            <span class="chip chip-wp">WP5</span>
+            <span class="chip chip-pp">PP1</span>
+            <span class="chip chip-parp">PartP1</span>
+            <span class="summary-note">Cross-cutting support. CRM, filing, payment execution, data aggregation. 1 FTE up to ~500 cases/year; +0.5 FTE per 300 thereafter.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Founder / CEO <span class="role-tag role-venture">Venture-wide</span></td>
+          <td class="touches">
+            <span class="chip chip-cp">CP1</span>
+            <span class="chip chip-parp">PartP1</span>
+            <span class="summary-note">External positioning, regulatory engagement, ITP and law school partnerships. Cost excluded from early-stage unit economics.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset">
+      <div class="inset-label">What this view exposes</div>
+      <p>The Litigation Associate is the single highest-touch direct role — six of nine components depend on it. The Head of Legal &amp; Operations is the highest-touch oversight role and the only one that bridges all four product types. WP3 is the only dual-role direct production chain in the system. Operations &amp; Finance is the connective tissue across communications, working and payment products.</p>
+    </div>
+
+    <!-- ====================================== -->
+    <!-- CROSS-REFERENCE: BY JOURNEY ACTOR      -->
+    <!-- ====================================== -->
+
+    <h2>Cross-reference — which components each journey actor experiences</h2>
+    <p>One row per actor. The chips show every component that appears in that actor's journey, in approximate sequence.</p>
+
+    <table class="crossref">
+      <thead>
+        <tr>
+          <th>Journey actor</th>
+          <th>Components in their journey (in sequence)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="role-cell">Claimant (SME) <span class="role-tag role-direct" style="background:#eff6ff;color:#1e3a8a;">Customer</span></td>
+          <td class="touches">
+            <span class="chip chip-cp">CP1</span> →
+            <span class="chip chip-wp">WP1</span> →
+            <span class="chip chip-wp">WP2</span> →
+            <span class="chip chip-pp">PP1</span> →
+            <span class="chip chip-wp">WP5</span>
+            <span class="summary-note">Full conversion: aware → committed → contracted → paid (purchase price) → paid (net proceeds). Five touchpoints across the lifecycle.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Defendant <span class="role-tag role-direct" style="background:#eff6ff;color:#1e3a8a;">Customer</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP3</span> →
+            <span class="chip chip-wp">WP4</span> →
+            <span class="chip chip-wp">WP6</span> →
+            <span class="chip chip-pp">PP1</span>
+            <span class="summary-note">Awareness disruption → motivation → escalation (if non-responding) → settlement payment. Court only for the 25% that escalate.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">ITP <span class="role-tag role-support" style="background:#f5f3ff;color:#5b21b6;">Partner</span></td>
+          <td class="touches">
+            <span class="chip chip-cp">CP1</span> →
+            <span class="chip chip-parp">PartP1</span>
+            <span class="summary-note">Inbound: refers claimants into CP1. Outbound: receives PartP1 outcomes report. The C8 lock-in is built in the partner-product loop, not the customer-facing flow.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Pool Operator <span class="role-tag role-support" style="background:#f5f3ff;color:#5b21b6;">Partner</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP5</span>
+            <span class="chip chip-pp">PP1</span>
+            <span class="summary-note">All settlement money flows through Pool Operator portfolio accounts. Not customer-facing; sits between Calmly platform and Claimant/Defendant.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Assessment Org <span class="role-tag role-support" style="background:#f5f3ff;color:#5b21b6;">Partner</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP1</span>
+            <span class="summary-note">Per AOM v4: centralised EV scoring body that supports WP1 valuation. Note the ARM has the Law Student Assessor / Qualified Supervisor producing WP3 — the AOM Assessment Org sits earlier in the chain at WP1 valuation.</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Law school <span class="role-tag role-support" style="background:#f5f3ff;color:#5b21b6;">Partner</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP3</span>
+            <span class="summary-note">Supplies the Law Student Assessor pipeline. Not a direct recipient. Multi-university partnerships smooth term-time seasonality (ARM Constraint 2).</span>
+          </td>
+        </tr>
+        <tr>
+          <td class="role-cell">Court <span class="role-tag role-venture" style="background:#f1f3f5;color:#4a5568;">External</span></td>
+          <td class="touches">
+            <span class="chip chip-wp">WP6</span>
+            <span class="summary-note">Escalation only — ~25% of cases. Triggers external counsel costs under Head of Legal &amp; Ops. Modelled as <code>court_external_cost_per_case</code> in Fin Sim.</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset">
+      <div class="inset-label">What this view exposes</div>
+      <p>The Claimant journey is the longest (five components) and spans communications, working and payment products. The Defendant journey is structurally shorter but carries the C2 negotiation-timeline and C3 EV-report mechanisms — the two design innovations that make settlement rational. The ITP appears in only two components but those two carry the C8 lock-in, the strongest competitive moat in the architecture. Pool Operator and Assessment Org are partner roles that sit in the flow but never customer-facing.</p>
+    </div>
+
+    <!-- Source note -->
+    <div class="footnote">
+      <p><strong>Document.</strong> Calmly — Component / Activity / Owner / Journey Map · v1 · 23 May 2026. Synthesises CTM (May 2026), AOM v4 (21 May 2026), ARM (May 2026), Fin Sim v4 (21 May 2026).</p>
+      <p style="margin-top:8px;"><strong>Source mapping.</strong> Component IDs and state changes from ARM Section 1 (4-D Product Index). Activities from ARM Section 2 (Direct personnel and activities) and Section 3 (Indirect HR chain). Requirements derived from AOM v4 at-scale numbers, ARM design constraints, Fin Sim v4 cost floor and FMOS chain, and the business architecture (LHS) MCL evaluation. Journey actors mapped from the AOM v4 actor diagram and ARM product recipients. Where the AOM and ARM use different numbering conventions, ARM numbering is authoritative (most recent integrated view).</p>
+      <p style="margin-top:8px;"><strong>Open items.</strong> (1) PartP1 cadence is not yet specified — needs Phase II decision. (2) Assessment Org vs Law Student Assessor production split for EV work needs clarification between AOM and ARM. (3) Court external cost model (<code>court_external_cost_per_case</code>) is flagged for separate Fin Sim parameterisation.</p>
+      <p style="margin-top:8px;"><strong>Saved to:</strong> <code>04-Projects/FinTech_Justice/calmly-components-map-v1.html</code></p>
+    </div>
+
+  </div><!-- /.main -->
+</div><!-- /.container -->
+</body>
+</html>

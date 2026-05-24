@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CS-001 — ITP Referral Portal · Component Spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1; --surface: #ffffff; --text: #0f1923;
+      --text-secondary: #4a5568; --text-muted: #718096;
+      --border: #dde1e7; --accent: #1f4fa8; --accent-light: #e8eef8;
+      --panel-bg: #0f2744; --panel-text: #ffffff;
+      --green-bg: #e6f4ec; --green-text: #166534; --green-border: #a7d4b8;
+      --red-bg: #fde8e8; --red-text: #991b1b; --red-border: #f0b4b4;
+      --yellow-bg: #fef9e6; --yellow-text: #854d0e; --yellow-border: #f0d98a;
+      --grey-bg: #f1f3f5; --grey-text: #4a5568; --grey-border: #d0d5dd;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 960px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 0 0 100px; background: var(--surface); }
+
+    .doc-header { background: var(--panel-bg); color: var(--panel-text); padding: 36px 40px 28px; }
+    .doc-header .eyebrow { font-size: 11px; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; font-weight: 600; }
+    .doc-header h1 { font-size: 26px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .doc-header .subtitle { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.65); max-width: 680px; line-height: 1.7; margin-bottom: 20px; }
+    .meta-row { display: flex; gap: 28px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 14px; }
+    .meta-item { font-size: 12px; color: rgba(255,255,255,0.5); }
+    .meta-item strong { color: rgba(255,255,255,0.82); font-weight: 600; margin-right: 4px; }
+
+    .main { padding: 32px 40px 0; }
+
+    h2 { font-size: 17px; font-weight: 600; margin: 40px 0 12px; border-top: 1px solid var(--border); padding-top: 28px; }
+    h2:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+    h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin: 20px 0 8px; }
+
+    p { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px; }
+
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: var(--tag-radius); border: 1px solid; white-space: nowrap; }
+    .tag-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-grey { background: var(--grey-bg); color: var(--grey-text); border-color: var(--grey-border); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-accent { background: var(--accent-light); color: var(--accent); border-color: #b8c8e8; }
+    .tag-red { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+
+    /* Scope panel */
+    .scope-panel { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 16px 20px; margin-bottom: 28px; }
+    .scope-panel p { font-size: 14px; color: var(--text); margin-bottom: 0; }
+    .scope-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 6px; }
+
+    /* I/O table */
+    .io-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+    .io-table thead th { background: var(--panel-bg); color: rgba(255,255,255,0.8); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .io-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .io-table tr:last-child td { border-bottom: none; }
+    .io-table .field-name { font-weight: 600; color: var(--text); font-family: var(--font-ui); }
+    .io-table .field-note { font-size: 12px; color: var(--text-muted); margin-top: 2px; font-family: var(--font-body); font-style: italic; }
+
+    /* Flow diagram — simplified text */
+    .flow-strip { display: flex; align-items: center; gap: 0; margin: 16px 0; flex-wrap: wrap; }
+    .flow-node { background: var(--grey-bg); border: 1px solid var(--grey-border); padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--text); }
+    .flow-node.external { background: var(--accent-light); border-color: #b8c8e8; color: var(--accent); }
+    .flow-node.output { background: var(--green-bg); border-color: var(--green-border); color: var(--green-text); }
+    .flow-node.trigger { background: var(--yellow-bg); border-color: var(--yellow-border); color: var(--yellow-text); }
+    .flow-arrow { font-size: 18px; color: var(--text-muted); padding: 0 6px; }
+
+    /* Acceptance criteria */
+    .ac-list { list-style: none; padding: 0; margin: 10px 0; }
+    .ac-list li { display: flex; gap: 12px; align-items: flex-start; padding: 9px 0; border-bottom: 1px dashed var(--border); font-size: 13px; }
+    .ac-list li:last-child { border-bottom: none; }
+    .ac-check { font-size: 15px; flex-shrink: 0; color: var(--green-text); }
+    .ac-id { font-size: 11px; font-weight: 600; color: var(--text-muted); min-width: 52px; }
+    .ac-text { color: var(--text); flex: 1; line-height: 1.5; }
+    .ac-source { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+    /* Out of scope */
+    .oos-list { list-style: none; padding: 0; margin: 10px 0; }
+    .oos-list li { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 13px; color: var(--text-secondary); }
+    .oos-list li:last-child { border-bottom: none; }
+    .oos-x { color: var(--text-muted); flex-shrink: 0; font-weight: 600; }
+    .oos-why { font-size: 11px; color: var(--text-muted); font-style: italic; display: block; margin-top: 2px; }
+
+    /* Ticket table */
+    .ticket-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .ticket-table thead th { background: #f7f7f6; color: var(--text-muted); padding: 9px 14px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--border); }
+    .ticket-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .ticket-table tr:last-child td { border-bottom: none; }
+    .ticket-id { font-weight: 700; color: var(--accent); font-size: 12px; white-space: nowrap; }
+    .ticket-title { font-weight: 600; color: var(--text); margin-bottom: 3px; }
+    .ticket-desc { font-family: var(--font-body); font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .ticket-ac { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+    .ticket-ac strong { font-family: var(--font-ui); font-style: normal; color: var(--text-secondary); }
+
+    /* Warning */
+    .warning { border-left: 4px solid #d4820a; background: #fff8e6; padding: 14px 18px; margin: 16px 0; }
+    .warning-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: #b45309; margin-bottom: 6px; }
+    .warning p { font-size: 13px; color: var(--text); margin-bottom: 0; }
+
+    .size-badge { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; background: var(--grey-bg); border: 1px solid var(--grey-border); color: var(--grey-text); border-radius: var(--tag-radius); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="doc-header">
+    <div class="eyebrow">Calmly · Component Spec · Slice 1 — ITP Partnership Loop</div>
+    <h1>CS-001 — ITP Referral Portal</h1>
+    <p class="subtitle">Receives structured referrals from signed ITP partners and routes them to the CP1 claim intake queue. Pilot-scope build: sufficient to run the PartP1 T4 test, not the full production platform.</p>
+    <div class="meta-row">
+      <div class="meta-item"><strong>Date:</strong> 23 May 2026</div>
+      <div class="meta-item"><strong>Slice:</strong> 1 — ITP Partnership Loop</div>
+      <div class="meta-item"><strong>Flow:</strong> PartP1</div>
+      <div class="meta-item"><strong>Performance bound:</strong> PB-06 (referral ≤5 min)</div>
+      <div class="meta-item"><strong>Gate:</strong> TRR · Slice 1 exit</div>
+      <div class="meta-item"><strong>Tickets:</strong> 6</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Scope -->
+    <div class="scope-panel" style="margin-top: 28px;">
+      <div class="scope-label">Pilot scope</div>
+      <p>Lightweight web form + email notification + manual log. No CRM integration, no automated routing, no claimant-facing output. The acceptance criteria for PartP1 (≥10 referrals, ≤5 min completion, NTP fee correctly attributed) can be met at this fidelity. The production build is commissioned after Slice 1 gate clears.</p>
+    </div>
+
+    <!-- Flow -->
+    <h2>How it fits</h2>
+    <div class="flow-strip">
+      <div class="flow-node external">ITP partner</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">ITP referral portal<br><span style="font-size:11px;font-weight:400;color:var(--text-muted);">CS-001 · this spec</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node output">CP1 intake queue<br><span style="font-size:11px;font-weight:400;">intake specialist</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node trigger">NTP fee log<br><span style="font-size:11px;font-weight:400;">£25 / referral</span></div>
+    </div>
+    <p>The ITP navigates to their unique referral URL, completes the form, submits. The intake specialist receives a notification and the referral appears in their queue. A fee record is written against the ITP's account for monthly reconciliation.</p>
+
+    <!-- Inputs -->
+    <h2>Inputs — what the ITP submits</h2>
+    <p>All fields required unless marked optional. Form must be completable in ≤5 minutes (PB-06). No free-text fields longer than 3 sentences — structured inputs only.</p>
+
+    <table class="io-table">
+      <thead>
+        <tr>
+          <th style="width:200px;">Field</th>
+          <th style="width:100px;">Type</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="field-name">Claimant full name</div></td>
+          <td><span class="tag tag-grey">Text</span></td>
+          <td><div class="field-note">As the claimant provided to the ITP. Used for intake deduplication.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Claimant email</div></td>
+          <td><span class="tag tag-grey">Email</span></td>
+          <td><div class="field-note">Calmly uses this to contact the claimant directly once the referral is received. ITP does not pass on communications after referral.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Claimant phone</div><div class="field-note">optional</div></td>
+          <td><span class="tag tag-grey">Tel</span></td>
+          <td><div class="field-note">Backup contact. Optional at pilot stage.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Harm type</div></td>
+          <td><span class="tag tag-grey">Select</span></td>
+          <td><div class="field-note">Dropdown: mis-sold financial product / unfair bank charge / credit file error / debt collection issue / other. Drives eligibility pre-screening in WP1.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Approximate claim value</div></td>
+          <td><span class="tag tag-grey">Select</span></td>
+          <td><div class="field-note">Banded: &lt;£500 / £500–£2k / £2k–£10k / £10k+. Used for eligibility filter and FMOS modelling. Not a precise figure — ITP is not expected to know.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">When harm occurred</div></td>
+          <td><span class="tag tag-grey">Select</span></td>
+          <td><div class="field-note">Banded: within 12 months / 1–3 years / 3–6 years / 6+ years. Limitation period flag. If 6+ years, intake specialist reviews manually before CP1 begins.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Claimant has documents</div></td>
+          <td><span class="tag tag-grey">Yes / No</span></td>
+          <td><div class="field-note">Does the claimant have any written evidence of the harm (statements, correspondence)? Not required — informs intake specialist before contacting claimant.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">ITP reference number</div></td>
+          <td><span class="tag tag-grey">Auto</span></td>
+          <td><div class="field-note">Generated from the ITP's unique URL. Not entered by the ITP — the URL encodes the ITP identity. Drives NTP fee attribution (£25/referral to this ITP account).</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Referring practitioner name</div><div class="field-note">optional</div></td>
+          <td><span class="tag tag-grey">Text</span></td>
+          <td><div class="field-note">Which individual within the ITP made the referral. Useful for OP5 outcomes reporting — the practitioner wants to know what happened to the client they referred.</div></td>
+        </tr>
+        <tr>
+          <td><div class="field-name">ITP consent confirmation</div></td>
+          <td><span class="tag tag-grey">Checkbox</span></td>
+          <td><div class="field-note">"I confirm the claimant has consented to Calmly contacting them using the details above." Required to submit. Legal basis for claimant outreach.</div></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Process -->
+    <h2>Process — what the component does</h2>
+    <ol style="padding-left: 1.4rem; font-size: 14px; color: var(--text-secondary); font-family: var(--font-body); line-height: 1.8;">
+      <li>ITP navigates to their unique referral URL (e.g. <code style="font-family:monospace;font-size:13px;background:#f1f3f5;padding:1px 5px;">calmly.io/refer/[itp-token]</code>). URL encodes ITP identity — no login required at pilot stage.</li>
+      <li>ITP completes and submits form. Client-side validation prevents submission with missing required fields. No server round-trips mid-form.</li>
+      <li>On submit: referral record written to database (timestamp, ITP token, all form fields). NTP fee record written (£25 against ITP account, pending monthly reconciliation).</li>
+      <li>Intake specialist receives email notification: claimant name, harm type, claim value band, limitation period flag, ITP name. Link to referral record.</li>
+      <li>Referral appears in intake specialist queue view (a simple list at pilot stage — no dashboard required). Status: <em>Received</em>.</li>
+      <li>ITP receives submission confirmation on screen: "Referral received — Calmly will contact [claimant first name] within 2 working days." No email confirmation to ITP at pilot stage.</li>
+    </ol>
+
+    <!-- Outputs -->
+    <h2>Outputs and interfaces</h2>
+    <table class="io-table">
+      <thead>
+        <tr>
+          <th style="width:200px;">Output</th>
+          <th style="width:130px;">Destination</th>
+          <th>Format at pilot stage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="field-name">Referral record</div></td>
+          <td><span class="tag tag-accent">Internal DB</span></td>
+          <td>All form fields + ITP token + timestamp + status field (Received / In progress / Closed). This record is the handoff to CP1.</td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Intake notification</div></td>
+          <td><span class="tag tag-accent">Intake specialist</span></td>
+          <td>Email. Subject: "New referral — [harm type] · [claim value band] · [ITP name]". Body includes limitation flag and link to referral record.</td>
+        </tr>
+        <tr>
+          <td><div class="field-name">NTP fee record</div></td>
+          <td><span class="tag tag-accent">Fee log</span></td>
+          <td>Row in fee log table: ITP token, referral ID, timestamp, amount (£25), status (pending reconciliation). Used for monthly ITP payment and OP5 reporting.</td>
+        </tr>
+        <tr>
+          <td><div class="field-name">Claimant consent record</div></td>
+          <td><span class="tag tag-accent">Internal DB</span></td>
+          <td>Boolean + timestamp + ITP token. Legal basis record for Calmly's right to contact the claimant. Required before CP1 begins.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Acceptance criteria -->
+    <h2>Acceptance criteria</h2>
+    <p>These are the criteria against which the PartP1 T4 test is assessed. The portal must meet all of them before Slice 1 gate can be called.</p>
+
+    <ul class="ac-list">
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-01</span>
+        <div>
+          <div class="ac-text">Referral form is completable in ≤5 minutes from URL navigation to submission confirmation.</div>
+          <div class="ac-source">Source: PB-06 (performance bound). Tested by timing 10 submissions with a representative ITP practitioner.</div>
+        </div>
+      </li>
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-02</span>
+        <div>
+          <div class="ac-text">Intake specialist receives notification within 5 minutes of submission.</div>
+          <div class="ac-source">Source: PartP1 pilot design. Measured from submission timestamp to email delivery timestamp.</div>
+        </div>
+      </li>
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-03</span>
+        <div>
+          <div class="ac-text">NTP fee of £25 is correctly attributed to the referring ITP for each submission — verifiable by matching referral ID to fee log row.</div>
+          <div class="ac-source">Source: ARM SC model. Verified by reconciling fee log against referral records at end of pilot window.</div>
+        </div>
+      </li>
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-04</span>
+        <div>
+          <div class="ac-text">Claimant consent record is written for every submission. No CP1 intake begins without it.</div>
+          <div class="ac-source">Source: legal requirement. Enforced by CP1 check: intake specialist cannot open an intake without a linked consent record.</div>
+        </div>
+      </li>
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-05</span>
+        <div>
+          <div class="ac-text">≥10 referrals received within the pilot window without active prompting from Calmly (the ITP refers without being chased).</div>
+          <div class="ac-source">Source: PartP1 T4 acceptance criteria. This is the architectural test — it validates that the ITP has embedded referral as standard procedure, not one-off behaviour.</div>
+        </div>
+      </li>
+      <li>
+        <span class="ac-check">✓</span>
+        <span class="ac-id">AC-06</span>
+        <div>
+          <div class="ac-text">Unique ITP URL correctly identifies the ITP on every submission — no submissions are attributed to the wrong ITP or to an unknown ITP.</div>
+          <div class="ac-source">Source: NTP fee integrity. Verified by inspecting ITP token on all referral records.</div>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Out of scope -->
+    <h2>Out of scope for this build</h2>
+    <ul class="oos-list">
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>Automated routing to CP1</strong>
+          <span class="oos-why">Email notification to intake specialist is sufficient at pilot stage. Automated queue management is a production build item, commissioned after Slice 1 gate clears.</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>Claimant-facing confirmation email</strong>
+          <span class="oos-why">The ITP manages claimant communication at point of referral. Calmly contacts the claimant directly as part of CP1. No email sent to claimant from this component.</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>ITP login / authenticated session</strong>
+          <span class="oos-why">Token URL is sufficient access control at pilot scale (≤25 ITP contacts). Authenticated ITP portal is a later build.</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>CRM integration</strong>
+          <span class="oos-why">Referral records are stored in a simple table. No CRM sync, no Salesforce, no HubSpot. Pilot volume (target: 25–100 referrals) is manageable manually.</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>Real-time NTP fee payment to ITP</strong>
+          <span class="oos-why">Monthly reconciliation is the ARM model at Stage 1. The fee log enables this — the payment mechanism itself is part of the Pool Operator infrastructure (Slice 4).</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>OP5 outcomes reporting dashboard</strong>
+          <span class="oos-why">OP5 (ITP outcomes reporting) is a separate T3 component, built in parallel. This portal only writes the fee record and referral record that OP5 reads later.</span>
+        </div>
+      </li>
+      <li>
+        <span class="oos-x">✗</span>
+        <div>
+          <strong>Document upload</strong>
+          <span class="oos-why">The claimant uploads documents during CP1 intake — not at referral. The ITP is not expected to handle claimant evidence.</span>
+        </div>
+      </li>
+    </ul>
+
+    <!-- Tickets -->
+    <h2>Tickets</h2>
+    <p>Six tickets. Build order: T1 → T2 → T3 and T4 in parallel → T5 → T6. T6 is the integration test — do not run until T1–T5 are complete.</p>
+
+    <table class="ticket-table">
+      <thead>
+        <tr>
+          <th style="width:80px;">ID</th>
+          <th style="width:220px;">Title</th>
+          <th>Acceptance criteria</th>
+          <th style="width:80px;">Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="ticket-id">T001</td>
+          <td>
+            <div class="ticket-title">Referral form — fields, validation, and submit</div>
+            <div class="ticket-desc">Build the web form with all 10 fields (9 ITP-entered + 1 auto from URL token). Client-side validation on required fields. Submit button disabled until required fields are complete. On submit: POST to /api/referrals. On success: show confirmation message.</div>
+          </td>
+          <td>
+            <div class="ticket-ac"><strong>AC-01:</strong> completable ≤5 min</div>
+            <div class="ticket-ac">Dropdown options match spec. Required fields enforce on submit. Confirmation visible on screen after submit.</div>
+          </td>
+          <td><span class="size-badge">M</span></td>
+        </tr>
+        <tr>
+          <td class="ticket-id">T002</td>
+          <td>
+            <div class="ticket-title">ITP URL token — generation and read</div>
+            <div class="ticket-desc">Each ITP gets a unique URL containing an encoded token (e.g. base64 ITP ID). On page load, the token is parsed from the URL and stored in a hidden form field. If the token is missing or invalid: show an error page ("this referral link is not valid — contact Calmly"). Token must survive form submission and be included in the POST body.</div>
+          </td>
+          <td>
+            <div class="ticket-ac"><strong>AC-06:</strong> ITP correctly identified on every submission</div>
+            <div class="ticket-ac">Invalid or missing token prevents form from loading. Valid token passes through to referral record.</div>
+          </td>
+          <td><span class="size-badge">S</span></td>
+        </tr>
+        <tr>
+          <td class="ticket-id">T003</td>
+          <td>
+            <div class="ticket-title">Referral record — database schema and write</div>
+            <div class="ticket-desc">Create referrals table. Columns: id, created_at, itp_token, itp_practitioner_name (nullable), claimant_name, claimant_email, claimant_phone (nullable), harm_type, claim_value_band, harm_timing, has_documents, consent_given (bool), consent_timestamp, status (default: 'received'). POST /api/referrals writes a row and returns the referral ID.</div>
+          </td>
+          <td>
+            <div class="ticket-ac"><strong>AC-04:</strong> consent record written on every submission</div>
+            <div class="ticket-ac">All required fields non-null after write. Status defaults to 'received'. Referral ID returned in response.</div>
+          </td>
+          <td><span class="size-badge">S</span></td>
+        </tr>
+        <tr>
+          <td class="ticket-id">T004</td>
+          <td>
+            <div class="ticket-title">NTP fee log — write on referral submission</div>
+            <div class="ticket-desc">Create ntp_fee_log table. Columns: id, referral_id (FK), itp_token, amount (fixed £25.00), created_at, status (default: 'pending'). Write a row when a referral record is successfully created. This is the only financial record at pilot stage — no payment processing in scope.</div>
+          </td>
+          <td>
+            <div class="ticket-ac"><strong>AC-03:</strong> £25 attributed to correct ITP for every referral</div>
+            <div class="ticket-ac">One fee row per referral. amount always £25. itp_token matches referral record. status = 'pending'.</div>
+          </td>
+          <td><span class="size-badge">S</span></td>
+        </tr>
+        <tr>
+          <td class="ticket-id">T005</td>
+          <td>
+            <div class="ticket-title">Intake notification — email on submission</div>
+            <div class="ticket-desc">On successful referral write: send email to intake specialist inbox. Subject: "New referral — [harm_type] · [claim_value_band] · [ITP name]". Body: claimant name, harm type, claim value band, harm timing, limitation flag (auto-set if harm_timing = '6+ years'), has_documents, ITP name, referral ID, link to referral record in queue view. Use transactional email provider (e.g. Resend or Postmark).</div>
+          </td>
+          <td>
+            <div class="ticket-ac"><strong>AC-02:</strong> notification delivered ≤5 min after submission</div>
+            <div class="ticket-ac">Email delivered to intake inbox. Limitation flag present when harm_timing = '6+ years'. Referral ID in email matches DB record.</div>
+          </td>
+          <td><span class="size-badge">S</span></td>
+        </tr>
+        <tr>
+          <td class="ticket-id">T006</td>
+          <td>
+            <div class="ticket-title">End-to-end integration test</div>
+            <div class="ticket-desc">Using a test ITP URL, submit a referral and verify: (1) referral record written correctly, (2) fee log row written correctly, (3) intake email delivered within 5 min, (4) consent record is present. Then time 5 submissions by a non-technical person unfamiliar with the form — all must complete in ≤5 min. Document results. This is the acceptance test for AC-01 through AC-06.</div>
+          </td>
+          <td>
+            <div class="ticket-ac">All 6 ACs pass. Timing results documented. Any field or timing failure is a bug before Slice 1 pilot runs.</div>
+          </td>
+          <td><span class="size-badge">M</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warning" style="margin-top: 28px;">
+      <div class="warning-label">Before tickets are created</div>
+      <p>Confirm tech stack choice (framework, DB, email provider). The spec is stack-agnostic — the only constraint is that the form must be web-accessible via URL (no app install required for the ITP) and the DB must support the referral and fee log schemas above. Stack decision drives T003 and T004 implementation approach.</p>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

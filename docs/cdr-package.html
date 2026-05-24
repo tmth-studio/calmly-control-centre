@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — CDR Package Cover — 22 May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+      --green-bg: #e6f4ec;
+      --green-text: #166534;
+      --green-border: #a7d4b8;
+      --red-bg: #fde8e8;
+      --red-text: #991b1b;
+      --red-border: #f0b4b4;
+      --yellow-bg: #fef9e6;
+      --yellow-text: #854d0e;
+      --yellow-border: #f0d98a;
+      --grey-bg: #f1f3f5;
+      --grey-text: #4a5568;
+      --grey-border: #d0d5dd;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 960px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 17px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; padding: 40px 24px 80px; background: var(--surface); }
+
+    /* Header panel */
+    .cdr-header {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 36px 40px;
+      margin-bottom: 40px;
+    }
+    .cdr-header .overline {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      margin-bottom: 12px;
+    }
+    .cdr-header h1 {
+      font-size: 30px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .cdr-header .subtitle {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 28px;
+      font-style: italic;
+    }
+    .cdr-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      padding-top: 24px;
+    }
+    .cdr-meta-item {
+      padding-right: 24px;
+    }
+    .cdr-meta-item:not(:last-child) {
+      border-right: 1px solid rgba(255,255,255,0.12);
+      margin-right: 24px;
+    }
+    .cdr-meta-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 4px;
+    }
+    .cdr-meta-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.9);
+    }
+
+    /* Section headers */
+    .section-header {
+      margin: 52px 0 20px;
+      padding-top: 28px;
+      border-top: 2px solid var(--border);
+    }
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .section-intro {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      margin: 12px 0 24px;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--tag-radius);
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .tag-green  { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-red    { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-grey   { background: var(--grey-bg); color: var(--grey-text); border-color: var(--grey-border); }
+    .tag-blue   { background: var(--accent-light); color: var(--accent); border-color: #b8c8e8; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 0; font-size: 14px; }
+    thead tr { background: #f7f7f6; }
+    th {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    td { padding: 13px 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    tr:last-child td { border-bottom: none; }
+    td.body-cell { font-family: var(--font-body); font-size: 14px; line-height: 1.65; }
+
+    /* Checklist table */
+    .checklist-table td:first-child { width: 220px; font-weight: 600; font-size: 14px; }
+    .checklist-table td:nth-child(2) { width: 80px; text-align: center; }
+    .checklist-table td:nth-child(3) { font-family: var(--font-body); font-size: 14px; line-height: 1.6; color: var(--text-secondary); }
+    .checklist-table td:last-child { font-family: var(--font-body); font-size: 13px; color: var(--text-muted); font-style: italic; width: 220px; }
+
+    /* FMOS gate */
+    .fmos-gate {
+      border: 1px solid var(--border);
+      margin: 20px 0;
+    }
+    .fmos-gate-header {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .fmos-gate-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .fmos-gate-body {
+      padding: 0;
+    }
+    .fmos-stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border-bottom: 1px solid var(--border);
+    }
+    .fmos-stat-row:last-child { border-bottom: none; }
+    .fmos-stat {
+      padding: 18px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .fmos-stat:last-child { border-right: none; }
+    .fmos-stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .fmos-stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .fmos-stat-value.pass { color: var(--green-text); }
+    .fmos-stat-value.borderline { color: var(--yellow-text); }
+    .fmos-stat-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-family: var(--font-body);
+    }
+    .fmos-detail-row {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .fmos-detail-row p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+    }
+    .fmos-verdict {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 24px;
+      background: var(--green-bg);
+      border-top: 2px solid var(--green-border);
+    }
+    .fmos-verdict-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green-text);
+    }
+    .fmos-verdict-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: #0f4020;
+    }
+
+    /* Package index table */
+    .package-table td:first-child { width: 200px; font-weight: 600; font-size: 13px; }
+    .package-table td:nth-child(2) { width: 120px; font-size: 13px; color: var(--text-muted); }
+    .package-table td:nth-child(3) { width: 110px; }
+    .package-table td:last-child { font-family: var(--font-body); font-size: 13px; line-height: 1.6; color: var(--text-secondary); }
+
+    /* Open items */
+    .open-item {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .open-item:last-child { border-bottom: none; }
+    .open-item-num {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      background: var(--warning-border);
+      color: white;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .open-item-content h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .open-item-content p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .open-item-content .item-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Verdict panel */
+    .verdict-panel {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 28px 32px;
+      margin-top: 36px;
+    }
+    .verdict-panel .verdict-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 14px;
+    }
+    .verdict-panel p {
+      font-family: var(--font-body);
+      font-size: 17px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.88);
+    }
+    .verdict-panel p + p { margin-top: 14px; }
+
+    /* Warning */
+    .warning {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning-border);
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+    .warning-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--warning-border);
+      margin-bottom: 8px;
+    }
+    .warning p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.65;
+      color: #5a3a00;
+    }
+
+    /* Inset */
+    .inset {
+      background: var(--accent-light);
+      border-left: 4px solid var(--inset-border);
+      padding: 14px 18px;
+      margin: 16px 0;
+    }
+    .inset p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+
+    /* Spec status in package index */
+    .spec-status-block { margin: 4px 0; }
+
+    /* Flow type legend colours */
+    .tag-wp   { background: #fde8e8; color: #991b1b; border-color: #f0b4b4; }
+    .tag-cp   { background: var(--accent-light); color: var(--accent); border-color: #b8c8e8; }
+    .tag-pp   { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-part { background: #f0ebfb; color: #5b21b6; border-color: #c4aff0; }
+    .tag-op   { background: var(--grey-bg); color: var(--grey-text); border-color: var(--grey-border); }
+
+    /* Footer */
+    .doc-footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ─── SECTION 1: CDR HEADER ─── -->
+  <div class="cdr-header">
+    <div class="overline">Critical Design Review — Gate Package</div>
+    <h1>Calmly — CDR Package Cover</h1>
+    <div class="subtitle">TP-5 Design Definition → TP-7 Implementation gate</div>
+    <div class="cdr-meta">
+      <div class="cdr-meta-item">
+        <div class="cdr-meta-label">Venture</div>
+        <div class="cdr-meta-value">Calmly</div>
+      </div>
+      <div class="cdr-meta-item">
+        <div class="cdr-meta-label">Date</div>
+        <div class="cdr-meta-value">22 May 2026</div>
+      </div>
+      <div class="cdr-meta-item">
+        <div class="cdr-meta-label">Gate</div>
+        <div class="cdr-meta-value">TP-5 → TP-7</div>
+      </div>
+      <div class="cdr-meta-item">
+        <div class="cdr-meta-label">Package version</div>
+        <div class="cdr-meta-value">2.0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 2: CDR ENTRY CRITERIA CHECKLIST ─── -->
+  <div class="section-header">
+    <div class="section-label">Section 2</div>
+    <h2>CDR entry criteria checklist</h2>
+  </div>
+  <p class="section-intro">Five criteria must be met before CDR can close and implementation (TP-7) can begin. Assessment is based on the Design Definition methodology document (22 May 2026), the flow register, the 17 complete flow specifications, the RTM, and the ICD register. All five criteria are now met.</p>
+
+  <table class="checklist-table">
+    <thead>
+      <tr>
+        <th>Criterion</th>
+        <th>Status</th>
+        <th>Evidence and basis</th>
+        <th>Closing action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Flow specs complete — all 17 flows have a full 11-field specification</td>
+        <td><span class="tag tag-green">✅ Complete</span></td>
+        <td class="body-cell">All 17 flow specs complete. 5 original (Part1, CP1, WP1, WP2, CP3) + 12 added (Part2, Part3, CP2, WP3, PP-C, PP-D, OP1–OP6). WP2 duplicate stub removed. Each spec includes 11 fields, sourcing appendix, and T4 pilot design where required.</td>
+        <td>No action required.</td>
+      </tr>
+      <tr>
+        <td>RTM complete — all BALM requirements C1–C10 traced to at least one flow</td>
+        <td><span class="tag tag-green">✅ Complete</span></td>
+        <td class="body-cell">C1–C10 all traced. C9 row: OP4; OP6; WP2 (constraint) — ≤30% per org, ≥3 active orgs, replacement ≤10 WD. C10 row: OP2 — accuracy improves cohort 1→2, methodology versioned before access.</td>
+        <td>No action required.</td>
+      </tr>
+      <tr>
+        <td>ICDs defined — all interface pairs between spec'd flows have a control document</td>
+        <td><span class="tag tag-green">✅ Complete</span></td>
+        <td class="body-cell">ICD-01 through ICD-12 all registered. Canonical numbering established and propagated to Design Definition and Capella model. ICD-08 (CP3→Part2 non-settling defendant handoff), ICD-09 (WP1→OP7 no-proceed dispatch), ICD-10 (WP2→OP4), ICD-11 (WP2→OP2), ICD-12 (Part1→OP5) — all confirmed as FunctionalExchanges in Calmly.capella.</td>
+        <td>No action required.</td>
+      </tr>
+      <tr>
+        <td>Build sequence established — risk-ordered, with T4 assumption and FAIL consequence per flow</td>
+        <td><span class="tag tag-green">✅ Complete</span></td>
+        <td class="body-cell">A 9-step risk-ordered build sequence is documented in the Design Definition methodology (Section 4, Step 5). Sequence leads with the three highest-risk T4 flows: Part1 (C7 critical path), CP3 (defendant settlement rate — most consequential FMOS driver), and WP2 (EV accuracy and cost). T4 assumption and FAIL consequence are stated for every flow in the sequence. Sequence is risk-ordered, not dependency-ordered, consistent with the IVE risk-first principle.</td>
+        <td>No action required. Confirm ordering against final specs when all 17 are complete.</td>
+      </tr>
+      <tr>
+        <td>Every T4 assumption has a pilot test design — not "validate in field" as a placeholder</td>
+        <td><span class="tag tag-green">✅ Complete</span></td>
+        <td class="body-cell">ITP Due Diligence Pack written (calmly-itp-diligence-pack-2026-05-22.html). Covers 5 ITP types: CMCs, solicitors, IFAs, debt management practitioners, consumer organisations. 7-section document including due diligence protocol, T4 acceptance criteria, pilot design (25 participants), SRA compliance review scope. Three architectural flags raised — see Open Items.</td>
+        <td>Pilot execution pending — pack is written. Three open architectural flags noted in Section 5.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ─── SECTION 3: FMOS GATE ─── -->
+  <div class="section-header">
+    <div class="section-label">Section 3</div>
+    <h2>FMOS gate</h2>
+  </div>
+  <p class="section-intro">The CDR requires a Stage 3 Monte Carlo FMOS result at or above 60% P50. The FinSim v4 model (21 May 2026) provides this. A Stage 4 flow-level simulation (22 May 2026) updates these results with all 17 flows spec-grounded. Both gates pass.</p>
+
+  <div class="fmos-gate">
+    <div class="fmos-gate-header">
+      <h3>Stage 3 Monte Carlo FMOS — FinSim v4 (21 May 2026)</h3>
+      <span class="tag tag-green">PASS WITH CONDITION</span>
+    </div>
+    <div class="fmos-gate-body">
+      <div class="fmos-stat-row">
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">P50 (median outcome)</div>
+          <div class="fmos-stat-value pass">60.3%</div>
+          <div class="fmos-stat-sub">Above 60% CDR threshold — PASS</div>
+        </div>
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">P10 (adverse decile)</div>
+          <div class="fmos-stat-value borderline">55.8%</div>
+          <div class="fmos-stat-sub">Below 60% — within tolerance at P10</div>
+        </div>
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">CDR gate threshold</div>
+          <div class="fmos-stat-value" style="color:var(--text);">≥60%</div>
+          <div class="fmos-stat-sub">P50 minimum — IVE gate</div>
+        </div>
+      </div>
+      <div class="fmos-detail-row">
+        <p><strong>Key sensitivity.</strong> The FinSim v4 sensitivity analysis identifies defendant settlement rate (PB-03) as the dominant driver of FMOS variance across the Monte Carlo distribution. At the 70% settlement rate assumption, FMOS is 60.3% (P50). If the actual settlement rate falls below approximately 50%, the P50 FMOS drops below the 60% CDR threshold — this is a structural failure mode, not an execution one. Assessment org EV accuracy (WP2) is the second-order sensitivity: a failure there collapses both claimant activation (CP2) and defendant settlement (CP3) simultaneously, making it a correlated risk, not an independent one.</p>
+        <p style="margin-top: 12px;"><strong>P10 interpretation.</strong> The P10 result of 55.8% reflects a plausible adverse combination of lower-than-assumed settlement rate and higher-than-assumed assessment org costs. It is below the 60% gate, but P10 is not the gate criterion — P50 is. The P10 figure is noted here because it informs the condition attached to the gate: PB-03 (defendant settlement rate) must be tested first in the build sequence, before any capital is committed to downstream flows.</p>
+      </div>
+      <div class="fmos-verdict">
+        <div>
+          <div class="fmos-verdict-label">Gate verdict</div>
+          <div class="fmos-verdict-text"><strong>PASS WITH CONDITION.</strong> P50 of 60.3% clears the 60% CDR threshold by 0.3 percentage points. Condition: Part1 (ITP channel) and CP3 (defendant settlement) must be validated before the exchange platform build commits to downstream flows. PB-03 is sequenced first in the build plan. If PB-03 pilot produces a settlement rate below 60%, the P50 FMOS falls below the CDR threshold and the C2 architecture must be redesigned before implementation continues.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fmos-gate" style="margin-top: 28px;">
+    <div class="fmos-gate-header">
+      <h3>Stage 4 flow-level simulation — all 17 flows spec-grounded (22 May 2026)</h3>
+      <span class="tag tag-green">PASS</span>
+    </div>
+    <div class="fmos-gate-body">
+      <div class="fmos-stat-row">
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">P50 (median outcome)</div>
+          <div class="fmos-stat-value pass">69.3%</div>
+          <div class="fmos-stat-sub">Above 60% CDR threshold — PASS</div>
+        </div>
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">P10 (adverse decile)</div>
+          <div class="fmos-stat-value" style="color:var(--red-text);">35.6%</div>
+          <div class="fmos-stat-sub">Below 60% — see P10 note below</div>
+        </div>
+        <div class="fmos-stat">
+          <div class="fmos-stat-label">P90 (favourable decile)</div>
+          <div class="fmos-stat-value pass">85.1%</div>
+          <div class="fmos-stat-sub">10,000 iterations</div>
+        </div>
+      </div>
+      <div class="fmos-detail-row">
+        <p><strong>Settlement rate.</strong> 20.3% (2,028 of 10,000 claims). Bottleneck flow: CP3 — 36.0% failure rate at T4 settlement gate (primary FMOS driver, consistent with Stage 3 sensitivity analysis).</p>
+        <p style="margin-top: 12px;"><strong>Revenue model.</strong> Combined DBA — PP-D defendant fee + PP-C claimant DBA fee. Revenue model is architecturally flagged as requiring BALM clarification: whether Calmly holds the DBA (making PP-C Calmly revenue) or the pool operator holds it (making PP-C pool operator revenue) has material FMOS consequences. See Open Items.</p>
+        <p style="margin-top: 12px;"><strong>P10 note.</strong> P10 FMOS of 35.6% is below the CDR gate of 60%. This is expected under simultaneous pessimistic draws across all T4 distributions — not an architectural failure. The P10 is driven by low EV claims (log-normal left tail) compounded with low settlement rates (CP3 PB-03 pessimistic). CP3 pilot validation is the structural risk gate.</p>
+      </div>
+      <div class="fmos-verdict">
+        <div>
+          <div class="fmos-verdict-label">Gate verdict</div>
+          <div class="fmos-verdict-text"><strong>PASS.</strong> P50 of 69.3% clears the 60% CDR threshold. Condition: CP3 and Part1 T4 pilots required before platform build commitment. P10 risk to be managed through pilot sequencing (highest-risk flows first) and concentration management (OP4).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SECTION 4: PACKAGE INDEX ─── -->
+  <div class="section-header">
+    <div class="section-label">Section 4</div>
+    <h2>Package index</h2>
+  </div>
+  <p class="section-intro">All documents in the CDR package. All 17 flow specs are complete. CDR entry criteria are satisfied.</p>
+
+  <table class="package-table">
+    <thead>
+      <tr>
+        <th>Document</th>
+        <th>File / location</th>
+        <th>Date</th>
+        <th>Description and status</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- Flow register -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Flow register</td>
+      </tr>
+      <tr>
+        <td>Calmly flow register — 17 flows</td>
+        <td>Design Definition doc, Section 4 Step 1</td>
+        <td>22 May 2026</td>
+        <td class="body-cell">Complete. All 17 flows listed with flow type (4 Working Product, 4 Comms Product, 2 Payment, 3 Partner Product, 4 Operational — note: WP3 counts as Working Product), Carrier from ARM, and AOM/CTM source. Register cross-checked against AOM v2 cost lines. No gaps identified against AOM activity matrix or CTM product flows. <span class="tag tag-green" style="font-size:11px;">Complete</span></td>
+      </tr>
+
+      <!-- Flow specs -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Flow specifications — 17 flows (11-field format)</td>
+      </tr>
+      <tr>
+        <td>CP1 — Claim intake and eligibility disclosure</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-cp" style="font-size:11px;">Comms Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">Complete</span><br><span style="font-size:13px;color:var(--text-muted);">All 11 fields. Carrier: Role (PVC) intake specialist. T4 moderate — pre-screen pass rate (65%) and ARM time budget (69 min) untested.</span></td>
+      </tr>
+      <tr>
+        <td>WP1 — Eligibility assessment workflow</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-wp" style="font-size:11px;">Working Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">Complete</span><br><span style="font-size:13px;color:var(--text-muted);">All 11 fields. Carrier: Role (PVC) eligibility assessor. T4 moderate — post-EV proceed rate (80%) untested.</span></td>
+      </tr>
+      <tr>
+        <td>WP2 — Independent EV assessment system</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-wp" style="font-size:11px;">Working Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">Complete</span><br><span style="font-size:13px;color:var(--text-muted);">All 11 fields — full specification including sourcing appendix. Carrier: Third-party (RC) assessment org + Role (PVC) EV specialist. T4 — EV accuracy, turnaround, per-claim cost all untested. <strong>Note: WP2 stub (earlier draft) should be removed before package finalisation.</strong></span></td>
+      </tr>
+      <tr>
+        <td>CP2 — EV disclosure and claim activation</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-cp" style="font-size:11px;">Comms Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Comms Product. Carrier: Role (PVC) EV specialist. BALM C4, C5. T4 — EV disclosure proceed rate. Terminal: 'abandoned' on claimant decline.</span></td>
+      </tr>
+      <tr>
+        <td>CP3 — Defendant notification and liability buyout facilitation</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-cp" style="font-size:11px;">Comms Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">Complete</span><br><span style="font-size:13px;color:var(--text-muted);">All 11 fields. Carrier: Role (PVC) defendant engagement specialist + ITP institutional channel. T4 — defendant settlement rate (70% target) is the most consequential FMOS driver. Validation: live pilot ≥50 real defendants.</span></td>
+      </tr>
+      <tr>
+        <td>PP-C — Payment flow: claimant fee collection</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-pp" style="font-size:11px;">Payment</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Payment. Carrier: System (RC) exchange platform. BALM C2. T3 — DBA Regulations 2013 claimant fee (15–25% of EV). Collection near-certain (deducted at source).</span></td>
+      </tr>
+      <tr>
+        <td>PP-D — Payment flow: defendant fee collection</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-pp" style="font-size:11px;">Payment</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Payment. Carrier: System (RC) exchange platform. BALM C2. T3 — Arkin v Borchard defendant fee (8–15% of EV). Primary Calmly revenue event. Platform_revenue key read by simulation.</span></td>
+      </tr>
+      <tr>
+        <td>Part1 — ITP referral protocol and activation pack</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-part" style="font-size:11px;">Partner Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">Complete</span><br><span style="font-size:13px;color:var(--text-muted);">All 11 fields. Carrier: Role (SC) territory coordinator + System (RC) ITP referral portal. T4 — ITP willingness to embed as standard procedure. C7 open item. Build sequence position 1 (highest risk).</span></td>
+      </tr>
+      <tr>
+        <td>Part2 — Pool operator onboarding and quality framework</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-part" style="font-size:11px;">Partner Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Partner Product. Carrier: Role (SC) HQ pool relations + System (RC) QA framework. BALM C3. T3 — pool operator quality gate (PERT-Beta 0.82, 0.93, 0.98).</span></td>
+      </tr>
+      <tr>
+        <td>Part3 — Pool insurance marketplace integration</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-part" style="font-size:11px;">Partner Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Partner Product. Carrier: Third-party (RC) FCA-regulated insurer. BALM C5. T3 — pool loss insurance availability (PERT-Beta 0.88, 0.96, 0.99).</span></td>
+      </tr>
+      <tr>
+        <td>WP3 — Pool matching algorithm</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-wp" style="font-size:11px;">Working Product</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Working Product. Carrier: System (RC) exchange platform. BALM C3, C9. T2 — automated pool matching, PB-07 acceptance rate. Matching time is SLA metric only (not a claim-terminating gate).</span></td>
+      </tr>
+      <tr>
+        <td>OP1 — Exchange platform (technology)</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: Platform Engineering (HQ). BALM C1, C8, C10. T2 — SaaS/managed cloud. Platform availability PERT-Beta(0.995, 0.999, 0.9999). FCA compliance constant.</span></td>
+      </tr>
+      <tr>
+        <td>OP2 — EV methodology and assessment engine (C10)</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: EV Methodology Analyst (HQ). BALM C1, C3. T2 — always passes. Tracks accuracy_improvement_rate and dataset_size (C10 data moat).</span></td>
+      </tr>
+      <tr>
+        <td>OP3 — Defendant notification and settlement system</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: Platform Engineering (HQ). BALM C2, C4. T3 — notification delivery reliability (PERT-Beta 0.985, 0.997, 0.9995). Tracks D1 resolution rate.</span></td>
+      </tr>
+      <tr>
+        <td>OP4 — Assessment org pool QA framework (C9)</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: Assessment Org QA Manager (HQ). BALM C9. T3 — three-gate: org_concentration ≤0.30, active_org_count ≥3, qa_score ≥0.80.</span></td>
+      </tr>
+      <tr>
+        <td>OP5 — ITP outcomes reporting system (C8)</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: ITP Account Manager (HQ). BALM C5, C8. T3 — ITP outcomes reporting, ≤5 WD generation time. C8 switching cost data feed.</span></td>
+      </tr>
+      <tr>
+        <td>OP6 — Territory compliance and management layer</td>
+        <td>Design Definition doc</td>
+        <td>22 May 2026</td>
+        <td class="body-cell"><span class="tag tag-op" style="font-size:11px;">Operational</span> &nbsp;<span class="tag tag-green" style="font-size:11px;">✅ Complete</span><br><span style="font-size:13px;color:var(--text-muted);">Operational. Carrier: Territory Compliance Manager (HQ). BALM C5, C10. T2 — compliance_score ≥0.90 AND Poisson(0.1) regulatory incidents = 0.</span></td>
+      </tr>
+
+      <!-- RTM -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Requirements Traceability Matrix</td>
+      </tr>
+      <tr>
+        <td>RTM — C1–C10</td>
+        <td>Design Definition doc, Section 4 Step 4</td>
+        <td>22 May 2026</td>
+        <td class="body-cell">C1–C10 complete with flows, acceptance criteria, verification methods, and assumption tiers. C9 row: OP4; OP6; WP2 (constraint). C10 row: OP2. All 10 BALM requirements traced. <span class="tag tag-green" style="font-size:11px;">✅ Complete</span></td>
+      </tr>
+
+      <!-- ICD register -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Interface Control Documents</td>
+      </tr>
+      <tr>
+        <td>ICD register — ICD-01 to ICD-12</td>
+        <td>Design Definition doc + Capella model</td>
+        <td>22 May 2026</td>
+        <td class="body-cell">ICD-01 through ICD-12 all registered. Canonical numbering established and propagated to Design Definition and Capella model. ICD-08 (CP3→Part2), ICD-09 (WP1→OP7), ICD-10 (WP2→OP4), ICD-11 (WP2→OP2), ICD-12 (Part1→OP5) confirmed as FunctionalExchanges in Calmly.capella. <span class="tag tag-green" style="font-size:11px;">✅ Complete</span></td>
+      </tr>
+
+      <!-- Build sequence -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Build sequence</td>
+      </tr>
+      <tr>
+        <td>Calmly recommended build sequence</td>
+        <td>Design Definition doc, Section 4 Step 5</td>
+        <td>22 May 2026</td>
+        <td class="body-cell">9-step risk-ordered sequence. Leads with T4 flows: Part1 → CP3 → WP2 → CP1/WP1 → Part2 → WP3 → PP-C/PP-D → OP4/OP5 → OP2. T4 assumption, FAIL consequence, and validation protocol specified for each high-risk flow. Consistent with IVE risk-first principle. <span class="tag tag-green" style="font-size:11px;">Complete</span></td>
+      </tr>
+
+      <!-- MBSE model -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">MBSE model</td>
+      </tr>
+      <tr>
+        <td>Calmly Capella model</td>
+        <td><code style="font-size:12px;background:var(--grey-bg);padding:1px 4px;">Calmly_Model/Calmly.capella</code></td>
+        <td>22 May 2026</td>
+        <td class="body-cell">Capella 6.x. Canonical structural model. 18 functions, 12 ICDs — all registered. ICD-08–12 added and confirmed as FunctionalExchanges. Structural relationships between flows, carriers, and BALM requirements held here as ground truth. The flow register and ICD register in the Design Definition doc derive from this model. <span class="tag tag-green" style="font-size:11px;">✅ Complete</span></td>
+      </tr>
+
+      <!-- Simulations -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Financial simulations</td>
+      </tr>
+      <tr>
+        <td>FinSim v4 — at-scale and staging model</td>
+        <td><code style="font-size:12px;background:var(--grey-bg);padding:1px 4px;">calmly-fin-sim-v4-2026-05-21.html</code></td>
+        <td>21 May 2026</td>
+        <td class="body-cell">P50 FMOS: 60.3% at price ceiling (£650/claim, £258 revised cost floor). HQ line derived from AOM functions — replaces T4 estimate. Stage 1 FMOS sub-threshold by design. Stage 2: 28.0%. Stage 3: 42.6% (approaching at-scale). At-scale (38 modules): 60.3%. Sensitivity analysis included. Defendant settlement rate (PB-03) identified as primary FMOS driver. <span class="tag tag-green" style="font-size:11px;">Complete</span></td>
+      </tr>
+      <tr>
+        <td>Stage 4 flow-level simulation — 17 flows chained</td>
+        <td>Monte Carlo results (10,000 iterations)</td>
+        <td>22 May 2026</td>
+        <td class="body-cell">P10: 35.6%. P50: 69.3%. P90: 85.1%. Settlement rate: 20.3% (2,028/10,000 claims). CP3 bottleneck (36.0% failure rate). Combined DBA revenue model (PP-D + PP-C). Revenue model architecture flagged for BALM clarification — see Open Items. <span class="tag tag-green" style="font-size:11px;">✅ Complete</span></td>
+      </tr>
+
+      <!-- ARM -->
+      <tr style="background: #fafaf9;">
+        <td colspan="4" style="font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); padding: 10px 16px 6px; border-bottom: 1px solid var(--border);">Resourcing model</td>
+      </tr>
+      <tr>
+        <td>At-Scale Resourcing Model (ARM)</td>
+        <td><code style="font-size:12px;background:var(--grey-bg);padding:1px 4px;">calmly-resourcing-model-2026-05-21.html</code></td>
+        <td>21 May 2026</td>
+        <td class="body-cell">Four cost layers: PVC (£157.37/claim), RC (£37.61/claim), SC + IC (HQ £62.26/claim derived from AOM). Total cost floor: £258/claim at 38-module scale. Identifies Carriers for all primary flows. Per-unit cost ceilings derive from this model and appear in every flow spec's Constraints field. HQ line upgraded from T4 to T2 (derived from AOM activity matrix). <span class="tag tag-green" style="font-size:11px;">Complete</span></td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- ─── SECTION 5: OPEN ITEMS ─── -->
+  <div class="section-header">
+    <div class="section-label">Section 5</div>
+    <h2>Open items</h2>
+  </div>
+  <p class="section-intro">CDR entry criteria are met. The items below are either closed (completion tasks now done) or carried forward as conditions on implementation. Two conditions are open — neither blocks CDR close, but both must resolve before fundraising use of the financial model or platform build commitment.</p>
+
+  <div style="margin-top: 20px;">
+
+    <div class="open-item">
+      <div class="open-item-num" style="background: var(--green-text);">✓</div>
+      <div class="open-item-content">
+        <h4>C9 and C10 RTM rows <span class="tag tag-green" style="font-size:11px;">✅ CLOSED</span></h4>
+        <p>C9 row added: OP4; OP6; WP2 (constraint) — ≤30% per org, ≥3 active orgs, replacement ≤10 WD. C10 row added: OP2 — accuracy improves cohort 1→2, methodology versioned before access. RTM is now complete across all 10 BALM requirements.</p>
+        <div class="item-meta">Closed 22 May 2026.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num" style="background: var(--green-text);">✓</div>
+      <div class="open-item-content">
+        <h4>ICD-08 through ICD-12 — Capella <span class="tag tag-green" style="font-size:11px;">✅ CLOSED</span></h4>
+        <p>ICD-08 (CP3→Part2 non-settling defendant handoff), ICD-09 (WP1→OP7 no-proceed dispatch), ICD-10 (WP2→OP4), ICD-11 (WP2→OP2), ICD-12 (Part1→OP5) all confirmed as FunctionalExchanges in Calmly.capella. Canonical ICD numbering propagated to Design Definition and flow register.</p>
+        <div class="item-meta">Closed 22 May 2026.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num" style="background: var(--green-text);">✓</div>
+      <div class="open-item-content">
+        <h4>WP2 duplicate stub <span class="tag tag-green" style="font-size:11px;">✅ CLOSED</span></h4>
+        <p>The earlier WP2 stub in the Step 2 section of the Design Definition doc has been removed. The full 11-field specification is the operative WP2 spec. No ambiguity remains.</p>
+        <div class="item-meta">Closed 22 May 2026.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num" style="background: var(--green-text);">✓</div>
+      <div class="open-item-content">
+        <h4>Stage 4 ARM cost double-counting <span class="tag tag-green" style="font-size:11px;">✅ CLOSED</span></h4>
+        <p>Stage 4 simulation confirmed to use the ARM-derived cost floor (£258/claim). No double-counting between operational flow costs and ARM line items. P50 69.3% and P10 35.6% are valid against the ARM-aligned inputs.</p>
+        <div class="item-meta">Closed 22 May 2026.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num">1</div>
+      <div class="open-item-content">
+        <h4>ITP due diligence pack — pilot execution pending</h4>
+        <p>Pack written (calmly-itp-diligence-pack-2026-05-22.html). Covers 5 ITP types: CMCs, solicitors, IFAs, debt management practitioners, consumer organisations. 7-section document including due diligence protocol, T4 acceptance criteria, pilot design (25 participants), SRA compliance review scope.</p>
+        <p style="margin-top: 8px;">Three architectural flags raised during pack authoring: (1) debt management ITP defendant notification split-side risk — debt management practitioners act for defendants, creating a conflict-of-interest exposure in the CP3 defendant notification flow; (2) consumer org dual-path dependency — consumer organisations pass AND serve as fallback in the same claim journey, creating a sequencing ambiguity; (3) SRA opinion on critical path for solicitor type — 3-week lag expected. CDR gate should not wait for solicitor type pilot if other types pass.</p>
+        <div class="item-meta">Owner: Tom Manuel. Condition: pilot execution required before platform build commitment. SRA opinion to be commissioned in parallel with CMC and IFA pilots.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num">2</div>
+      <div class="open-item-content">
+        <h4>Revenue model architectural decision — PP-C BALM clarification required</h4>
+        <p>The Stage 4 simulation uses a combined DBA revenue model: PP-D defendant fee + PP-C claimant DBA fee = Calmly platform revenue. This gives P50 FMOS 69.3%.</p>
+        <p style="margin-top: 8px;">The architectural question unresolved: does Calmly hold the DBA and distribute net to the pool operator, or does the pool operator hold the DBA? If Calmly holds it, PP-C (~£600 at median) is Calmly revenue and the combined model is correct. If the pool operator holds it, PP-C is pool operator revenue only, and the defendant-only model applies — giving P50 FMOS approximately 9.3%. This is not a rounding error; it is a structural decision about the legal form of the exchange relationship.</p>
+        <div class="item-meta">Owner: Tom Manuel + legal / BALM review. Blocking: use of the financial model for fundraising. Must resolve before investor materials are produced. Does not block CDR close or pilot design.</div>
+      </div>
+    </div>
+
+    <div class="open-item">
+      <div class="open-item-num" style="background: var(--green-text);">✓</div>
+      <div class="open-item-content">
+        <h4>WP1 Capella tier correction <span class="tag tag-green" style="font-size:11px;">✅ CLOSED</span></h4>
+        <p>WP1 was incorrectly assigned T3 in an earlier Capella model version. Corrected to T4 in generate_calmly_capella.py and model regenerated. WP1 post-EV proceed rate (80%) is now correctly tiered as an untested assumption requiring pilot validation.</p>
+        <div class="item-meta">Closed 22 May 2026.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ─── SECTION 6: CDR VERDICT ─── -->
+  <div class="section-header">
+    <div class="section-label">Section 6</div>
+    <h2>CDR verdict</h2>
+  </div>
+
+  <div class="verdict-panel">
+    <div class="verdict-label">Gate assessment — 22 May 2026</div>
+    <p>All 5 CDR entry criteria are met. The flow-level architecture is complete: 17 specs, 10 RTM traces across C1–C10, 12 ICDs registered and confirmed in Capella, ITP pilot designed across 5 ITP types. Stage 4 P50 FMOS is 69.3% — above Stage 3's 60.3% gate — on 10,000 iterations with all 17 flows spec-grounded.</p>
+    <p>CDR closes on this architecture. Two conditions are carried forward: (1) CP3 and Part1 T4 pilots required before platform build commitment — CP3 defendant settlement rate (36.0% failure rate in Stage 4) is the primary FMOS driver and must be tested first; Part1 ITP pilot must precede portal build; (2) PP-C revenue model to be confirmed in BALM before the financial model is used for fundraising — the combined DBA model gives P50 69.3%, the defendant-only model gives approximately 9.3%, and the legal form of the exchange relationship determines which is operative.</p>
+    <p>Architect recommendation: proceed to portal prototype build — Part1 ITP onboarding portal and CP1 intake flow — as the highest-risk, highest-priority T4 validation path. SRA opinion to be commissioned in parallel. Revenue model architecture to be resolved with legal review before any investor materials are produced.</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <p>Calmly — CDR Package Cover v2.0 · 22 May 2026 · Tom Manuel · IVE Design Definition Methodology (Simanis / Cornell)<br>
+    Sources: Design Definition doc (22 May 2026), Capella 6.x MBSE model, FinSim v4 (21 May 2026), ARM (21 May 2026), AOM v2 (20 May 2026).</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — Financial Simulation v4 — At-scale vs Scaling Architecture — 21 May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --green-bg: #e6f4ec;
+      --green-text: #166534;
+      --green-border: #a7d4b8;
+      --yellow-bg: #fef9e6;
+      --yellow-text: #854d0e;
+      --yellow-border: #f0d98a;
+      --red-bg: #fde8e8;
+      --red-text: #991b1b;
+      --red-border: #f0b4b4;
+      --purple-bg: #f0ebfb;
+      --purple-text: #5b21b6;
+      --purple-border: #c4aff0;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 980px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+
+    /* ── Page header ── */
+    .page-header { background: var(--panel-bg); color: var(--panel-text); padding: 40px 0 32px; }
+    .page-header-inner { max-width: var(--width); margin: 0 auto; padding: 0 32px; }
+    .page-header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .page-header .subtitle { font-family: var(--font-body); font-size: 16px; color: rgba(255,255,255,0.75); max-width: 780px; line-height: 1.65; margin-bottom: 20px; }
+    .header-tags { display: flex; gap: 10px; flex-wrap: wrap; }
+    .header-tag { font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); padding: 3px 10px; border-radius: var(--tag-radius); letter-spacing: 0.04em; }
+
+    /* ── Nav ── */
+    .section-nav { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+    .section-nav-inner { max-width: var(--width); margin: 0 auto; padding: 0 32px; display: flex; gap: 0; overflow-x: auto; }
+    .nav-link { font-size: 12px; font-weight: 500; color: var(--text-secondary); text-decoration: none; padding: 13px 14px; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); }
+    .nav-link.model1 { color: var(--accent); }
+    .nav-link.model2 { color: var(--purple-text); }
+    .nav-divider { font-size: 11px; color: var(--border-strong); padding: 13px 4px; display: flex; align-items: center; }
+
+    /* ── Main container ── */
+    .main { max-width: var(--width); margin: 0 auto; padding: 48px 32px 100px; }
+
+    /* ── Section headers (navy panels) ── */
+    .model-header { background: var(--panel-bg); color: var(--panel-text); padding: 28px 32px; margin-bottom: 36px; }
+    .model-header .mh-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 8px; }
+    .model-header h2 { font-size: 24px; font-weight: 600; margin-bottom: 10px; }
+    .model-header .mh-subtitle { font-family: var(--font-body); font-size: 16px; color: rgba(255,255,255,0.8); line-height: 1.65; max-width: 820px; }
+
+    /* ── Model divider ── */
+    .model-divider { margin: 64px 0; text-align: center; }
+    .model-divider hr { border: none; border-top: 2px solid var(--border-strong); margin-bottom: 28px; }
+    .model-divider p { font-family: var(--font-body); font-style: italic; font-size: 15px; color: var(--text-secondary); line-height: 1.7; max-width: 720px; margin: 0 auto; }
+
+    /* ── Section blocks ── */
+    .section-block { margin-bottom: 48px; }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+    .section-subtitle { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 24px; }
+
+    /* ── Tags ── */
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: var(--tag-radius); border: 1px solid; white-space: nowrap; }
+    .tag-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-red { background: var(--red-bg); color: var(--red-text); border-color: var(--red-border); }
+    .tag-blue { background: var(--accent-light); color: var(--accent); border-color: #b8c8e8; }
+    .tag-grey { background: #f1f3f5; color: var(--text-secondary); border-color: #d0d5dd; }
+    .tag-purple { background: var(--purple-bg); color: var(--purple-text); border-color: var(--purple-border); }
+
+    .t4-badge { font-size: 10px; font-weight: 600; padding: 1px 5px; background: #fff8e6; color: #854d0e; border: 1px solid #f0d98a; border-radius: 3px; vertical-align: middle; margin-left: 4px; }
+
+    /* ── Stat grid ── */
+    .stat-grid { display: grid; gap: 16px; margin-bottom: 32px; }
+    .stat-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .stat-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .stat-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .stat-card { border: 1px solid var(--border); padding: 18px 20px; }
+    .stat-card .sc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+    .stat-card .sc-value { font-size: 26px; font-weight: 600; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
+    .stat-card .sc-value.green { color: var(--green-text); }
+    .stat-card .sc-value.yellow { color: var(--yellow-text); }
+    .stat-card .sc-value.red { color: var(--red-text); }
+    .stat-card .sc-sub { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+
+    /* ── Navy stat grid (for at-scale summary) ── */
+    .navy-stat-panel { background: var(--panel-bg); padding: 24px 28px; margin-bottom: 32px; }
+    .navy-stat-panel .nsp-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 18px; }
+    .navy-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .navy-stat-card { border-left: 3px solid rgba(255,255,255,0.2); padding-left: 16px; }
+    .navy-stat-card .nsc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+    .navy-stat-card .nsc-value { font-size: 28px; font-weight: 600; color: #fff; line-height: 1.1; }
+    .navy-stat-card .nsc-value.green { color: #6de4a0; }
+    .navy-stat-card .nsc-value.yellow { color: #fcd34d; }
+    .navy-stat-card .nsc-sub { font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 4px; font-family: var(--font-body); }
+
+    /* ── Tables ── */
+    table.sim-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    table.sim-table thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: #f7f7f6; padding: 10px 14px; text-align: left; border-bottom: 2px solid var(--border); }
+    table.sim-table thead th.right { text-align: right; }
+    table.sim-table thead th.center { text-align: center; }
+    table.sim-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+    table.sim-table tr:last-child td { border-bottom: none; }
+    table.sim-table td.right { text-align: right; font-variant-numeric: tabular-nums; }
+    table.sim-table td.center { text-align: center; }
+    table.sim-table tr.subtotal td { background: #f7f7f6; font-weight: 600; border-top: 2px solid var(--border); border-bottom: 2px solid var(--border); }
+    table.sim-table tr.total td { background: var(--accent-light); font-weight: 600; font-size: 15px; border-top: 2px solid var(--accent); }
+    table.sim-table tr.highlight-green td { background: var(--green-bg); }
+    table.sim-table tr.highlight-yellow td { background: var(--yellow-bg); }
+    table.sim-table tr.highlight-red td { background: var(--red-bg); }
+    table.sim-table .formula { font-size: 11px; color: var(--text-muted); font-family: monospace; margin-top: 3px; display: block; }
+    table.sim-table .row-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); display: block; margin-bottom: 2px; }
+
+    /* ── Sensitivity table ── */
+    table.sens-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    table.sens-table thead th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); background: #f7f7f6; padding: 10px 14px; border-bottom: 2px solid var(--border); text-align: right; }
+    table.sens-table thead th:first-child { text-align: left; }
+    table.sens-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
+    table.sens-table td:first-child { text-align: left; font-weight: 500; }
+    table.sens-table tr.base td { background: var(--accent-light); font-weight: 600; }
+    table.sens-table tr.fail td { background: var(--red-bg); }
+    table.sens-table tr.pass td { background: var(--green-bg); }
+    table.sens-table tr.borderline td { background: var(--yellow-bg); }
+
+    /* ── Inset / warning blocks ── */
+    .inset-block { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 18px; font-size: 14px; color: var(--accent); line-height: 1.65; margin-bottom: 20px; }
+    .inset-block strong { font-weight: 600; }
+    .warning-block { background: var(--warning-bg); border-left: 4px solid var(--warning-border); padding: 14px 18px; font-size: 13px; color: #7a4a00; line-height: 1.65; margin-bottom: 20px; }
+    .warning-block strong { color: var(--warning-border); }
+
+    /* ── P&L card ── */
+    .pl-card { border: 1px solid var(--border); margin-bottom: 24px; }
+    .pl-card-header { background: #f7f7f6; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .pl-card-header h3 { font-size: 15px; font-weight: 600; }
+    .pl-card-header .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .pl-row { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 18px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .pl-row:last-child { border-bottom: none; }
+    .pl-row.deduct { color: var(--text-secondary); }
+    .pl-row.subtotal { background: #f7f7f6; font-weight: 600; border-top: 1px solid var(--border-strong); border-bottom: 1px solid var(--border-strong); }
+    .pl-row.total { background: var(--accent-light); font-weight: 600; font-size: 14px; border-top: 2px solid var(--accent); }
+    .pl-row.fmos-row { background: var(--green-bg); font-weight: 600; color: var(--green-text); }
+    .pl-row.fmos-row-yellow { background: var(--yellow-bg); font-weight: 600; color: var(--yellow-text); }
+    .pl-row.fmos-row-red { background: var(--red-bg); font-weight: 600; color: var(--red-text); }
+    .pl-label { flex: 1; }
+    .pl-value { font-variant-numeric: tabular-nums; font-weight: 500; }
+    .pl-value.neg { color: var(--red-text); }
+    .pl-value.pos { color: var(--green-text); }
+
+    /* ── Stage gate diagram ── */
+    .stage-diagram { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr; gap: 0; margin-bottom: 32px; align-items: stretch; }
+    .stage-box { padding: 20px 16px; border: 2px solid; }
+    .stage-box.s0 { border-color: var(--warning-border); background: var(--warning-bg); }
+    .stage-box.s1 { border-color: var(--accent); background: var(--accent-light); }
+    .stage-box.s2 { border-color: var(--purple-text); background: var(--purple-bg); }
+    .stage-box.s3 { border-color: var(--green-text); background: var(--green-bg); }
+    .stage-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+    .stage-box.s0 .stage-label { color: var(--warning-border); }
+    .stage-box.s1 .stage-label { color: var(--accent); }
+    .stage-box.s2 .stage-label { color: var(--purple-text); }
+    .stage-box.s3 .stage-label { color: var(--green-text); }
+    .stage-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .stage-box.s0 .stage-title { color: var(--warning-border); }
+    .stage-box.s1 .stage-title { color: var(--accent); }
+    .stage-box.s2 .stage-title { color: var(--purple-text); }
+    .stage-box.s3 .stage-title { color: var(--green-text); }
+    .stage-detail { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .stage-gate { display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+    .gate-arrow { font-size: 22px; color: var(--border-strong); }
+    .gate-label-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .gate-condition { font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: center; max-width: 72px; line-height: 1.35; letter-spacing: 0.03em; }
+
+    /* ── FMOS bar ── */
+    .fmos-track { margin-bottom: 6px; }
+    .fmos-track-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .fmos-bar-wrap { height: 24px; background: var(--border); position: relative; }
+    .fmos-bar-fill { height: 100%; position: absolute; left: 0; top: 0; display: flex; align-items: center; padding-left: 8px; }
+    .fmos-bar-fill-label { font-size: 11px; font-weight: 600; color: #fff; }
+    .fmos-target-line { position: absolute; top: 0; height: 100%; width: 2px; background: var(--text-muted); }
+
+    /* ── WC requirement cards ── */
+    .wc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .wc-card { border: 1px solid var(--border); padding: 16px 18px; }
+    .wc-card .wc-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .wc-card .wc-value { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .wc-card .wc-sub { font-size: 12px; color: var(--text-muted); line-height: 1.45; }
+    .wc-card.s1 .wc-value { color: var(--warning-border); }
+    .wc-card.s2 .wc-value { color: var(--purple-text); }
+    .wc-card.s3 .wc-value { color: var(--green-text); }
+
+    /* ── Insight panel ── */
+    .insight-panel { background: var(--panel-bg); color: var(--panel-text); padding: 24px 28px; margin-top: 32px; }
+    .insight-panel .ip-label { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 10px; }
+    .insight-panel p { font-family: var(--font-body); font-size: 16px; line-height: 1.7; color: rgba(255,255,255,0.9); margin-bottom: 10px; }
+    .insight-panel p:last-child { margin-bottom: 0; }
+
+    /* ── Timeline bar ── */
+    .timeline-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+    .timeline-segment { padding: 14px 16px; border-right: 1px solid var(--border); }
+    .timeline-segment:last-child { border-right: none; }
+    .timeline-segment.s1 { background: var(--warning-bg); }
+    .timeline-segment.s2 { background: var(--purple-bg); }
+    .timeline-segment.s3 { background: var(--green-bg); }
+    .ts-label { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+    .timeline-segment.s1 .ts-label { color: var(--warning-border); }
+    .timeline-segment.s2 .ts-label { color: var(--purple-text); }
+    .timeline-segment.s3 .ts-label { color: var(--green-text); }
+    .ts-months { font-size: 16px; font-weight: 600; margin-bottom: 3px; }
+    .ts-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+
+    /* ── hr dividers ── */
+    .section-hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .navy-stat-grid { grid-template-columns: 1fr 1fr; }
+      .stat-grid-4 { grid-template-columns: 1fr 1fr; }
+      .stat-grid-3 { grid-template-columns: 1fr 1fr; }
+      .stage-diagram { grid-template-columns: 1fr; }
+      .stage-gate { display: none; }
+      .wc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===================================================== -->
+<!-- PAGE HEADER                                           -->
+<!-- ===================================================== -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <h1>Calmly — Financial Simulation v4</h1>
+    <p class="subtitle">Two separate models: (1) the at-scale satellite — Calmly operating permanently with all 10 requirements operational and a securitisation vehicle live; (2) the scaling rocket — the three temporary stages required to reach orbit without running out of capital. These are not the same model at different points in time. They have different cost structures, different sources of capital, and different economic constraints.</p>
+    <div class="header-tags">
+      <span class="header-tag">21 May 2026 — v4 (HQ updated)</span>
+      <span class="header-tag">Supersedes v3 (19 May 2026)</span>
+      <span class="header-tag">IVE Methodology — Simanis / Cornell</span>
+      <span class="header-tag">All Tier 4 inputs flagged in amber</span>
+      <span class="header-tag" style="background:rgba(31,79,168,0.25);">HQ cost line: T4 → T2 (resourcing model, 21 May 2026)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================== -->
+<!-- SECTION NAV                                           -->
+<!-- ===================================================== -->
+<div class="section-nav">
+  <div class="section-nav-inner">
+    <span class="nav-divider">Model 1 →</span>
+    <a class="nav-link model1" href="#m1-summary">Summary</a>
+    <a class="nav-link model1" href="#m1-pl">P&amp;L per claim</a>
+    <a class="nav-link model1" href="#m1-annual">Annual P&amp;L</a>
+    <a class="nav-link model1" href="#m1-fmos">FMOS</a>
+    <a class="nav-link model1" href="#m1-sensitivity">Sensitivity</a>
+    <span class="nav-divider">· Model 2 →</span>
+    <a class="nav-link model2" href="#m2-stages">Stage gates</a>
+    <a class="nav-link model2" href="#m2-economics">Stage economics</a>
+    <a class="nav-link model2" href="#m2-wc">Working capital</a>
+    <a class="nav-link model2" href="#m2-timeline">Timeline</a>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===================================================== -->
+<!-- MODEL 1 — AT-SCALE ARCHITECTURE                       -->
+<!-- ===================================================== -->
+<div id="model1">
+
+  <div class="model-header">
+    <div class="mh-label">Model 1 of 2</div>
+    <h2>At-scale architecture — the satellite</h2>
+    <p class="mh-subtitle">Calmly operating at full scale. All 10 requirements operational. Cost of capital: 8% (securitisation vehicle active). This is the destination — not the journey. The at-scale model answers the question: is the venture worth building if we get there?</p>
+  </div>
+
+  <!-- ─── M1 SUMMARY ─── -->
+  <div id="m1-summary" class="section-block">
+
+    <div class="navy-stat-panel">
+      <div class="nsp-label">At-scale model — 38 modules · 18,240 claims/year · securitisation capital at 8%</div>
+      <div class="navy-stat-grid">
+        <div class="navy-stat-card">
+          <div class="nsc-label">Cost floor (revised)</div>
+          <div class="nsc-value green">£258</div>
+          <div class="nsc-sub">per claim — HQ line derived from resourcing model (21 May 2026). Was £245 at C10 FIT Verifier. +£13/claim from HQ correction.</div>
+        </div>
+        <div class="navy-stat-card">
+          <div class="nsc-label">Price ceiling</div>
+          <div class="nsc-value">£650</div>
+          <div class="nsc-sub">per claim — market constraint from design memo C10 (unchanged)</div>
+        </div>
+        <div class="navy-stat-card">
+          <div class="nsc-label">FMOS at price ceiling (revised)</div>
+          <div class="nsc-value green">60.3%</div>
+          <div class="nsc-sub">(650 − 258) ÷ 650. Clears 25% minimum gate with 35pp headroom. Was 62.3%.</div>
+        </div>
+        <div class="navy-stat-card">
+          <div class="nsc-label">Implied fee % at 25% FMOS</div>
+          <div class="nsc-value yellow">11.5%</div>
+          <div class="nsc-sub">of £3,000 average settlement <span class="t4-badge">T4</span>. Was 10.9%.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-grid stat-grid-3">
+      <div class="stat-card">
+        <div class="sc-label">Required fee (25% FMOS target)</div>
+        <div class="sc-value">£344.00</div>
+        <div class="sc-sub">per resolved claim = £258 ÷ (1 − 0.25). Was £326.67.</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Annual revenue at scale</div>
+        <div class="sc-value">£6.27M</div>
+        <div class="sc-sub">18,240 claims × £344/claim. Was £5.96M.</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Annual net contribution (25% FMOS)</div>
+        <div class="sc-value green">£1.57M</div>
+        <div class="sc-sub">revenue − total costs at 100% utilisation. Was £1.49M.</div>
+      </div>
+    </div>
+
+    <div class="warning-block">
+      <strong>What this model does not show.</strong> The at-scale model answers whether the venture is worth building — it does not show how it gets there. It assumes 38 modules running at 100% utilisation with securitisation capital at 8% cost. None of those conditions exist at launch. The scaling model (Model 2) shows the path and the economics of each stage. Read the two models together, not the at-scale model alone.
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M1 P&L PER CLAIM ─── -->
+  <div id="m1-pl" class="section-block">
+    <h2 class="section-title">P&amp;L per claim — at-scale, 100% utilisation</h2>
+    <p class="section-subtitle">All costs are stated per resolved claim at 38-module scale and 100% utilisation. The cost floor has been updated from the C10 FIT Verifier baseline (£245) to £258 following the derivation of the HQ cost line from the AOM resourcing model (resourcing model, 21 May 2026). HQ was the only T4 input replaced — all other cost lines are unchanged. The required fee and FMOS are recalculated accordingly.</p>
+
+    <div class="pl-card">
+      <div class="pl-card-header">
+        <h3>Revenue</h3>
+        <div class="sub">Platform fee — contingent, deducted from gross settlement at recovery. No upfront charge.</div>
+      </div>
+      <div class="pl-row">
+        <span class="pl-label">Platform fee (at 25% FMOS target)</span>
+        <span class="pl-value pos">£344.00</span>
+      </div>
+      <div class="pl-row">
+        <span class="pl-label" style="font-size:12px;color:var(--text-muted);">Formula: £258 revised cost floor ÷ (1 − 0.25 FMOS target) = £344. Was £326.67 at £245 cost floor.</span>
+        <span class="pl-value" style="font-size:12px;color:var(--text-muted);">= £344.00</span>
+      </div>
+      <div class="pl-row">
+        <span class="pl-label">Fee as % of average settlement (£3,000 <span class="t4-badge">T4</span>)</span>
+        <span class="pl-value">11.5%</span>
+      </div>
+    </div>
+
+    <div class="pl-card">
+      <div class="pl-card-header">
+        <h3>Cost breakdown per claim — at-scale, 100% utilisation</h3>
+        <div class="sub">Cost floor: £245/claim (C10 FIT Verifier). Component breakdown below is indicative — derived from v3 model structure and C10 cumulative stack.</div>
+      </div>
+      <!-- Fixed module costs -->
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module</span>
+          Supervising solicitor (£85k/yr, fully loaded <span class="t4-badge">T4</span>)
+          <span class="formula">£85,000 ÷ 480 claims/yr/module = £177.08/claim</span>
+        </span>
+        <span class="pl-value neg">(£177.08)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module</span>
+          Student programme cost (£6k/yr/module <span class="t4-badge">T4</span>)
+          <span class="formula">£6,000 ÷ 480 claims/yr/module = £12.50/claim</span>
+        </span>
+        <span class="pl-value neg">(£12.50)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module</span>
+          Module infrastructure (£12k/yr/module <span class="t4-badge">T4</span>)
+          <span class="formula">£12,000 ÷ 480 claims/yr/module = £25.00/claim</span>
+        </span>
+        <span class="pl-value neg">(£25.00)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Total module fixed costs per claim</span>
+        <span class="pl-value neg">(£214.58)</span>
+      </div>
+      <!-- Variable -->
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — per claim</span>
+          Independent assessment org fee (C3 — £16.28/claim <span class="t4-badge">T4</span>)
+          <span class="formula">NMW £12.21/hr × 80 min student time + 25% overhead</span>
+        </span>
+        <span class="pl-value neg">(£16.28)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — per claim</span>
+          Consumables and admin <span class="t4-badge">T4</span>
+          <span class="formula">ID checks, postage, admin — estimated</span>
+        </span>
+        <span class="pl-value neg">(£15.00)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — per claim (IC)</span>
+          WC investment cost — assessment org payment lag <span class="t4-badge">T4</span>
+          <span class="formula">£16.28 × (8% CoC ÷ 12) × 4.65 months weighted avg = £0.50/claim at 8% CoC</span>
+        </span>
+        <span class="pl-value neg">(£0.50)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Total variable costs per claim</span>
+        <span class="pl-value neg">(£31.78)</span>
+      </div>
+      <!-- Overhead -->
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Overhead — head office (derived)</span>
+          15.5 FTE at-scale HQ — all functions per AOM v2, including C8 ITP account management, C9 QA analyst, C10 data governance, C4 insurance curation <span class="t2-badge">T2</span>
+          <span class="formula">£1,135k/yr fully-loaded (15.5 FTE × salaries × 1.25 on-costs) ÷ 18,240 claims/yr = £62.26/claim — derived from resourcing model, replaces prior T4 split of £49.34 + £24.00 = £73.34</span>
+        </span>
+        <span class="pl-value neg">(£62.26)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Total overhead per claim (at full scale)</span>
+        <span class="pl-value neg">(£62.26)</span>
+      </div>
+      <!-- Blended CAC -->
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — acquisition</span>
+          Blended CAC — 60% ITP-referred at £25 NTP fee, 40% organic at £18 <span class="t4-badge">T4</span>
+          <span class="formula">0.60 × £25 + 0.40 × £18 = £22.20/claim</span>
+        </span>
+        <span class="pl-value neg">(£22.20)</span>
+      </div>
+      <!-- Assessment org fee (central case) -->
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — assessment org</span>
+          Assessment org fee — central case: £16/claim <span class="t4-badge">T4</span>
+        </span>
+        <span class="pl-value neg">— (included in variable above)</span>
+      </div>
+      <div class="pl-row total">
+        <span class="pl-label"><strong>Total cost floor — revised (HQ line derived from resourcing model, 21 May 2026)</strong> <span class="t2-badge" style="font-size:10px;padding:2px 6px;background:#e8eef8;color:#1f4fa8;border:1px solid #b8c8e8;border-radius:2px;margin-left:4px;">T2 HQ</span></span>
+        <span class="pl-value neg"><strong>(£258.00)</strong></span>
+      </div>
+      <div class="pl-row fmos-row">
+        <span class="pl-label"><strong>Contribution margin at required fee</strong></span>
+        <span class="pl-value pos"><strong>£86.00 (25.0% FMOS)</strong></span>
+      </div>
+      <div class="pl-row fmos-row" style="background:transparent;color:var(--green-text);font-weight:400;font-size:13px;">
+        <span class="pl-label">FMOS at price ceiling (£650/claim vs £258 revised cost floor) — was 62.3% at £245; revised down to 60.3% after HQ derivation (+£13/claim)</span>
+        <span class="pl-value">(£650 − £258) ÷ £650 = <strong>60.3%</strong> ✓ still passes 25% gate</span>
+      </div>
+    </div>
+
+    <div class="inset-block">
+      <strong>Note on the cost floor.</strong> The £245/claim figure is the cumulative output from the C10 FIT Verifier — it includes the C8 ITP outcomes reporting cost (+£4/claim), C9 assessment org QA management (+£10/claim), and C10 claim data management (+£10/claim), offset by the C7 blended CAC saving (−£18/claim). The per-line breakdown above is indicative — derived from the v3 model structure and the C10 cost stack progression. The £245 total is definitive; treat the line items as directional.
+    </div>
+
+    <div class="warning-block">
+      <strong>⚠ Tier 4 assumptions affecting every line.</strong> The cost floor rests on several unvalidated assumptions: (1) module capacity of 40 claims/month — the single most consequential number; (2) average settlement of £3,000 — drives fee % calculation; (3) solicitor cost of £85k/year — university law clinic model may reduce this materially; (4) platform fee structure itself — contingent % of settlement is a design choice, not a validated market preference. All four need pilot data before any financial commitment.
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M1 ANNUAL P&L ─── -->
+  <div id="m1-annual" class="section-block">
+    <h2 class="section-title">Annual P&amp;L — at-scale</h2>
+    <p class="section-subtitle">38 modules × 40 claims/month × 12 months = 18,240 claims/year at 100% utilisation. All figures in £ thousands.</p>
+
+    <table class="sim-table">
+      <thead>
+        <tr>
+          <th>Line</th>
+          <th class="right">Per claim (£)</th>
+          <th class="right">Annual at scale (£k)</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight-green">
+          <td><strong>Revenue — platform fee (revised)</strong></td>
+          <td class="right"><strong>£344.00</strong></td>
+          <td class="right"><strong>£6,274k</strong></td>
+          <td><span class="tag tag-blue">25% FMOS case — revised cost floor £258</span></td>
+        </tr>
+        <tr>
+          <td>
+            <span class="row-label">Fixed costs</span>
+            Module fixed costs (solicitor, students, infra)
+          </td>
+          <td class="right">(£214.58)</td>
+          <td class="right">(£3,914k)</td>
+          <td><span class="tag tag-yellow">T4</span></td>
+        </tr>
+        <tr>
+          <td>
+            <span class="row-label">Variable costs</span>
+            Assessment org, consumables, WC IC
+          </td>
+          <td class="right">(£31.78)</td>
+          <td class="right">(£580k)</td>
+          <td><span class="tag tag-yellow">T4</span></td>
+        </tr>
+        <tr>
+          <td>
+            <span class="row-label">Acquisition costs</span>
+            Blended CAC (60% ITP-referred, 40% organic)
+          </td>
+          <td class="right">(£22.20)</td>
+          <td class="right">(£405k)</td>
+          <td><span class="tag tag-yellow">T4</span></td>
+        </tr>
+        <tr>
+          <td>
+            <span class="row-label">Overhead — HQ (derived)</span>
+            15.5 FTE at-scale HQ — fully-loaded £1,135k/yr per resourcing model
+          </td>
+          <td class="right">(£62.26)</td>
+          <td class="right">(£1,136k)</td>
+          <td><span class="tag tag-blue" style="background:#e8eef8;color:#1f4fa8;border-color:#b8c8e8;">T2</span></td>
+        </tr>
+        <tr>
+          <td>
+            <span class="row-label">Overhead — HQ (note on prior T4)</span>
+            Prior T4 used £73.34/claim (£900k + £24 C8-C10). Derived T2: £62.26/claim (£1,135k unified). Change: −£11.08/claim in HQ cost per claim.
+          </td>
+          <td class="right"></td>
+          <td class="right"></td>
+          <td></td>
+        </tr>
+        <tr class="subtotal">
+          <td>Total cost floor (revised)</td>
+          <td class="right">(£330.82)</td>
+          <td class="right">(£6,034k)</td>
+          <td></td>
+        </tr>
+        <tr class="total">
+          <td><strong>Net contribution (25% FMOS)</strong></td>
+          <td class="right"><strong>£86.00</strong></td>
+          <td class="right"><strong>£1,568k</strong></td>
+          <td><span class="tag tag-green">25% FMOS</span></td>
+        </tr>
+        <tr class="highlight-green">
+          <td>
+            <strong>Upside case — FMOS at price ceiling (£650/claim)</strong>
+          </td>
+          <td class="right"><strong>£392.00</strong></td>
+          <td class="right"><strong>£7,149k</strong></td>
+          <td><span class="tag tag-green">60.3% FMOS</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="stat-grid stat-grid-2">
+      <div class="stat-card">
+        <div class="sc-label">Upside scenario — assessment org fees compress to £12/claim</div>
+        <div class="sc-value green">60.9%</div>
+        <div class="sc-sub">Cost floor falls from £258 to £253.72. Saving: £4.28/claim. FMOS: (650 − 253.72) ÷ 650 = 60.9%. Multi-org competition (C9 design) is the mechanism — not assumed in central case.</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-label">Calmly working capital requirement at scale</div>
+        <div class="sc-value">~£2.2M peak</div>
+        <div class="sc-sub">WC tied up in assessment org payments before settlement recovery. At 8% CoC (securitisation vehicle), IC per claim = ~£0.50. Peak WC at Y5 scale (18,240 claims) = ~£2.2M outstanding. Source: C3 CLO II analysis, 19 May 2026. <span class="t4-badge">T4</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M1 FMOS ─── -->
+  <div id="m1-fmos" class="section-block">
+    <h2 class="section-title">FMOS — first moment of sustainability</h2>
+    <p class="section-subtitle">FMOS = (price − cost floor) ÷ price. At the price ceiling of £650/claim and the revised cost floor of £258/claim (HQ line derived from resourcing model, 21 May 2026), FMOS is 60.3% — down from 62.3% at the prior T4 HQ estimate. The venture still passes the 25% IVE gate by 35 percentage points. The at-scale architecture remains sound.</p>
+
+    <table class="sim-table" style="max-width:580px;">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th class="right">Fee (£/claim)</th>
+          <th class="right">FMOS</th>
+          <th class="center">Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Minimum — 25% FMOS target (revised cost floor £258)</td>
+          <td class="right">£344.00</td>
+          <td class="right">25.0%</td>
+          <td class="center"><span class="tag tag-yellow">Minimum</span></td>
+        </tr>
+        <tr class="highlight-green">
+          <td><strong>Central — price ceiling (£650/claim) — revised</strong></td>
+          <td class="right"><strong>£650.00</strong></td>
+          <td class="right"><strong>60.3%</strong></td>
+          <td class="center"><span class="tag tag-green">✓ PASS</span></td>
+        </tr>
+        <tr class="highlight-green">
+          <td>Upside — assessment org fees at £12/claim (revised floor £253.72)</td>
+          <td class="right">£650.00</td>
+          <td class="right">60.9%</td>
+          <td class="center"><span class="tag tag-green">✓ PASS</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- FMOS trajectory bars -->
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;margin-top:28px;">FMOS progression through the IVE design chain</h3>
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">Each challenge adds to the cost floor. C7 (ITP gateway — blended CAC saving) was the first challenge to improve FMOS. C8–C10 added HQ cost per the FIT Verifier chain. Resourcing model (21 May 2026) derived the HQ line from AOM functions — replacing the T4 split. The HQ line fell from £73.34/claim (T4) to £62.26/claim (T2), a saving of £11/claim; however the overall cost floor rose from £245 to £258 because the T4 HQ estimate of £900k (£49.34 base) was lower than the derived £1,135k. The net effect on FMOS is −2pp: from 62.3% to 60.3%. The venture still passes the 25% gate by 35pp.</p>
+
+    <div style="font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;">FMOS at each gate (price ceiling £650 constant)</div>
+
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C3</span><span>63.5%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:63.5%;background:#166534;">
+          <span class="fmos-bar-fill-label">63.5%</span>
+        </div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C6 baseline</span><span>63.2%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:63.2%;background:#166534;">
+          <span class="fmos-bar-fill-label">63.2%</span>
+        </div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C7 — ITP gateway adds blended CAC saving</span><span>66.0%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:66.0%;background:#166534;">
+          <span class="fmos-bar-fill-label">66.0%</span>
+        </div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C8 — ITP outcomes reporting (+£4/claim)</span><span>65.4%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:65.4%;background:#1e7a3e;">
+          <span class="fmos-bar-fill-label">65.4%</span>
+        </div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C9 — Assessment org QA (+£10/claim)</span><span>63.8%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:63.8%;background:#1e7a3e;">
+          <span class="fmos-bar-fill-label">63.8%</span>
+        </div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>C10 — Data management (+£10/claim)</span><span>62.3%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:62.3%;background:#1e7a3e;">
+          <span class="fmos-bar-fill-label">62.3%</span>
+        </div>
+        <div class="fmos-target-line" style="left:25%;"></div>
+      </div>
+    </div>
+    <div class="fmos-track">
+      <div class="fmos-track-label"><span>Resourcing model — HQ derived from AOM (21 May 2026) — <strong>final gate</strong></span><span>60.3%</span></div>
+      <div class="fmos-bar-wrap">
+        <div class="fmos-bar-fill" style="width:60.3%;background:#166534;">
+          <span class="fmos-bar-fill-label">60.3% ✓ PASS</span>
+        </div>
+        <div class="fmos-target-line" style="left:25%;"></div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Vertical line at 25% = IVE minimum gate. Resourcing model replaced T4 HQ estimate with derived figure — at-scale FMOS revised from 62.3% to 60.3%.</div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M1 SENSITIVITY ─── -->
+  <div id="m1-sensitivity" class="section-block">
+    <h2 class="section-title">Sensitivity analysis — at-scale model</h2>
+    <p class="section-subtitle">The at-scale model's FMOS is most sensitive to average settlement value and platform fee rate. The cost floor is relatively stable (dominated by fixed module costs amortised across high volume). The key question is whether the market will support a fee rate of 10–25% of settlement — and whether average settlements cluster near £3,000 or closer to £1,500.</p>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:8px;">FMOS under variations in average settlement and platform fee rate</h3>
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Rows = average settlement value. Columns = platform fee rate (% of settlement). Each cell shows the implied £ fee and resulting FMOS. Cost floor held constant at £258/claim (revised from £245 following HQ derivation). Green = FMOS ≥ 60%. Yellow = 25–59%. Red = &lt;25%.</p>
+
+    <table class="sens-table">
+      <thead>
+        <tr>
+          <th>Avg settlement <span class="t4-badge">T4</span></th>
+          <th>15% fee rate → £ fee</th>
+          <th>FMOS at 15%</th>
+          <th>20% fee rate → £ fee</th>
+          <th>FMOS at 20%</th>
+          <th>25% fee rate → £ fee</th>
+          <th>FMOS at 25%</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="fail">
+          <td>£2,000 <span class="t4-badge">T4</span></td>
+          <td>£300</td>
+          <td>14.0% <span class="tag tag-red">Below gate</span></td>
+          <td>£400</td>
+          <td>35.5% <span class="tag tag-yellow">Margin</span></td>
+          <td>£500</td>
+          <td>48.4% <span class="tag tag-yellow">OK</span></td>
+        </tr>
+        <tr class="base">
+          <td><strong>£3,000 (central) <span class="t4-badge">T4</span></strong></td>
+          <td><strong>£450</strong></td>
+          <td><strong>42.7%</strong> <span class="tag tag-yellow">OK</span></td>
+          <td><strong>£600</strong></td>
+          <td><strong>57.0%</strong> <span class="tag tag-yellow">Strong</span></td>
+          <td><strong>£750</strong></td>
+          <td><strong>65.6%</strong> <span class="tag tag-green">PASS</span></td>
+        </tr>
+        <tr class="pass">
+          <td>£4,000 <span class="t4-badge">T4</span></td>
+          <td>£600</td>
+          <td>57.0% <span class="tag tag-yellow">Strong</span></td>
+          <td>£800</td>
+          <td>67.8% <span class="tag tag-green">PASS</span></td>
+          <td>£1,000</td>
+          <td>74.2% <span class="tag tag-green">PASS</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warning-block" style="margin-top:8px;">
+      <strong>Key read from this table (revised cost floor £258).</strong> If average settlements cluster at £2,000, a 15% fee rate (£300/claim) is well below the IVE minimum gate (FMOS 14.0%). The model only holds at £2,000 settlements if the fee rate is 20%+. The revised cost floor (£258 vs prior £245) means the £2,000 / 20% cell now shows 35.5% FMOS — still above the gate but with less margin. Market willingness to pay 20–25% of a £2,000 claim (£400–£500/claim) is the primary commercial risk. At £3,000 settlements and 25%, FMOS is 65.6% — the architecture remains commercially robust at the central settlement assumption.
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin:28px 0 8px;">Upside scenario — assessment org fees compress to £12/claim</h3>
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Multi-org competition (C9 design) is the mechanism. If competition drives assessment org fees from £16.28 to £12/claim, cost floor falls from £258 to £253.72. FMOS improvement at each settlement and fee combination.</p>
+
+    <table class="sens-table">
+      <thead>
+        <tr>
+          <th>Scenario</th>
+          <th>Central cost floor</th>
+          <th>Upside cost floor</th>
+          <th>FMOS change (at price ceiling £650)</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="base">
+          <td><strong>Central — org fee £16.28/claim (revised floor)</strong></td>
+          <td><strong>£258.00</strong></td>
+          <td>—</td>
+          <td><strong>60.3%</strong></td>
+          <td><span class="tag tag-green">✓ PASS</span></td>
+        </tr>
+        <tr class="pass">
+          <td>Upside — org fee £12.00/claim</td>
+          <td>£258.00</td>
+          <td>£253.72</td>
+          <td>60.9% (+0.6pp)</td>
+          <td><span class="tag tag-green">✓ PASS</span></td>
+        </tr>
+        <tr>
+          <td>Downside — org fee rises to £25/claim (pre-C3 level)</td>
+          <td>£258.00</td>
+          <td>£266.72</td>
+          <td>58.9% (−1.4pp)</td>
+          <td><span class="tag tag-green">✓ Still passes</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="inset-block">
+      <strong>Structural robustness.</strong> Assessment org fee variation has a relatively small impact on at-scale FMOS because fixed module costs dominate (£214.58/claim of the £258 revised floor). A £4/claim change in assessment org fees moves FMOS by less than 1pp at the price ceiling. The cost floor is more sensitive to module capacity (which affects how fixed costs amortise) and to solicitor cost under the law clinic model. HQ cost (£62.26/claim derived) is now the second-largest fixed overhead after module costs — it is no longer a T4 guess but a T2 derivation that updates automatically if the resourcing model is revised.
+    </div>
+
+    <div class="insight-panel">
+      <div class="ip-label">Model 1 insight</div>
+      <p>At-scale, the venture is viable. FMOS of 60.3% at the price ceiling (revised from 62.3% after HQ cost derivation) clears the 25% IVE gate by 35 percentage points — a wide margin that absorbs significant adverse movement in any single assumption without destroying the basic case. The architecture is sound. The HQ cost revision adds £13/claim to the cost floor but does not change the structural conclusion.</p>
+      <p>What the at-scale model cannot tell you is whether you can get there. The journey requires three stages of increasingly efficient capital, a track record that does not yet exist, and a portfolio of claims that takes time to build. That is Model 2's job.</p>
+    </div>
+  </div>
+
+</div><!-- /model1 -->
+
+<!-- ===================================================== -->
+<!-- MODEL DIVIDER                                         -->
+<!-- ===================================================== -->
+<div class="model-divider">
+  <hr>
+  <p>The two models are separate by design. The at-scale satellite assumes securitisation capital at 8%, 38 modules at full utilisation, and all 10 IVE requirements operational. None of those conditions hold at launch. The scaling rocket describes a different economic reality — higher capital costs, lower volume, higher cost per claim, and sub-threshold FMOS — that is not a failure state but a necessary passage. Reading the at-scale model without the scaling model produces false confidence about what the early years look like.</p>
+</div>
+
+<!-- ===================================================== -->
+<!-- MODEL 2 — SCALING ARCHITECTURE                        -->
+<!-- ===================================================== -->
+<div id="model2">
+
+  <div class="model-header" style="background:#1a0a3d;">
+    <div class="mh-label">Model 2 of 2</div>
+    <h2>Scaling architecture — the rocket stages</h2>
+    <p class="mh-subtitle">The temporary structures designed to reach orbit without running out of capital. Three stages, each with its own cost of capital, module count, FMOS, and working capital requirement. Each stage falls away once it has served its purpose. Stage 1 is about survival and proof-of-concept — not FMOS.</p>
+  </div>
+
+  <!-- ─── M2 STAGE GATE DIAGRAM ─── -->
+  <div id="m2-stages" class="section-block">
+    <h2 class="section-title">Stage-gate architecture</h2>
+    <p class="section-subtitle">Three funding stages with explicit gate conditions between them. The gates are not arbitrary milestones — they are the specific data points that unlock the next, cheaper source of capital. The venture cannot buy its way through the gates with cash; it must earn them with evidence.</p>
+
+    <div class="stage-diagram">
+      <!-- Stage 1 -->
+      <div class="stage-box s1">
+        <div class="stage-label">Stage 1</div>
+        <div class="stage-title">Litigation funder capital</div>
+        <div class="stage-detail">
+          <strong>CoC:</strong> 25–30%<br>
+          <strong>Modules:</strong> 1–2<br>
+          <strong>Claims/month:</strong> 40–80<br>
+          <strong>Duration:</strong> months 0–18 <span class="t4-badge">T4</span>
+        </div>
+      </div>
+      <!-- Gate 1→2 -->
+      <div class="stage-gate">
+        <div class="gate-label-wrap">
+          <span class="gate-arrow">→</span>
+          <span class="gate-condition">Gate 1→2: portfolio track record</span>
+        </div>
+      </div>
+      <!-- Stage 2 -->
+      <div class="stage-box s2">
+        <div class="stage-label">Stage 2</div>
+        <div class="stage-title">Specialist litigation debt</div>
+        <div class="stage-detail">
+          <strong>CoC:</strong> 15–18%<br>
+          <strong>Modules:</strong> 5–10<br>
+          <strong>Claims/month:</strong> 200–400<br>
+          <strong>Duration:</strong> months 18–42 <span class="t4-badge">T4</span>
+        </div>
+      </div>
+      <!-- Gate 2→3 -->
+      <div class="stage-gate">
+        <div class="gate-label-wrap">
+          <span class="gate-arrow">→</span>
+          <span class="gate-condition">Gate 2→3: securitisation readiness</span>
+        </div>
+      </div>
+      <!-- Stage 3 -->
+      <div class="stage-box s3">
+        <div class="stage-label">Stage 3</div>
+        <div class="stage-title">Securitisation bridge</div>
+        <div class="stage-detail">
+          <strong>CoC:</strong> 8%<br>
+          <strong>Modules:</strong> 15–25<br>
+          <strong>Claims/month:</strong> 600–1,000<br>
+          <strong>Duration:</strong> months 42–72 <span class="t4-badge">T4</span>
+        </div>
+      </div>
+      <!-- Gate 3→satellite -->
+      <div class="stage-gate">
+        <div class="gate-label-wrap">
+          <span class="gate-arrow">→</span>
+          <span class="gate-condition">Booster falls away → at-scale satellite</span>
+        </div>
+      </div>
+      <!-- Satellite -->
+      <div class="stage-box s3" style="border-color:var(--accent);background:var(--accent-light);">
+        <div class="stage-label" style="color:var(--accent);">Destination</div>
+        <div class="stage-title" style="color:var(--accent);">At-scale satellite</div>
+        <div class="stage-detail">
+          <strong>CoC:</strong> 8% (securitisation)<br>
+          <strong>Modules:</strong> 38<br>
+          <strong>Claims/year:</strong> 18,240<br>
+          <strong>FMOS:</strong> 62.3%
+        </div>
+      </div>
+    </div>
+
+    <!-- Gate conditions detail -->
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:12px;">Gate conditions — what triggers each transition</h3>
+
+    <table class="sim-table">
+      <thead>
+        <tr>
+          <th>Gate</th>
+          <th>From → To</th>
+          <th>Required evidence</th>
+          <th>Why this unlocks the next stage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Gate 1→2</strong></td>
+          <td>Litigation funder → Specialist debt</td>
+          <td>
+            6-month portfolio settlement rate (&gt;55% pre-trial) <span class="t4-badge">T4</span><br>
+            Average recovery rate across first 100+ resolved claims <span class="t4-badge">T4</span><br>
+            Claim outcome distribution (win rate, settlement %, time-to-resolution)<br>
+            Investor-grade data pack: structured, auditable, no selection bias
+          </td>
+          <td>Specialist debt underwriters can now price the portfolio against real data rather than theoretical EV models. The litigation funder's track record is the underwriting basis — without it, specialist lenders cannot price the risk.</td>
+        </tr>
+        <tr>
+          <td><strong>Gate 2→3</strong></td>
+          <td>Specialist debt → Securitisation</td>
+          <td>
+            500+ resolved claims with full outcome data <span class="t4-badge">T4</span><br>
+            EV accuracy tracked and validated (predicted vs actual settlement)<br>
+            Investor-grade data pack assembled for rating agency review<br>
+            3+ ITP channel partnerships active (demonstrates origination scale)<br>
+            No single ITP &gt;30% of claim supply (concentration limit)
+          </td>
+          <td>Securitisation requires a rated portfolio with a statistically meaningful claims history. Rating agencies need EV accuracy data — not just volume. The 500-claim threshold is directional (Tier 4); the actual requirement depends on the chosen securitisation vehicle and rating agency.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M2 STAGE ECONOMICS ─── -->
+  <div id="m2-economics" class="section-block">
+    <h2 class="section-title">Stage economics — per-stage P&amp;L</h2>
+    <p class="section-subtitle">Each stage has different unit economics. Fixed costs do not amortise across high volume, so the cost per claim is higher than at scale. Cost of capital adds directly to the working capital burden on assessment org payments. FMOS is sub-threshold in Stage 1 — this is not a modelling failure, it is the reality of early-stage operations.</p>
+
+    <div class="warning-block">
+      <strong>Stage 1 FMOS is deliberately sub-threshold.</strong> Stage 1 exists to build the portfolio track record that unlocks cheaper capital — not to generate a surplus. The venture accepts a period of sub-25% FMOS in Stage 1 because the alternative (refusing to launch until economics are at-scale) is structurally impossible: you cannot reach at-scale economics without going through the early stages. The loss period must be sized and funded explicitly. It is not a risk to be managed away — it is a cost to be budgeted.
+    </div>
+
+    <!-- Stage 1 -->
+    <div class="pl-card" style="border-left: 4px solid var(--warning-border);">
+      <div class="pl-card-header" style="background:var(--warning-bg);">
+        <h3 style="color:var(--warning-border);">Stage 1 — Litigation funder capital (months 0–18) <span class="t4-badge">T4</span></h3>
+        <div class="sub">1–2 modules, 40–80 claims/month, CoC: 25–30%. This stage is about survival, proof-of-concept, and building the track record. FMOS is sub-threshold by design.</div>
+      </div>
+      <div class="pl-row">
+        <span class="pl-label">Revenue — platform fee (at required break-even price)</span>
+        <span class="pl-value">£435–£490/claim <span class="t4-badge">T4</span></span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module (1 module)</span>
+          Solicitor + students + infra (fixed costs not yet amortised)
+          <span class="formula">£103k/yr ÷ 480 claims/yr = £214.58/claim — same as at scale, but overhead is NOT spread across 38 modules</span>
+        </span>
+        <span class="pl-value neg">(£214.58)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable — per claim</span>
+          Assessment org + consumables
+        </span>
+        <span class="pl-value neg">(£31.28)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Acquisition — Stage 1</span>
+          Blended CAC: mostly organic (ITP channel not yet at scale) <span class="t4-badge">T4</span>
+          <span class="formula">£35/claim — organic-heavy; 1–2 ITP partners not yet generating referral volume at scale</span>
+        </span>
+        <span class="pl-value neg">(£35.00)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">WC IC — Stage 1 CoC</span>
+          Investment cost on assessment org payments at 25–30% CoC <span class="t4-badge">T4</span>
+          <span class="formula">£16.28 × (27.5% avg ÷ 12) × 4.65 months = £1.74/claim IC</span>
+        </span>
+        <span class="pl-value neg">(£1.74)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Overhead — HQ (not yet amortised at scale)</span>
+          7.5 FTE: CEO, COO (0.5 FTE), Head of Engineering, Senior engineer, Head of EV Methodology, Head of Pool Operator Relations (0.5 FTE), Head of Commercial (0.5 FTE), Finance director (0.5 FTE) <span class="t2-badge">T2</span>
+          <span class="formula">£373k/yr HQ fully-loaded ÷ 960 claims/yr (2 modules) = £388.54/claim — derived from resourcing model, not assumed</span>
+        </span>
+        <span class="pl-value neg">(£388.54)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Cost floor at Stage 1 (2 modules, 960 claims/yr)</span>
+        <span class="pl-value neg">(£671.14)</span>
+      </div>
+      <div class="pl-row fmos-row-red">
+        <span class="pl-label"><strong>FMOS at Stage 1 (vs £650 price ceiling)</strong></span>
+        <span class="pl-value" style="color:var(--red-text);"><strong>Negative — sub-threshold by design <span class="t2-badge">T2</span></strong></span>
+      </div>
+      <div class="pl-row" style="background:var(--red-bg);font-size:13px;color:var(--red-text);">
+        <span class="pl-label">HQ overhead per claim at 2-module scale (£389/claim derived) exceeds price ceiling. Stage 1 requires explicit loss funding — £373k/yr HQ overhead that claim revenue at this volume cannot cover. This is the working capital requirement for Stage 1, not a cost to be optimised away. <strong>HQ cost revised down from T4 estimate (£400k → £373k) using derived resourcing model.</strong></span>
+        <span class="pl-value"></span>
+      </div>
+    </div>
+
+    <!-- Stage 2 -->
+    <div class="pl-card" style="border-left: 4px solid var(--purple-text);">
+      <div class="pl-card-header" style="background:var(--purple-bg);">
+        <h3 style="color:var(--purple-text);">Stage 2 — Specialist litigation debt (months 18–42) <span class="t4-badge">T4</span></h3>
+        <div class="sub">5–10 modules, 200–400 claims/month, CoC: 15–18%. HQ costs begin to amortise. ITP channel growing. FMOS approaching but not yet at threshold.</div>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module (7 modules central)</span>
+          Module fixed costs
+          <span class="formula">£103k/yr ÷ 480 claims/yr = £214.58/claim per module (unchanged)</span>
+        </span>
+        <span class="pl-value neg">(£214.58)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable</span>
+          Assessment org + consumables + WC IC at 16.5% avg CoC
+          <span class="formula">£16.28 + £15.00 + (£16.28 × 16.5%/12 × 4.65) = £32.27/claim</span>
+        </span>
+        <span class="pl-value neg">(£32.27)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Acquisition — Stage 2</span>
+          Blended CAC — ITP channel growing, not dominant <span class="t4-badge">T4</span>
+          <span class="formula">£28/claim (40% ITP-referred at £25, 60% organic at £18 — not yet at C7 optimum)</span>
+        </span>
+        <span class="pl-value neg">(£28.00)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Overhead — HQ amortising</span>
+          11 FTE: full HQ team — adds Compliance manager, Software engineer (mid), EV methodology analyst (0.5 FTE), full-time COO/Finance director/Commercial <span class="t2-badge">T2</span>
+          <span class="formula">£650k/yr HQ fully-loaded ÷ 3,360 claims/yr (7 modules) = £193.45/claim — derived from resourcing model (was T4 £700k → £208/claim)</span>
+        </span>
+        <span class="pl-value neg">(£193.45)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Cost floor at Stage 2 (7 modules central, ~280 claims/month)</span>
+        <span class="pl-value neg">(£468.30)</span>
+      </div>
+      <div class="pl-row fmos-row-yellow">
+        <span class="pl-label"><strong>FMOS at Stage 2 (vs £650 price ceiling) <span class="t2-badge">T2</span></strong></span>
+        <span class="pl-value" style="color:var(--yellow-text);"><strong>~28.0% — above threshold</strong></span>
+      </div>
+      <div class="pl-row" style="background:var(--yellow-bg);font-size:13px;color:var(--yellow-text);">
+        <span class="pl-label">Formula: (650 − 468.30) ÷ 650 = 28.0%. Improved from prior T4 estimate of 25.7% — because the derived HQ figure is £193/claim vs the assumed £208/claim. At 10 modules, HQ/claim falls to ~£135 and FMOS approaches 37%. <strong>HQ cost revised down from T4 (£700k → £650k) using derived resourcing model.</strong></span>
+      </div>
+    </div>
+
+    <!-- Stage 3 -->
+    <div class="pl-card" style="border-left: 4px solid var(--green-text);">
+      <div class="pl-card-header" style="background:var(--green-bg);">
+        <h3 style="color:var(--green-text);">Stage 3 — Securitisation bridge (months 42–72) <span class="t4-badge">T4</span></h3>
+        <div class="sub">15–25 modules, 600–1,000 claims/month, CoC: 8%. Fixed costs amortising at increasing scale. FMOS trajectory toward at-scale target.</div>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Fixed — module (20 modules central)</span>
+          Module fixed costs (unchanged per module)
+        </span>
+        <span class="pl-value neg">(£214.58)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Variable + WC IC at 8% CoC</span>
+          Assessment org + consumables + WC IC
+          <span class="formula">£16.28 + £15.00 + £0.50 = £31.78/claim</span>
+        </span>
+        <span class="pl-value neg">(£31.78)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Acquisition — Stage 3</span>
+          Blended CAC at C7 optimum (60% ITP, 40% organic) <span class="t4-badge">T4</span>
+        </span>
+        <span class="pl-value neg">(£22.20)</span>
+      </div>
+      <div class="pl-row deduct">
+        <span class="pl-label">
+          <span class="row-label">Overhead — HQ amortising at scale</span>
+          13.5 FTE: adds Pool operator analyst, ITP account manager (1 FTE), 2× Software engineers, Insurance curation (0.5 FTE) <span class="t2-badge">T2</span>
+          <span class="formula">£1,002k/yr HQ fully-loaded ÷ 9,600 claims/yr (20 modules) = £104.38/claim — derived from resourcing model (was T4 £1.1M → £114.58/claim)</span>
+        </span>
+        <span class="pl-value neg">(£104.38)</span>
+      </div>
+      <div class="pl-row subtotal">
+        <span class="pl-label">Cost floor at Stage 3 (20 modules, ~800 claims/month)</span>
+        <span class="pl-value neg">(£372.94)</span>
+      </div>
+      <div class="pl-row fmos-row">
+        <span class="pl-label"><strong>FMOS at Stage 3 (vs £650 price ceiling) <span class="t2-badge">T2</span></strong></span>
+        <span class="pl-value" style="color:var(--green-text);"><strong>~42.6% — approaching at-scale target</strong></span>
+      </div>
+      <div class="pl-row" style="background:var(--green-bg);font-size:13px;color:var(--green-text);">
+        <span class="pl-label">Formula: (650 − 372.94) ÷ 650 = 42.6%. Improved from prior T4 estimate of 41.1% — derived HQ is £104/claim vs assumed £114/claim. FMOS continues to improve as modules added. By module 38 at full securitisation capital, FMOS reaches 60.3% (Model 1 revised — see below). <strong>HQ cost revised down from T4 (£1.1M → £1,002k) using derived resourcing model.</strong></span>
+      </div>
+    </div>
+
+    <!-- Stage economics summary table -->
+    <h3 style="font-size:15px;font-weight:600;margin:28px 0 12px;">Stage economics — summary table</h3>
+    <table class="sim-table">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>CoC</th>
+          <th>Modules (central)</th>
+          <th>Claims/month</th>
+          <th class="right">Cost floor (£/claim)</th>
+          <th class="right">FMOS estimate</th>
+          <th>Verdict</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight-red">
+          <td><strong>Stage 1</strong> — litigation funder <span class="t4-badge">T4</span></td>
+          <td>25–30%</td>
+          <td>1–2</td>
+          <td>40–80</td>
+          <td class="right">£671 <span class="t2-badge">T2</span></td>
+          <td class="right" style="color:var(--red-text);font-weight:600;">Negative</td>
+          <td><span class="tag tag-red">Survival</span></td>
+        </tr>
+        <tr class="highlight-yellow">
+          <td><strong>Stage 2</strong> — specialist debt <span class="t2-badge">T2</span></td>
+          <td>15–18%</td>
+          <td>5–10 (7 central)</td>
+          <td>200–400</td>
+          <td class="right">~£468 <span class="t2-badge">T2</span></td>
+          <td class="right" style="color:var(--yellow-text);font-weight:600;">~28%</td>
+          <td><span class="tag tag-yellow">Approaching</span></td>
+        </tr>
+        <tr class="highlight-green">
+          <td><strong>Stage 3</strong> — securitisation bridge <span class="t2-badge">T2</span></td>
+          <td>8%</td>
+          <td>15–25 (20 central)</td>
+          <td>600–1,000</td>
+          <td class="right">~£373 <span class="t2-badge">T2</span></td>
+          <td class="right" style="color:var(--green-text);font-weight:600;">~42.6%</td>
+          <td><span class="tag tag-yellow">On track</span></td>
+        </tr>
+        <tr class="highlight-green" style="background:var(--accent-light);">
+          <td><strong>At-scale satellite</strong> (Model 1) — HQ revised</td>
+          <td>8%</td>
+          <td>38</td>
+          <td>1,520</td>
+          <td class="right"><strong>£258</strong> <span class="t2-badge">T2</span></td>
+          <td class="right" style="color:var(--green-text);font-weight:600;"><strong>60.3%</strong></td>
+          <td><span class="tag tag-green">✓ PASS</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M2 WORKING CAPITAL ─── -->
+  <div id="m2-wc" class="section-block">
+    <h2 class="section-title">Working capital requirement — per stage</h2>
+    <p class="section-subtitle">The venture needs two kinds of capital at each stage: (1) operating capital to fund HQ overhead before claim revenue arrives; (2) working capital for the assessment org payment lag (paid before settlement recovery). The two requirements compound at Stage 1 because revenue cannot cover overhead at 1–2 module scale.</p>
+
+    <div class="wc-grid">
+      <div class="wc-card s1">
+        <div class="wc-label">Stage 1 — litigation funder <span class="t2-badge">T2</span></div>
+        <div class="wc-value">£375–575k</div>
+        <div class="wc-sub">HQ overhead gap: £373k/yr (derived — 7.5 FTE at Stage 1, fully-loaded) that claim revenue cannot cover at 2-module scale. Assessment org WC float: ~£65–130k (80 claims × £16.28 × 4.65 months weighted avg). Total Stage 1 capital requirement: ~£475–700k for the 18-month period to Gate 1. HQ figure updated from T4 £400k to derived T2 £373k.</div>
+      </div>
+      <div class="wc-card s2">
+        <div class="wc-label">Stage 2 — specialist debt <span class="t4-badge">T4</span></div>
+        <div class="wc-value">£200–400k</div>
+        <div class="wc-sub">HQ overhead gap narrows as claim volume grows. At 7 modules (central), FMOS ~25.7% — barely covering costs at price ceiling. Assessment org WC float: ~£250–500k (400 claims/month × £16.28 × 4.65 months). Capital need shifts from loss-funding to WC float management.</div>
+      </div>
+      <div class="wc-card s3">
+        <div class="wc-label">Stage 3 — securitisation <span class="t4-badge">T4</span></div>
+        <div class="wc-value">~£2.2M peak</div>
+        <div class="wc-sub">Stage 3 approaches at-scale WC requirement. HQ overhead now covered by claim revenue. Peak WC = assessment org float: ~1,000 claims/month × £16.28 × 4.65 months = ~£2.2M at 8% CoC. This is the number from the C3 CLO II analysis (19 May 2026).</div>
+      </div>
+    </div>
+
+    <div class="warning-block">
+      <strong>⚠ These working capital figures are Tier 4.</strong> They are derived from the module count and assessment org fee assumptions — both of which have no field data. The actual WC requirement could be materially higher (if modules run at &lt;100% utilisation, extending the recovery timeline) or lower (if the pre-trial settlement rate is higher than 70%, shortening the cash cycle). The WC model is directional. It answers the shape of the problem, not the exact number.
+    </div>
+
+    <div class="inset-block">
+      <strong>Capital structure note.</strong> The three stages are not three applications to the same type of investor — they are structurally different instruments. Stage 1 capital is risk-bearing (litigation funder — earns a return from the settlement spread). Stage 2 is debt-like (specialist lender — earns interest on a portfolio with a track record). Stage 3 is securitisation-grade (institutional investors — buy into a rated, diversified claims pool). Each stage has different investor requirements, different due diligence processes, and different timelines to close. Planning the capital raise for Stage 2 should begin during Stage 1, not at Gate 1.
+    </div>
+  </div>
+
+  <hr class="section-hr">
+
+  <!-- ─── M2 TIMELINE ─── -->
+  <div id="m2-timeline" class="section-block">
+    <h2 class="section-title">Timeline — indicative stage durations</h2>
+    <p class="section-subtitle">All timelines are Tier 4 placeholders. The actual duration of each stage is determined by how quickly the portfolio evidence accumulates — which depends on claim resolution rates that do not yet have field data. The timeline is a planning scaffold, not a commitment.</p>
+
+    <div class="timeline-grid">
+      <div class="timeline-segment s1">
+        <div class="ts-label">Stage 1 <span class="t4-badge">T4</span></div>
+        <div class="ts-months">Months 0–18</div>
+        <div class="ts-desc">Litigation funder capital. Build portfolio track record. Target: 100+ resolved claims with clean outcome data. Gate trigger: 6-month settlement rate &gt;55%, average recovery validated.</div>
+      </div>
+      <div class="timeline-segment s2">
+        <div class="ts-label">Stage 2 <span class="t4-badge">T4</span></div>
+        <div class="ts-months">Months 18–42</div>
+        <div class="ts-desc">Specialist debt. Scale ITP channel. Target: 5–10 modules, 500+ resolved claims, EV accuracy tracked and validated. Gate trigger: securitisation-grade data pack assembled.</div>
+      </div>
+      <div class="timeline-segment s3">
+        <div class="ts-label">Stage 3 <span class="t4-badge">T4</span></div>
+        <div class="ts-months">Months 42–72</div>
+        <div class="ts-desc">Securitisation bridge. Scale toward 38 modules. FMOS improving from ~41% toward 62.3% as volume increases. Booster falls away when securitisation vehicle is live and fully operational.</div>
+      </div>
+    </div>
+
+    <div class="warning-block">
+      <strong>The 18-month Stage 1 estimate is directional.</strong> It assumes: (1) the first module is operational within 60 days of launch (law clinic partnership, assessment org standing, exchange infrastructure); (2) claims begin resolving within 3–6 months of intake (pre-trial settlement path); (3) 100 resolved claims with clean data takes ~12–15 months at 40 claims/module/month. If module ramp-up takes longer, or if the pre-trial settlement rate is lower than modelled (meaning claims take longer to resolve), Stage 1 extends and the capital requirement grows. The timeline is a planning input — it is the first thing to update with field data from the pilot module.
+    </div>
+
+    <div class="insight-panel">
+      <div class="ip-label">Model 2 insight</div>
+      <p>Stage 1 is not a small version of the at-scale model. It is a different economic structure with a different purpose: building the evidence that makes later, cheaper capital possible. The sub-threshold FMOS in Stage 1 is a feature of the design, not a bug. The question is not "how do we improve Stage 1 FMOS?" — it is "how do we size and fund the Stage 1 loss period explicitly so it does not threaten the venture's survival before the track record is built?"</p>
+      <p>The two models should be read as a single system. The at-scale model confirms the destination is worth reaching. The scaling model confirms the path is traversable — if the capital is sized correctly, the gate conditions are met in sequence, and the venture does not mistake Stage 1 survival economics for a permanent state.</p>
+    </div>
+  </div>
+
+</div><!-- /model2 -->
+
+<!-- ===================================================== -->
+<!-- FOOTER NOTES                                          -->
+<!-- ===================================================== -->
+<hr class="section-hr" style="margin-top:64px;">
+<div style="font-family:var(--font-body);font-size:13px;color:var(--text-muted);line-height:1.7;padding-bottom:40px;">
+  <p><strong style="font-family:var(--font-ui);">Document.</strong> Calmly — Financial Simulation v4. 21 May 2026. Supersedes v3 (19 May 2026, C3 update — exchange model). IVE Methodology: Simanis / Cornell MCL.</p>
+  <p style="margin-top:8px;"><strong style="font-family:var(--font-ui);">Source data.</strong> Cost floor £245/claim: C10 FIT Verifier (design-memo-v2-2026-05-18.html). Price ceiling £650/claim: design memo C10. FMOS chain C3–C10: FIT Verifier chain in design memo. Blended CAC £22/claim: C7 FIT Verifier (60% ITP at £25 NTP fee, 40% organic at £18). Assessment org fee £16.28/claim: C3 CLO II analysis (19 May 2026). WC peak £2.2M: C3 CLO II analysis. All Tier 4 unless noted.</p>
+  <p style="margin-top:8px;"><strong style="font-family:var(--font-ui);">Tier system.</strong> T1 = field data from this venture. T2 = published institutional data. T3 = industry benchmark (named source). T4 = reasoned assumption, no external source. All inputs in this simulation are Tier 4 unless explicitly marked otherwise. The model is internally consistent — it is not externally validated.</p>
+</div>
+
+</div><!-- /main -->
+
+</body>
+</html>

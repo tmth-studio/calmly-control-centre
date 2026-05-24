@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Service Blueprint — 23 May 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --actor-col-width: 148px;
+      --cell-min-width: 178px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    /* ── HEADER ── */
+    .doc-header {
+      background: var(--panel-bg);
+      color: #fff;
+      padding: 32px 40px;
+    }
+    .doc-header h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .doc-header .subtitle {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: rgba(255,255,255,0.72);
+      margin-bottom: 16px;
+    }
+    .doc-meta {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .doc-meta span {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .doc-meta span strong {
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      margin-left: 4px;
+    }
+
+    /* ── FLOW KEY ── */
+    .flow-key-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 40px;
+    }
+    .flow-key-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .flow-key { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .actor-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .actor-pill .num { font-size: 10px; font-weight: 700; opacity: 0.7; }
+    .pill-claimant  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .pill-itp       { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .pill-intake    { background: #eff3ff; color: #1e3a8a; border: 1px solid #c7d2fe; }
+    .pill-ev        { background: #f0fdfa; color: #0f766e; border: 1px solid #99f6e4; }
+    .pill-platform  { background: #f8fafc; color: #374151; border: 1px solid #d1d5db; }
+    .pill-defendant { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+    .pill-pool      { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+
+    /* ── TABLE WRAPPER ── */
+    .table-outer {
+      padding: 32px 40px 48px;
+      overflow-x: auto;
+    }
+
+    table.blueprint {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      min-width: 1420px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+    }
+
+    /* ── STAGE HEADER ROW ── */
+    table.blueprint thead tr.stage-header th {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      text-align: left;
+      padding: 12px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 2px solid var(--border-strong);
+      border-right: 1px solid rgba(255,255,255,0.15);
+      background: var(--panel-bg);
+      color: rgba(255,255,255,0.9);
+    }
+    table.blueprint thead tr.stage-header th:last-child { border-right: none; }
+
+    /* Actor label cell in header (top-left corner) */
+    th.actor-corner {
+      background: #07182e !important;
+      color: rgba(255,255,255,0.4) !important;
+      font-size: 10px !important;
+      letter-spacing: 0.09em !important;
+      text-transform: uppercase;
+      width: var(--actor-col-width);
+      min-width: var(--actor-col-width);
+      z-index: 30 !important;
+    }
+
+    .stage-th-num {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 4px;
+    }
+    .stage-th-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    /* ── ACTOR CELL (sticky left column) ── */
+    td.actor-cell {
+      width: var(--actor-col-width);
+      min-width: var(--actor-col-width);
+      padding: 14px 12px;
+      vertical-align: middle;
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      border-right: 3px solid transparent;
+      border-bottom: 1px solid var(--border);
+    }
+    td.actor-cell .actor-name {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 3px;
+    }
+    td.actor-cell .actor-role {
+      font-size: 11px;
+      opacity: 0.65;
+      font-family: var(--font-body);
+      font-style: italic;
+    }
+
+    /* Actor cell colour variants */
+    td.actor-cell.ac-claimant  { background: #dbeafe; border-right-color: #1d4ed8; }
+    td.actor-cell.ac-claimant .actor-name { color: #1e3a8a; }
+    td.actor-cell.ac-itp       { background: #ede9fe; border-right-color: #6d28d9; }
+    td.actor-cell.ac-itp .actor-name { color: #4c1d95; }
+    td.actor-cell.ac-intake    { background: #c7d2fe; border-right-color: #1e3a8a; }
+    td.actor-cell.ac-intake .actor-name { color: #1e3a8a; }
+    td.actor-cell.ac-ev        { background: #99f6e4; border-right-color: #0f766e; }
+    td.actor-cell.ac-ev .actor-name { color: #134e4a; }
+    td.actor-cell.ac-platform  { background: #e5e7eb; border-right-color: #374151; }
+    td.actor-cell.ac-platform .actor-name { color: #111827; }
+    td.actor-cell.ac-defendant { background: #fde68a; border-right-color: #92400e; }
+    td.actor-cell.ac-defendant .actor-name { color: #78350f; }
+    td.actor-cell.ac-pool      { background: #a7f3d0; border-right-color: #065f46; }
+    td.actor-cell.ac-pool .actor-name { color: #064e3b; }
+
+    /* ── CONTENT CELLS ── */
+    td.content-cell {
+      padding: 13px 14px;
+      vertical-align: top;
+      min-width: var(--cell-min-width);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    td.content-cell:last-child { border-right: none; }
+
+    /* Row tints — very light, enough to identify actor without overwhelming */
+    tr.row-claimant  td.content-cell { background: #fafcff; }
+    tr.row-itp       td.content-cell { background: #fdfcff; }
+    tr.row-intake    td.content-cell { background: #f8f9ff; }
+    tr.row-ev        td.content-cell { background: #f8fffe; }
+    tr.row-platform  td.content-cell { background: #f9fafb; }
+    tr.row-defendant td.content-cell { background: #fffef7; }
+    tr.row-pool      td.content-cell { background: #f5fffb; }
+
+    /* ── CELL ANATOMY ── */
+    .cell-action {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 5px;
+    }
+    .cell-detail {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      margin-bottom: 8px;
+    }
+    .cell-empty {
+      color: #c8d0db;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      min-height: 56px;
+    }
+
+    /* Handoff badges */
+    .handoffs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .handoff-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 7px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      border: 1px solid;
+    }
+    .handoff-badge::before { content: '→'; margin-right: 1px; }
+    .hb-claimant   { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+    .hb-itp        { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+    .hb-intake     { background: #eff3ff; color: #1e3a8a; border-color: #c7d2fe; }
+    .hb-ev         { background: #f0fdfa; color: #0f766e; border-color: #99f6e4; }
+    .hb-platform   { background: #f8fafc; color: #374151; border-color: #d1d5db; }
+    .hb-defendant  { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    .hb-pool       { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+
+    .dispute-note {
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-left: 3px solid #d4820a;
+      background: #fff8e6;
+      font-size: 11px;
+      color: #7c3a00;
+      line-height: 1.4;
+    }
+    .dispute-note strong { font-weight: 600; }
+
+    /* ── LINE OF VISIBILITY ROW ── */
+    tr.lov-row td {
+      padding: 0;
+      border-top: 3px dashed #ef4444;
+      border-bottom: 3px dashed #ef4444;
+      background: #fff3f3;
+      height: 28px;
+    }
+    tr.lov-row td.lov-label-cell {
+      position: sticky;
+      left: 0;
+      z-index: 5;
+      background: #ffd5d5;
+      border-right: 3px solid #ef4444;
+      text-align: center;
+      vertical-align: middle;
+    }
+    tr.lov-row td.lov-label-cell span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #7f1d1d;
+    }
+    tr.lov-row td.lov-content-cell {
+      text-align: center;
+      vertical-align: middle;
+    }
+    tr.lov-row td.lov-content-cell span {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #ef4444;
+      opacity: 0.6;
+    }
+
+    /* ── LEGEND ── */
+    .legend-wrap { padding: 0 40px 60px; }
+    .legend-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+    .legend-grid { display: flex; flex-wrap: wrap; gap: 16px 32px; }
+    .legend-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; max-width: 280px; }
+    .legend-swatch { flex-shrink: 0; width: 24px; height: 24px; border-radius: 2px; margin-top: 1px; }
+    .legend-text strong { display: block; font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+    .legend-text span { color: var(--text-secondary); font-size: 12px; font-family: var(--font-body); font-style: italic; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <h1>Calmly Service Blueprint</h1>
+  <p class="subtitle">End-to-end service map across all actors — 7 stages · 7 actors</p>
+  <div class="doc-meta">
+    <span>Date <strong>23 May 2026</strong></span>
+    <span>Gate <strong>TRR Preparation</strong></span>
+    <span>Version <strong>1.1</strong></span>
+    <span>Status <strong>Draft for review</strong></span>
+  </div>
+</div>
+
+<!-- FLOW KEY -->
+<div class="flow-key-wrap">
+  <div class="flow-key-label">Actors — reading order top to bottom</div>
+  <div class="flow-key">
+    <div class="actor-pill pill-claimant"><span class="num">1</span> Claimant</div>
+    <div class="actor-pill pill-itp"><span class="num">2</span> ITP</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;font-size:12px;font-weight:700;background:#fff3f3;color:#7f1d1d;border:2px dashed #fca5a5;border-radius:3px;">⊣ Line of Visibility ⊢</div>
+    <div class="actor-pill pill-intake"><span class="num">3</span> Intake Specialist</div>
+    <div class="actor-pill pill-ev"><span class="num">4</span> EV Assessor</div>
+    <div class="actor-pill pill-platform"><span class="num">5</span> Calmly Platform</div>
+    <div class="actor-pill pill-defendant"><span class="num">6</span> Defendant</div>
+    <div class="actor-pill pill-pool"><span class="num">7</span> Pool Operator</div>
+  </div>
+</div>
+
+<!-- BLUEPRINT TABLE -->
+<div class="table-outer">
+  <table class="blueprint">
+    <thead>
+      <tr class="stage-header">
+        <th class="actor-corner">Actor</th>
+        <th>
+          <span class="stage-th-num">Stage 1</span>
+          <span class="stage-th-name">Referral</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 2</span>
+          <span class="stage-th-name">Intake &amp; Eligibility</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 3</span>
+          <span class="stage-th-name">EV Assessment</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 4</span>
+          <span class="stage-th-name">Disclosure &amp; Decision</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 5</span>
+          <span class="stage-th-name">Demand Issued</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 6</span>
+          <span class="stage-th-name">Defendant Response</span>
+        </th>
+        <th>
+          <span class="stage-th-num">Stage 7</span>
+          <span class="stage-th-name">Settlement &amp; Payment</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- ── CLAIMANT ROW ── -->
+      <tr class="row-claimant">
+        <td class="actor-cell ac-claimant">
+          <div class="actor-name">Claimant</div>
+          <div class="actor-role">consumer</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Discloses financial harm</div>
+          <div class="cell-detail">Mentions potential mis-selling or unfair charge to ITP contact. Unaware of Calmly at this point.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Completes intake form (CP1)</div>
+          <div class="cell-detail">Receives Calmly intro email. Clicks link and completes CP1 — ≤8 screens. Submits supporting documents where available.</div>
+          <div class="handoffs"><span class="handoff-badge hb-intake">Intake Specialist</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Waits for assessment</div>
+          <div class="cell-detail">Receives "assessment underway" email with 2–5 day indicative timeline. No action required.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Reviews EV result &amp; decides</div>
+          <div class="cell-detail">Receives CP2 email with assessed value, confidence range, and fee breakdown (25% + VAT). Decides whether to proceed or decline. No deadline, no pressure.</div>
+          <div class="handoffs"><span class="handoff-badge hb-platform">Platform (records decision)</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Receives demand confirmation</div>
+          <div class="cell-detail">Notified that formal demand letter has been sent and 56-day clock has started. Can view claim timeline.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Reviews defendant's response</div>
+          <div class="cell-detail">Notified of defendant response via platform. Receives and reviews any offer made.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Receives settlement funds</div>
+          <div class="cell-detail">Settlement confirmation sent. Funds transferred to bank account within 3–5 working days (PP-C). Receives OP5-triggered outcome summary.</div>
+        </td>
+      </tr>
+
+      <!-- ── ITP ROW ── -->
+      <tr class="row-itp">
+        <td class="actor-cell ac-itp">
+          <div class="actor-name">ITP</div>
+          <div class="actor-role">intermediary</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Recognises claim &amp; submits referral</div>
+          <div class="cell-detail">Opens unique Calmly referral URL. Completes 10-field form in ≤5 min. Submits and receives on-screen confirmation. NTP fee: £25 logged.</div>
+          <div class="handoffs">
+            <span class="handoff-badge hb-intake">Intake Specialist</span>
+            <span class="handoff-badge hb-platform">Platform</span>
+          </div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Receives processing acknowledgment</div>
+          <div class="cell-detail">Notified by platform that referral is under review. No further action required at this stage.</div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell">
+          <div class="cell-action">Receives quarterly outcomes report</div>
+          <div class="cell-detail">OP5 report covers all referred claims: outcomes, settlement values, confirmation of referral channel value. Supports ongoing referral relationship.</div>
+        </td>
+      </tr>
+
+      <!-- ── LINE OF VISIBILITY ── -->
+      <tr class="lov-row">
+        <td class="lov-label-cell"><span>Visibility line</span></td>
+        <td class="lov-content-cell" colspan="7"><span>▲ claimant-facing above · internal operations below ▼</span></td>
+      </tr>
+
+      <!-- ── INTAKE SPECIALIST ROW ── -->
+      <tr class="row-intake">
+        <td class="actor-cell ac-intake">
+          <div class="actor-name">Intake Specialist</div>
+          <div class="actor-role">Calmly staff</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Receives notification</div>
+          <div class="cell-detail">Email notification arrives with referral summary and limitation flag. Claim enters intake queue.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Runs WP1 eligibility check</div>
+          <div class="cell-detail">Opens referral in queue. Reviews pre-screen flags. Contacts claimant for any gaps. Applies WP1 criteria. Time budget: 69 min/claim (ARM). Passes or rejects.</div>
+          <div class="handoffs"><span class="handoff-badge hb-ev">EV Assessor</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Assigns to EV assessor queue</div>
+          <div class="cell-detail">Eligible case allocated to assessor. Monitors progress in claim management system.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Available for claimant questions</div>
+          <div class="cell-detail">Monitors decision status in queue. Responds to any claimant queries about the assessment or fee structure.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Monitors active claim</div>
+          <div class="cell-detail">Case moves to active status. Available to field claimant questions while 56-day window runs.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Reviews response &amp; advises claimant</div>
+          <div class="cell-detail">Analyses defendant response. Recommends accept, counter, or escalate. Manages escalation to FOS or litigation if defendant disputes.</div>
+          <div class="dispute-note"><strong>If disputed:</strong> Escalates to FOS or litigation pathway. Case remains active.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Closes case</div>
+          <div class="cell-detail">Records outcome in claim management system. Marks case closed. Triggers post-closure admin — OP5 report queue, QA sampling.</div>
+        </td>
+      </tr>
+
+      <!-- ── EV ASSESSOR ROW ── -->
+      <tr class="row-ev">
+        <td class="actor-cell ac-ev">
+          <div class="actor-name">EV Assessor</div>
+          <div class="actor-role">law student + QS</div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell">
+          <div class="cell-action">Calculates EV &amp; submits for sign-off</div>
+          <div class="cell-detail">Receives case. Reviews claimant evidence. Applies assessment framework against FCA regulations. Calculates EV (premium refund + 8% interest + distress compensation). Submits draft. Qualified Supervisor reviews and signs off. Cost target: ≤£16.28/claim (WP2 ARM).</div>
+          <div class="handoffs"><span class="handoff-badge hb-platform">Platform (on QS sign-off)</span></div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+      </tr>
+
+      <!-- ── PLATFORM ROW ── -->
+      <tr class="row-platform">
+        <td class="actor-cell ac-platform">
+          <div class="actor-name">Calmly Platform</div>
+          <div class="actor-role">automated system</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Creates referral record</div>
+          <div class="cell-detail">Writes referral record + consent record + NTP fee log (£25). Dispatches intake notification email to Intake Specialist.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Stores intake data &amp; triggers WP1</div>
+          <div class="cell-detail">Sends claimant intro email. Stores CP1 intake data. Triggers WP1 workflow for Intake Specialist. Notifies ITP of receipt.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Stores assessment result</div>
+          <div class="cell-detail">Holds EV result pending QS signature. Triggers CP2 disclosure workflow once Qualified Supervisor signs off.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Sends CP2 &amp; records decision</div>
+          <div class="cell-detail">Dispatches CP2 email with EV value, confidence range, and fee breakdown. Records claimant's proceed/decline decision. If proceeding: triggers demand workflow.</div>
+          <div class="handoffs"><span class="handoff-badge hb-pool">Pool Operator (provisional reserve)</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Generates &amp; sends CP3 demand letter</div>
+          <div class="cell-detail">Generates formal CP3 demand letter. Sends to defendant legal/complaints team. Sets 56-day response deadline. Logs claim as active.</div>
+          <div class="handoffs"><span class="handoff-badge hb-defendant">Defendant</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Logs response &amp; notifies parties</div>
+          <div class="cell-detail">Records defendant's written response. Sends notification to claimant and Intake Specialist with response details and recommendation prompt.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Calculates fee &amp; processes transfer</div>
+          <div class="cell-detail">Calculates Calmly fee (25% + VAT). Instructs Pool Operator on net transfer amount. Logs case as closed. Triggers OP5 report entry for ITP quarterly summary.</div>
+          <div class="handoffs">
+            <span class="handoff-badge hb-claimant">Claimant (PP-C)</span>
+            <span class="handoff-badge hb-itp">ITP (OP5)</span>
+          </div>
+        </td>
+      </tr>
+
+      <!-- ── DEFENDANT ROW ── -->
+      <tr class="row-defendant">
+        <td class="actor-cell ac-defendant">
+          <div class="actor-name">Defendant</div>
+          <div class="actor-role">financial institution</div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell">
+          <div class="cell-action">Receives formal demand</div>
+          <div class="cell-detail">CP3 demand letter received by legal/complaints team. 56-day response clock begins. Internal routing to appropriate handler.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Issues formal response within 56 days</div>
+          <div class="cell-detail">Accepts claim in full, makes partial settlement offer, or formally disputes. Sends written response to Calmly platform.</div>
+          <div class="handoffs"><span class="handoff-badge hb-platform">Platform</span></div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Transfers settlement to Calmly pool</div>
+          <div class="cell-detail">Initiates bank transfer of agreed settlement amount to Calmly pool account (PP-D). Transaction reference logged against claim ID.</div>
+          <div class="handoffs"><span class="handoff-badge hb-pool">Pool Operator</span></div>
+        </td>
+      </tr>
+
+      <!-- ── POOL OPERATOR ROW ── -->
+      <tr class="row-pool">
+        <td class="actor-cell ac-pool">
+          <div class="actor-name">Pool Operator</div>
+          <div class="actor-role">litigation fund</div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell">
+          <div class="cell-action">Notified &amp; reserves funds</div>
+          <div class="cell-detail">Receives notification of potential active claim. Establishes provisional fund reservation pending demand issue.</div>
+        </td>
+        <td class="content-cell">
+          <div class="cell-action">Confirms fund reservation</div>
+          <div class="cell-detail">Moves provisional reserve to confirmed status for this active claim.</div>
+        </td>
+        <td class="content-cell"><div class="cell-empty">—</div></td>
+        <td class="content-cell">
+          <div class="cell-action">Receives payment, deducts fee, pays claimant</div>
+          <div class="cell-detail">Receives defendant transfer (PP-D). Deducts Calmly fee per platform instruction. Transfers net amount to claimant bank account. Updates pool accounting and fund records.</div>
+          <div class="handoffs"><span class="handoff-badge hb-claimant">Claimant (net payment)</span></div>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+<!-- LEGEND -->
+<div class="legend-wrap">
+  <div style="height:1px;background:var(--border);margin-bottom:28px;"></div>
+  <div class="legend-title">Legend</div>
+  <div class="legend-grid">
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:var(--panel-bg);"></div>
+      <div class="legend-text">
+        <strong>Stage columns</strong>
+        <span>Each column = one stage of the journey, reading left to right. Sticky header row.</span>
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#dbeafe;border-left:4px solid #1d4ed8;"></div>
+      <div class="legend-text">
+        <strong>Actor rows</strong>
+        <span>Each row = one actor. Colour-coded by actor from top to bottom. Sticky left column.</span>
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#ffd5d5;border:2px dashed #ef4444;"></div>
+      <div class="legend-text">
+        <strong>Line of visibility</strong>
+        <span>Horizontal dashed red row between ITP and Intake Specialist. Above = claimant-facing. Below = internal Calmly operations and external counterparties.</span>
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#eff6ff;border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#1d4ed8;">→</div>
+      <div class="legend-text">
+        <strong>Handoff badges</strong>
+        <span>Coloured chip at the bottom of a cell showing which actor receives the work next.</span>
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#f8fafc;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:#c8d0db;">—</div>
+      <div class="legend-text">
+        <strong>Empty cells</strong>
+        <span>That actor has no action in that stage. Shown explicitly — not overlooked.</span>
+      </div>
+    </div>
+    <div class="legend-item">
+      <div class="legend-swatch" style="background:#fff8e6;border-left:4px solid #d4820a;"></div>
+      <div class="legend-text">
+        <strong>Dispute / escalation notes</strong>
+        <span>Amber inset marks conditional paths — where the standard flow branches due to dispute or partial offer.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:28px;padding:14px 18px;background:var(--accent-light);border-left:4px solid var(--accent);font-size:12px;font-family:var(--font-body);font-style:italic;color:var(--text-secondary);">
+    Reference codes — CP1: claimant intake form · CP2: EV disclosure · CP3: formal demand · WP1: eligibility criteria · WP2: EV assessment framework · ARM: activity-based resource model · NTP: new third-party fee · PP-C: payment to claimant · PP-D: payment from defendant · OP5: ITP quarterly outcomes report · QS: qualified supervisor · FOS: Financial Ombudsman Service
+  </div>
+</div>
+
+</body>
+</html>

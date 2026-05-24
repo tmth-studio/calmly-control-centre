@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly — Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Lora:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #1d4ed8;
+      --brand-light: #eff6ff;
+      --brand-dark: #1e3a8a;
+      --green: #059669;
+      --green-light: #ecfdf5;
+      --green-dark: #065f46;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --red: #dc2626;
+      --red-light: #fef2f2;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --radius: 12px;
+      --radius-sm: 8px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Device shell ── */
+    .device {
+      width: 100%;
+      max-width: 460px;
+      min-height: 100vh;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--brand);
+      letter-spacing: -0.03em;
+      flex: 1;
+    }
+    .logo span { color: var(--green); }
+    .step-badge {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      height: 3px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--brand);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* ── Screen container ── */
+    .screens {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .screen {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      padding: 28px 24px 100px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(40px);
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(0);
+    }
+    .screen.exiting-left {
+      opacity: 0;
+      transform: translateX(-40px);
+    }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      position: sticky;
+      bottom: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px 18px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 13px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+      flex: 1;
+    }
+    .btn-primary:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-secondary {
+      background: #f8fafc;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 13px 16px;
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-success {
+      background: var(--green);
+      color: white;
+      flex: 1;
+    }
+    .btn-success:hover { background: var(--green-dark); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+      flex: 1;
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { color: var(--text-secondary); background: #f8fafc; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* ── Typography ── */
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 8px;
+    }
+    .eyebrow.green { color: var(--green); }
+    h1 {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    h1.lg { font-size: 30px; }
+    .lead {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+    .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* ── Referral banner ── */
+    .referral-banner {
+      background: var(--brand-light);
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .referral-banner .rb-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--brand);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 15px;
+    }
+    .referral-banner .rb-text { font-size: 13px; color: var(--brand-dark); line-height: 1.4; }
+    .referral-banner .rb-text strong { font-weight: 600; }
+
+    /* ── Trust signals ── */
+    .trust-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .trust-pill {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--green-dark);
+      background: var(--green-light);
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* ── Option cards ── */
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .option-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: center;
+      background: var(--surface);
+    }
+    .option-card:hover { border-color: var(--brand); background: var(--brand-light); }
+    .option-card.selected { border-color: var(--brand); background: var(--brand-light); }
+    .option-card .oc-icon { font-size: 24px; margin-bottom: 6px; }
+    .option-card .oc-label { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .option-card .oc-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .option-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .option-row {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+    }
+    .option-row:hover { border-color: var(--brand); background: var(--brand-light); }
+    .option-row.selected { border-color: var(--brand); background: var(--brand-light); }
+    .option-row .or-icon { font-size: 20px; flex-shrink: 0; }
+    .option-row .or-body { flex: 1; }
+    .option-row .or-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .option-row .or-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+    .option-row .or-check {
+      width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+    }
+    .option-row.selected .or-check {
+      background: var(--brand); border-color: var(--brand); color: white; font-size: 11px;
+    }
+
+    /* ── Form fields ── */
+    .field { margin-bottom: 18px; }
+    .input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .input:focus { border-color: var(--brand); }
+    .input.prefilled { background: #f8fafc; color: var(--text-secondary); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* ── Eligibility check animation ── */
+    .check-anim {
+      text-align: center;
+      padding: 40px 0;
+    }
+    .spinner {
+      width: 52px; height: 52px;
+      border: 4px solid var(--border);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .check-steps { text-align: left; margin-top: 28px; }
+    .check-step {
+      display: flex; gap: 12px; align-items: center;
+      padding: 10px 0; border-bottom: 1px dashed var(--border);
+      font-size: 14px; color: var(--text-secondary);
+    }
+    .check-step:last-child { border-bottom: none; }
+    .check-step .cs-icon { font-size: 16px; width: 24px; text-align: center; flex-shrink: 0; }
+    .check-step.done { color: var(--green); }
+    .check-step.active { color: var(--brand); font-weight: 500; }
+
+    /* ── Result big number ── */
+    .result-card {
+      background: linear-gradient(135deg, var(--brand) 0%, #1e40af 100%);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .result-card .rc-label { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 8px; }
+    .result-card .rc-amount { font-size: 52px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px; }
+    .result-card .rc-range { font-size: 13px; color: rgba(255,255,255,0.7); }
+    .result-card .rc-confidence { display: inline-block; margin-top: 10px; background: rgba(255,255,255,0.15); padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+
+    .assessment-detail {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .assessment-detail .ad-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px; }
+    .assessment-detail p { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin: 0; }
+
+    .fee-breakdown {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    .fee-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .fee-row:last-child { border-bottom: none; }
+    .fee-row.total { background: var(--green-light); font-weight: 700; color: var(--green-dark); }
+    .fee-row .fr-label { color: var(--text-secondary); }
+    .fee-row .fr-amount { font-weight: 600; }
+
+    /* ── Timeline ── */
+    .timeline { margin: 20px 0; }
+    .tl-step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      position: relative;
+    }
+    .tl-step:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 32px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .tl-step.done::before { background: var(--green); }
+    .tl-step.active::before { background: var(--brand); }
+    .tl-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      z-index: 1;
+    }
+    .tl-step.done .tl-dot { background: var(--green); border-color: var(--green); color: white; }
+    .tl-step.active .tl-dot { background: var(--brand); border-color: var(--brand); color: white; }
+    .tl-step.pending .tl-dot { background: #f8fafc; color: var(--text-muted); }
+    .tl-body { flex: 1; padding-top: 4px; }
+    .tl-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .tl-step.pending .tl-title { color: var(--text-muted); }
+    .tl-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; font-family: var(--font-body); }
+    .tl-step.active .tl-desc { color: var(--text-secondary); }
+
+    /* ── Info rows ── */
+    .info-list { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 16px; }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-row .ir-label { color: var(--text-muted); }
+    .info-row .ir-value { font-weight: 600; color: var(--text); text-align: right; }
+
+    /* ── Settled big moment ── */
+    .settled-hero {
+      text-align: center;
+      padding: 28px 0 20px;
+    }
+    .settled-hero .sh-icon {
+      width: 72px; height: 72px;
+      background: var(--green-light);
+      border: 3px solid #6ee7b7;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 34px;
+      margin: 0 auto 16px;
+    }
+    .settled-hero h1 { margin-bottom: 6px; }
+
+    /* ── Consent check ── */
+    .consent-row {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+    .consent-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      accent-color: var(--brand);
+      cursor: pointer;
+    }
+    .consent-row .cr-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-family: var(--font-body);
+    }
+
+    /* ── Notification card ── */
+    .notif-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .notif-card .nc-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-card .nc-icon {
+      width: 36px; height: 36px;
+      background: var(--brand);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .notif-card .nc-from { font-size: 12px; font-weight: 600; color: var(--text); }
+    .notif-card .nc-time { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+    .notif-card .nc-subject { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .notif-card .nc-preview { font-family: var(--font-body); font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ── Stat pills ── */
+    .stat-row { display: flex; gap: 8px; margin-bottom: 20px; }
+    .stat-pill {
+      flex: 1;
+      background: var(--green-light);
+      border: 1px solid #a7f3d0;
+      border-radius: var(--radius-sm);
+      padding: 12px 10px;
+      text-align: center;
+    }
+    .stat-pill .sp-num { font-size: 22px; font-weight: 700; color: var(--green-dark); letter-spacing: -0.02em; }
+    .stat-pill .sp-label { font-size: 11px; color: var(--green-dark); margin-top: 2px; opacity: 0.8; }
+
+    /* Prototype label */
+    .proto-label {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: #0f172a;
+      color: rgba(255,255,255,0.7);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 10px;
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    /* ── Demand letter ── */
+    .demand-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 16px;
+      font-size: 13px;
+    }
+    .demand-card .dc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .demand-card .dc-to { font-weight: 600; color: var(--text); }
+    .demand-card .dc-sent { font-size: 11px; color: var(--text-muted); }
+    .demand-card .dc-body { font-family: var(--font-body); color: var(--text-secondary); line-height: 1.65; }
+
+    .response-card {
+      border: 2px solid #a7f3d0;
+      background: var(--green-light);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .response-card .rc-ico { font-size: 22px; flex-shrink: 0; }
+    .response-card .rc-text { flex: 1; font-size: 13px; color: var(--green-dark); line-height: 1.5; }
+    .response-card .rc-text strong { font-weight: 600; display: block; margin-bottom: 3px; }
+
+    /* ── Screen-specific overrides ── */
+    #screen-loading .check-step.cs-1 { animation: fadein 0.4s 0.2s both; }
+    #screen-loading .check-step.cs-2 { animation: fadein 0.4s 0.9s both; }
+    #screen-loading .check-step.cs-3 { animation: fadein 0.4s 1.6s both; }
+    @keyframes fadein { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
+  </style>
+</head>
+<body>
+
+<div class="device">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo">calm<span>ly</span></div>
+    <div class="step-badge" id="step-badge">Step 1 of 9</div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar" style="width: 11%"></div>
+  </div>
+
+  <!-- Screens -->
+  <div class="screens">
+
+    <!-- ── SCREEN 1: Welcome ── -->
+    <div class="screen active" id="screen-1">
+      <div class="referral-banner">
+        <div class="rb-icon">🤝</div>
+        <div class="rb-text">
+          <strong>Referred by Citizens Advice</strong><br>
+          They thought Calmly could help with your case.
+        </div>
+      </div>
+
+      <div class="eyebrow">Financial Claims</div>
+      <h1 class="lg">You may have a claim worth thousands</h1>
+      <p class="lead">Calmly helps people recover money lost to financial wrongdoing — mis-sold products, unfair charges, credit errors. We assess your claim independently and act for you if it's worth pursuing.</p>
+
+      <div class="trust-row">
+        <div class="trust-pill">✓ No win, no fee</div>
+        <div class="trust-pill">✓ Nothing upfront</div>
+        <div class="trust-pill">✓ Independently assessed</div>
+        <div class="trust-pill">✓ FCA registered</div>
+      </div>
+
+      <div class="info-list">
+        <div class="info-row">
+          <span class="ir-label">Average settled claim</span>
+          <span class="ir-value">£2,400</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Claims settled without court</span>
+          <span class="ir-value">78%</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Time from submission to offer</span>
+          <span class="ir-value">8–12 weeks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 2: What happened? ── -->
+    <div class="screen" id="screen-2">
+      <div class="eyebrow">Your claim</div>
+      <h1>What best describes what happened?</h1>
+      <p class="lead">Select the option that fits your situation.</p>
+
+      <div class="option-list">
+        <div class="option-row selected" onclick="selectOption(this)">
+          <span class="or-icon">💳</span>
+          <div class="or-body">
+            <div class="or-label">Mis-sold financial product</div>
+            <div class="or-sub">PPI, investment, pension, insurance</div>
+          </div>
+          <div class="or-check">✓</div>
+        </div>
+        <div class="option-row" onclick="selectOption(this)">
+          <span class="or-icon">🏦</span>
+          <div class="or-body">
+            <div class="or-label">Unfair bank charges or fees</div>
+            <div class="or-sub">Overdraft fees, penalty charges</div>
+          </div>
+          <div class="or-check"></div>
+        </div>
+        <div class="option-row" onclick="selectOption(this)">
+          <span class="or-icon">📋</span>
+          <div class="or-body">
+            <div class="or-label">Credit file error</div>
+            <div class="or-sub">Incorrect entry affecting your credit score</div>
+          </div>
+          <div class="or-check"></div>
+        </div>
+        <div class="option-row" onclick="selectOption(this)">
+          <span class="or-icon">📬</span>
+          <div class="or-body">
+            <div class="or-label">Debt collection issue</div>
+            <div class="or-sub">Harassment, incorrect debt amount</div>
+          </div>
+          <div class="or-check"></div>
+        </div>
+        <div class="option-row" onclick="selectOption(this)">
+          <span class="or-icon">❓</span>
+          <div class="or-body">
+            <div class="or-label">Something else</div>
+            <div class="or-sub">We'll ask a few questions to understand</div>
+          </div>
+          <div class="or-check"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 3: Details ── -->
+    <div class="screen" id="screen-3">
+      <div class="eyebrow">Your claim</div>
+      <h1>A few details about your case</h1>
+
+      <div class="field">
+        <label class="label">Which company are you claiming against?</label>
+        <input class="input" type="text" value="NatWest" placeholder="e.g. Barclays, HSBC">
+      </div>
+
+      <div class="field">
+        <label class="label">When did this happen?</label>
+        <div class="option-list" style="margin-bottom:0;">
+          <div class="option-row" onclick="selectOption(this)" style="padding:10px 14px;">
+            <div class="or-body"><div class="or-label">Within the last year</div></div>
+            <div class="or-check"></div>
+          </div>
+          <div class="option-row selected" onclick="selectOption(this)" style="padding:10px 14px;">
+            <div class="or-body"><div class="or-label">1–3 years ago</div></div>
+            <div class="or-check">✓</div>
+          </div>
+          <div class="option-row" onclick="selectOption(this)" style="padding:10px 14px;">
+            <div class="or-body"><div class="or-label">3–6 years ago</div></div>
+            <div class="or-check"></div>
+          </div>
+          <div class="option-row" onclick="selectOption(this)" style="padding:10px 14px;">
+            <div class="or-body"><div class="or-label">More than 6 years ago</div></div>
+            <div class="or-check"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:18px;">
+        <label class="label">Roughly how much do you think you lost?</label>
+        <div class="option-grid">
+          <div class="option-card" onclick="selectCard(this)">
+            <div class="oc-label">£500 – £2,000</div>
+          </div>
+          <div class="option-card selected" onclick="selectCard(this)">
+            <div class="oc-label">£2,000 – £5,000</div>
+          </div>
+          <div class="option-card" onclick="selectCard(this)">
+            <div class="oc-label">£5,000 – £10,000</div>
+          </div>
+          <div class="option-card" onclick="selectCard(this)">
+            <div class="oc-label">£10,000+</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 4: Your details ── -->
+    <div class="screen" id="screen-4">
+      <div class="eyebrow">Your details</div>
+      <h1>Confirm your details</h1>
+      <p class="lead">Citizens Advice shared these with us. Let us know if anything needs updating.</p>
+
+      <div class="field">
+        <label class="label">Full name</label>
+        <input class="input prefilled" type="text" value="Sarah Johnson">
+      </div>
+      <div class="field">
+        <label class="label">Email address</label>
+        <input class="input prefilled" type="email" value="sarah.johnson@gmail.com">
+      </div>
+      <div class="field">
+        <label class="label">Phone number <span style="font-weight:400;color:var(--text-muted);">(optional)</span></label>
+        <input class="input" type="tel" placeholder="+44 7700 000000">
+      </div>
+
+      <hr class="divider">
+
+      <label class="consent-row" for="consent">
+        <input type="checkbox" id="consent" checked>
+        <span class="cr-text">I confirm that the details above are correct and I consent to Calmly contacting me about my claim. I understand this is a free eligibility check with no obligation to proceed.</span>
+      </label>
+    </div>
+
+    <!-- ── SCREEN 5: Loading / eligibility check ── -->
+    <div class="screen" id="screen-loading">
+      <div class="eyebrow">Checking your eligibility</div>
+      <h1>Reviewing your case…</h1>
+
+      <div class="check-anim">
+        <div class="spinner"></div>
+        <p style="color:var(--text-muted);font-size:14px;">This usually takes a few seconds</p>
+      </div>
+
+      <div class="check-steps">
+        <div class="check-step done cs-1">
+          <span class="cs-icon">✓</span> Claim type confirmed
+        </div>
+        <div class="check-step done cs-2">
+          <span class="cs-icon">✓</span> Limitation period checked
+        </div>
+        <div class="check-step active cs-3">
+          <span class="cs-icon">⟳</span> Eligibility criteria applied
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 6: Eligible ── -->
+    <div class="screen" id="screen-6">
+      <div class="eyebrow green">✓ Eligible</div>
+      <h1>Good news, Sarah</h1>
+      <p class="lead">Your claim qualifies. Our legal team will now independently assess the value of your case. This takes 2–5 working days and costs you nothing.</p>
+
+      <div class="timeline">
+        <div class="tl-step done">
+          <div class="tl-dot">✓</div>
+          <div class="tl-body">
+            <div class="tl-title">Claim received and verified</div>
+            <div class="tl-desc">Your details and eligibility confirmed.</div>
+          </div>
+        </div>
+        <div class="tl-step active">
+          <div class="tl-dot">2</div>
+          <div class="tl-body">
+            <div class="tl-title">Independent legal assessment</div>
+            <div class="tl-desc">A qualified assessor reviews NatWest's conduct against financial regulations and calculates your claim value.</div>
+          </div>
+        </div>
+        <div class="tl-step pending">
+          <div class="tl-dot">3</div>
+          <div class="tl-body">
+            <div class="tl-title">You decide</div>
+            <div class="tl-desc">We share the assessed value. You choose whether to proceed — no pressure.</div>
+          </div>
+        </div>
+        <div class="tl-step pending">
+          <div class="tl-dot">4</div>
+          <div class="tl-body">
+            <div class="tl-title">We act for you</div>
+            <div class="tl-desc">Calmly issues a formal demand. 78% of cases settle without court.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 7: Assessment result ── -->
+    <div class="screen" id="screen-7">
+      <div class="notif-card">
+        <div class="nc-header">
+          <div class="nc-icon">✉</div>
+          <div>
+            <div class="nc-from">Calmly · Legal Team</div>
+            <div class="nc-time">Just now</div>
+          </div>
+        </div>
+        <div class="nc-subject">Your assessment is ready, Sarah</div>
+        <div class="nc-preview">We've completed the independent review of your NatWest claim. Here's what we found…</div>
+      </div>
+
+      <div class="result-card">
+        <div class="rc-label">Assessed claim value</div>
+        <div class="rc-amount">£2,840</div>
+        <div class="rc-range">Range: £2,360 – £3,320</div>
+        <div class="rc-confidence">High confidence · ±17%</div>
+      </div>
+
+      <div class="assessment-detail">
+        <div class="ad-label">What we found</div>
+        <p>NatWest sold you a payment protection insurance policy in 2022 without adequately assessing your circumstances. The policy was unsuitable. You are entitled to a refund of premiums plus 8% statutory interest.</p>
+      </div>
+
+      <div class="assessment-detail">
+        <div class="ad-label">How we calculated this</div>
+        <p>Premium refund: £2,140 · Interest (8% p.a. for 2 years): £342 · Compensation for distress: £358. Total assessed: £2,840.</p>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 8: Decision ── -->
+    <div class="screen" id="screen-8">
+      <div class="eyebrow">Your decision</div>
+      <h1>Would you like to pursue this?</h1>
+      <p class="lead">There is no obligation. If you proceed, Calmly acts on your behalf at no cost to you — we take a fee only if we win.</p>
+
+      <div class="result-card" style="margin-bottom:20px;">
+        <div class="rc-label">If we win</div>
+        <div class="rc-amount">£2,840</div>
+        <div class="rc-range">less Calmly's fee of 25% + VAT</div>
+      </div>
+
+      <div class="fee-breakdown">
+        <div class="fee-row">
+          <span class="fr-label">Settlement amount</span>
+          <span class="fr-amount">£2,840</span>
+        </div>
+        <div class="fee-row">
+          <span class="fr-label">Calmly fee (25% + VAT)</span>
+          <span class="fr-amount" style="color:var(--text-muted);">−£852</span>
+        </div>
+        <div class="fee-row total">
+          <span class="fr-label">You receive</span>
+          <span class="fr-amount">£1,988</span>
+        </div>
+      </div>
+
+      <div class="info-list" style="margin-bottom:20px;">
+        <div class="info-row">
+          <span class="ir-label">If we don't win</span>
+          <span class="ir-value">You pay nothing</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Court required</span>
+          <span class="ir-value">Unlikely (78% settle)</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Estimated timeline</span>
+          <span class="ir-value">8–14 weeks</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 9: We're on it ── -->
+    <div class="screen" id="screen-9">
+      <div class="eyebrow green">✓ Claim submitted</div>
+      <h1>We're on it, Sarah</h1>
+      <p class="lead">A formal demand letter has been sent to NatWest today. They are legally required to respond within 56 days.</p>
+
+      <div class="demand-card">
+        <div class="dc-header">
+          <div>
+            <div class="dc-to">NatWest — Legal & Complaints</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Mis-sold PPI · Ref: CLM-2026-00847</div>
+          </div>
+          <div class="dc-sent" style="text-align:right;">Sent<br>23 May 2026</div>
+        </div>
+        <div class="dc-body">Formal demand for refund of premiums and statutory interest under the Consumer Credit Act and FCA DISP rules. Total claim: £2,840. Response required within 56 days.</div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-pill">
+          <div class="sp-num">78%</div>
+          <div class="sp-label">settle without court</div>
+        </div>
+        <div class="stat-pill">
+          <div class="sp-num">8–14</div>
+          <div class="sp-label">weeks to resolution</div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-step done">
+          <div class="tl-dot">✓</div>
+          <div class="tl-body">
+            <div class="tl-title">Demand sent to NatWest</div>
+            <div class="tl-desc">23 May 2026</div>
+          </div>
+        </div>
+        <div class="tl-step active">
+          <div class="tl-dot">2</div>
+          <div class="tl-body">
+            <div class="tl-title">Awaiting NatWest's response</div>
+            <div class="tl-desc">Deadline: 18 July 2026 (56 days)</div>
+          </div>
+        </div>
+        <div class="tl-step pending">
+          <div class="tl-dot">3</div>
+          <div class="tl-body">
+            <div class="tl-title">Settlement or escalation</div>
+            <div class="tl-desc">If they agree: funds transferred within 10 days. If they dispute: Calmly escalates to FOS.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SCREEN 10: Settled ── -->
+    <div class="screen" id="screen-10">
+      <div class="settled-hero">
+        <div class="sh-icon">🎉</div>
+        <div class="eyebrow green">Claim resolved</div>
+        <h1>Your claim has been settled</h1>
+        <p style="font-family:var(--font-body);font-size:14px;color:var(--text-muted);margin-top:4px;">NatWest accepted the claim in full.</p>
+      </div>
+
+      <div class="fee-breakdown">
+        <div class="fee-row">
+          <span class="fr-label">Settlement received</span>
+          <span class="fr-amount">£2,840</span>
+        </div>
+        <div class="fee-row">
+          <span class="fr-label">Calmly fee (25% + VAT)</span>
+          <span class="fr-amount" style="color:var(--text-muted);">−£852</span>
+        </div>
+        <div class="fee-row total">
+          <span class="fr-label">Transferred to your account</span>
+          <span class="fr-amount">£1,988</span>
+        </div>
+      </div>
+
+      <div class="response-card">
+        <div class="rc-ico">🏦</div>
+        <div class="rc-text">
+          <strong>Funds transferred</strong>
+          £1,988 will appear in your account ending 4421 within 3–5 working days.
+        </div>
+      </div>
+
+      <div class="info-list">
+        <div class="info-row">
+          <span class="ir-label">Claim reference</span>
+          <span class="ir-value">CLM-2026-00847</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Submitted</span>
+          <span class="ir-value">23 May 2026</span>
+        </div>
+        <div class="info-row">
+          <span class="ir-label">Resolved</span>
+          <span class="ir-value">14 Jul 2026 (52 days)</span>
+        </div>
+      </div>
+
+      <p style="font-family:var(--font-body);font-size:13px;color:var(--text-muted);text-align:center;margin-top:12px;">Know someone else who might have a claim?<br><a href="#" style="color:var(--brand);font-weight:600;text-decoration:none;">Share Calmly with a friend</a></p>
+    </div>
+
+  </div><!-- /screens -->
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav" id="bottom-nav">
+    <button class="btn btn-secondary" id="btn-back" onclick="goBack()">← Back</button>
+    <button class="btn btn-primary" id="btn-next" onclick="goNext()">Check my claim →</button>
+  </div>
+
+</div><!-- /device -->
+
+<div class="proto-label">Prototype · Not real data</div>
+
+<script>
+  const screens = [
+    { id: 'screen-1',       step: '1 of 9',  progress: 11,  nextLabel: 'Check my claim →',   backHide: true },
+    { id: 'screen-2',       step: '2 of 9',  progress: 22,  nextLabel: 'Continue →' },
+    { id: 'screen-3',       step: '3 of 9',  progress: 33,  nextLabel: 'Continue →' },
+    { id: 'screen-4',       step: '4 of 9',  progress: 44,  nextLabel: 'Submit claim →' },
+    { id: 'screen-loading', step: '5 of 9',  progress: 55,  nextLabel: null,                  hideNav: true },
+    { id: 'screen-6',       step: '6 of 9',  progress: 66,  nextLabel: 'Continue →' },
+    { id: 'screen-7',       step: '7 of 9',  progress: 77,  nextLabel: 'See full assessment →' },
+    { id: 'screen-8',       step: '8 of 9',  progress: 88,  nextLabel: 'Yes, pursue this claim →',   successBtn: true },
+    { id: 'screen-9',       step: '9 of 9',  progress: 95,  nextLabel: 'Skip to outcome →',   ghostBtn: true },
+    { id: 'screen-10',      step: 'Done',    progress: 100, nextLabel: null,                  hideNav: true },
+  ];
+
+  let current = 0;
+
+  function goNext() {
+    if (current >= screens.length - 1) return;
+
+    const leaving = document.getElementById(screens[current].id);
+    leaving.classList.remove('active');
+    leaving.classList.add('exiting-left');
+    setTimeout(() => leaving.classList.remove('exiting-left'), 400);
+
+    current++;
+    const arriving = document.getElementById(screens[current].id);
+    arriving.classList.add('active');
+
+    updateChrome();
+
+    // Auto-advance from loading screen
+    if (screens[current].id === 'screen-loading') {
+      setTimeout(() => goNext(), 3000);
+    }
+  }
+
+  function goBack() {
+    if (current <= 0) return;
+
+    const leaving = document.getElementById(screens[current].id);
+    leaving.classList.remove('active');
+
+    current--;
+    const arriving = document.getElementById(screens[current].id);
+    arriving.style.transform = 'translateX(-40px)';
+    arriving.style.opacity = '0';
+    arriving.classList.add('active');
+    // Force reflow then animate in from left
+    arriving.getBoundingClientRect();
+    arriving.style.transition = 'all 0.35s cubic-bezier(0.4,0,0.2,1)';
+    arriving.style.transform = '';
+    arriving.style.opacity = '';
+    setTimeout(() => { arriving.style.transition = ''; }, 400);
+
+    updateChrome();
+  }
+
+  function updateChrome() {
+    const s = screens[current];
+
+    // Step badge
+    document.getElementById('step-badge').textContent = 'Step ' + s.step;
+
+    // Progress
+    document.getElementById('progress-bar').style.width = s.progress + '%';
+
+    // Nav
+    const nav = document.getElementById('bottom-nav');
+    const btnBack = document.getElementById('btn-back');
+    const btnNext = document.getElementById('btn-next');
+
+    if (s.hideNav) {
+      nav.style.display = 'none';
+    } else {
+      nav.style.display = 'flex';
+      btnBack.style.display = (s.backHide) ? 'none' : 'flex';
+      btnNext.style.display = s.nextLabel ? 'flex' : 'none';
+      btnNext.textContent = s.nextLabel || '';
+
+      // Reset button style
+      btnNext.className = 'btn btn-primary';
+      if (s.successBtn) btnNext.className = 'btn btn-success';
+      if (s.ghostBtn) {
+        // Add a ghost button alongside
+        btnNext.style.flex = '1';
+      }
+    }
+  }
+
+  function selectOption(el) {
+    const siblings = el.parentElement.querySelectorAll('.option-row');
+    siblings.forEach(s => {
+      s.classList.remove('selected');
+      const check = s.querySelector('.or-check');
+      if (check) check.textContent = '';
+    });
+    el.classList.add('selected');
+    const check = el.querySelector('.or-check');
+    if (check) check.textContent = '✓';
+  }
+
+  function selectCard(el) {
+    const siblings = el.parentElement.querySelectorAll('.option-card');
+    siblings.forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  // Init
+  updateChrome();
+</script>
+</body>
+</html>
