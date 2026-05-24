@@ -391,27 +391,19 @@
       </div>
     </div>
 
-    <div class="consolidate-item needs-work">
-      <span class="ci-icon">⚠</span>
+    <div class="consolidate-item done">
+      <span class="ci-icon">✓</span>
       <div class="ci-body">
-        <div class="ci-head">OP7 reference — flow not in 17-flow spec</div>
-        <div class="ci-desc">ICD-09 is defined as "WP1→OP7 no-proceed dispatch". But OP7 does not appear in the 17-flow spec (flows run OP1–OP6). Either OP7 is an implicit operational notification (not needing a full spec) or it's a gap in the flow register. This must be resolved: either add OP7 to the flow register with a minimal spec, or reclassify ICD-09 as an internal system event rather than a named flow. Decision owner: Tom.</div>
+        <div class="ci-head">OP7 reference — resolved 24 May 2026</div>
+        <div class="ci-desc">Decision 1 ratified. OP7 added to the flow register as "Ineligibility notification dispatch" — the named target of ICD-09 (WP1 → OP7 no-proceed dispatch). Full spec added to Design Definition. Flow count updated to 18. CDR package updated accordingly. Rationale: the notification crosses a system boundary (recipient is the claimant, an external actor) so a named flow is architecturally correct.</div>
       </div>
     </div>
 
-    <div class="consolidate-item needs-work">
-      <span class="ci-icon">⚠</span>
+    <div class="consolidate-item done">
+      <span class="ci-icon">✓</span>
       <div class="ci-body">
-        <div class="ci-head">AOM v4 actor refinements — not yet reflected in Capella</div>
-        <div class="ci-desc">AOM v4 was finalised today (23 May) with refined actor names, zone shading, and the PartP1 C8 lock-in confirmation. The Capella model uses the actor list from 22 May. The 8 external actors in the model should be cross-checked against AOM v4's actor perimeter — especially: (a) Pool Operator appears in AOM v4 as "1–3 regional Pool Operators" — model has single "Pool Operator" actor; (b) "Assessment Org" in AOM v4 vs "Independent Assessment Organisation" in Capella. No structural difference, but naming should be canonical.</div>
-      </div>
-    </div>
-
-    <div class="consolidate-item needs-work">
-      <span class="ci-icon">⚠</span>
-      <div class="ci-body">
-        <div class="ci-head">Components map (CoWork) vs Capella system components — partial overlap</div>
-        <div class="ci-desc">The components map (23 May CoWork) defines 9 product flows with detailed activity breakdowns and HR owners. The Capella model has system components as PVC/SC/IC roles drawn from the ARM. The two should be checked for consistency: (a) components map WP1 uses "Assessment Org" as direct producer but Capella has "EV Specialist (PVC)" as WP1 carrier — this is the AOM/ARM numbering divergence flagged in the previous session and still unresolved; (b) the components map shows the Law Student Assessor producing WP3 (in the ARM sense), but AOM v4 labels the equivalent node WP1. Naming must be resolved before the Capella model is used as a TRR verification source.</div>
+        <div class="ci-head">Canonical actor naming — resolved 24 May 2026</div>
+        <div class="ci-desc">Decision 2 ratified. "Assessment Org" adopted as the canonical name across all documents. "Independent Assessment Organisation" (Capella pre-AOM v4 label) to be updated in Capella model at next model edit. Components map WP3 mislabel corrected: Law Student Assessor produces WP1 (EV assessment); WP3 (pool data aggregation) is a Pool Operator infrastructure responsibility. AOM v4 is the authoritative source for actor names.</div>
       </div>
     </div>
 
