@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Systems Engineering Process</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --green-bg: #e6f4ec;
+      --green-text: #166534;
+      --green-border: #a7d4b8;
+      --yellow-bg: #fef9e6;
+      --yellow-text: #854d0e;
+      --yellow-border: #f0d98a;
+      --red-bg: #fde8e8;
+      --red-text: #991b1b;
+      --red-border: #f0b4b4;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 1000px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+    .container { max-width: var(--width); margin: 0 auto; background: var(--surface); }
+
+    /* ── Header ── */
+    .doc-header { background: var(--panel-bg); color: var(--panel-text); padding: 44px 48px 36px; }
+    .doc-header .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 12px; }
+    .doc-header h1 { font-size: 32px; font-weight: 600; line-height: 1.2; margin-bottom: 10px; color: #fff; }
+    .doc-header .subtitle { font-family: var(--font-body); font-size: 17px; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 680px; margin-bottom: 28px; }
+    .header-meta { display: flex; gap: 32px; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 18px; }
+    .header-meta-item { font-size: 13px; color: rgba(255,255,255,0.5); }
+    .header-meta-item strong { color: rgba(255,255,255,0.85); font-weight: 600; margin-right: 5px; }
+
+    /* ── Position banner ── */
+    .position-banner { background: #1a3a6b; padding: 18px 48px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .pos-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.4); }
+    .pos-value { font-size: 15px; font-weight: 600; color: #fff; margin-top: 2px; }
+    .pos-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+    .pos-gate { background: rgba(255,214,0,0.15); border: 1px solid rgba(255,214,0,0.4); color: #ffd600; font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 3px; letter-spacing: 0.04em; }
+
+    /* ── Body ── */
+    .body-content { padding: 0 48px 80px; }
+
+    /* ── Section headings ── */
+    .section-h2 { font-size: 20px; font-weight: 600; margin: 52px 0 6px; padding-top: 36px; border-top: 2px solid var(--border); }
+    .section-intro { font-family: var(--font-body); font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 28px; max-width: 740px; }
+
+    /* ── V-diagram ── */
+    .v-diagram { margin: 32px 0 48px; }
+    .v-diagram svg { width: 100%; max-width: 900px; display: block; margin: 0 auto; }
+
+    /* ── Gate tracker ── */
+    .gate-row { display: flex; gap: 0; margin: 28px 0; }
+    .gate-cell { flex: 1; position: relative; }
+    .gate-cell:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 10px solid var(--border); z-index: 1; }
+    .gate-inner { margin-right: 10px; border: 2px solid; padding: 14px 10px; text-align: center; }
+    .gate-cell:last-child .gate-inner { margin-right: 0; }
+    .gate-code { font-size: 16px; font-weight: 600; display: block; margin-bottom: 3px; }
+    .gate-name-small { font-size: 11px; font-weight: 500; display: block; margin-bottom: 8px; }
+    .gate-q { font-size: 11px; font-family: var(--font-body); color: var(--text-secondary); line-height: 1.45; font-style: italic; }
+    .gate-cell.passed .gate-inner { background: var(--green-bg); border-color: var(--green-border); }
+    .gate-cell.passed .gate-code { color: var(--green-text); }
+    .gate-cell.passed .gate-name-small { color: var(--green-text); }
+    .gate-cell.current .gate-inner { background: var(--yellow-bg); border-color: var(--yellow-border); }
+    .gate-cell.current .gate-code { color: var(--yellow-text); }
+    .gate-cell.current .gate-name-small { color: var(--yellow-text); }
+    .gate-cell.future .gate-inner { background: #f7f7f6; border-color: var(--border); }
+    .gate-cell.future .gate-code { color: var(--text-muted); }
+    .gate-cell.future .gate-name-small { color: var(--text-muted); }
+
+    /* ── Phase panels ── */
+    .phase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 24px 0; }
+    .phase-panel { border: 1px solid var(--border); }
+    .phase-panel-head { padding: 14px 18px; background: var(--panel-bg); color: #fff; }
+    .phase-panel-head .ph-label { font-size: 10px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 4px; }
+    .phase-panel-head .ph-title { font-size: 15px; font-weight: 600; color: #fff; }
+    .phase-panel-head.done { background: var(--green-text); }
+    .phase-panel-head.current { background: #8a6200; }
+    .phase-panel-head.future { background: #5a6a7a; }
+    .phase-items { padding: 14px 18px; }
+    .phase-item { display: flex; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; align-items: flex-start; }
+    .phase-item:last-child { border-bottom: none; }
+    .phase-item-icon { font-size: 13px; flex-shrink: 0; margin-top: 2px; }
+    .phase-item-text { flex: 1; line-height: 1.5; }
+    .phase-item-text strong { font-weight: 600; color: var(--text); }
+    .phase-item-text span { color: var(--text-muted); font-size: 12px; display: block; margin-top: 1px; }
+
+    /* ── BALM table ── */
+    .balm-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+    .balm-table thead th { background: var(--panel-bg); color: #fff; padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .balm-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .balm-table tr:hover td { background: #fafaf9; }
+    .balm-table .fn { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+    .balm-table .req-name { font-weight: 600; color: var(--text); display: block; }
+    .balm-table .req-answer { color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+    .balm-table tr.f-sep td { background: #f0f4ff; }
+    .balm-table tr.current-row td { background: var(--yellow-bg); }
+
+    /* ── Model stack ── */
+    .model-stack { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .model-card { border: 1px solid var(--border); }
+    .model-card-head { padding: 14px 18px 10px; border-bottom: 1px solid var(--border); }
+    .model-card-head .mc-code { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .model-card-head .mc-name { font-size: 15px; font-weight: 600; color: var(--text); }
+    .model-card-body { padding: 12px 18px; font-family: var(--font-body); font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+    .model-card-foot { padding: 8px 18px 12px; display: flex; align-items: center; gap: 8px; }
+    .model-card-foot a { font-size: 12px; font-weight: 600; color: var(--accent); text-decoration: none; }
+    .model-card-foot a:hover { text-decoration: underline; }
+    .mc-status { font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 2px; }
+    .mc-status.live { background: var(--green-bg); color: var(--green-text); }
+    .mc-status.updating { background: var(--yellow-bg); color: var(--yellow-text); }
+
+    /* ── Document registry ── */
+    .doc-registry { border: 1px solid var(--border); margin: 20px 0; }
+    .doc-registry-head { padding: 12px 18px; background: #fafaf9; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 2fr 3fr 1fr 1fr; gap: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+    .doc-row { display: grid; grid-template-columns: 2fr 3fr 1fr 1fr; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--border); align-items: start; font-size: 14px; }
+    .doc-row:last-child { border-bottom: none; }
+    .doc-row .doc-name { font-weight: 600; color: var(--text); }
+    .doc-row .doc-name a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    .doc-row .doc-name a:hover { text-decoration: underline; }
+    .doc-row .doc-desc { color: var(--text-secondary); font-size: 13px; font-family: var(--font-body); line-height: 1.5; }
+    .doc-row .doc-gate { font-size: 12px; color: var(--text-muted); }
+    .doc-row .doc-date { font-size: 12px; color: var(--text-muted); }
+
+    /* ── Tags ── */
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--tag-radius); border: 1px solid; white-space: nowrap; }
+    .tag-green { background: var(--green-bg); color: var(--green-text); border-color: var(--green-border); }
+    .tag-yellow { background: var(--yellow-bg); color: var(--yellow-text); border-color: var(--yellow-border); }
+    .tag-grey { background: #f1f3f5; color: var(--text-muted); border-color: var(--border); }
+
+    /* ── Inset ── */
+    .inset { border-left: 4px solid var(--accent); background: var(--accent-light); padding: 16px 20px; margin: 20px 0; }
+    .inset p { font-family: var(--font-body); font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 0; }
+    .inset-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--accent); margin-bottom: 6px; }
+
+    /* ── Warning ── */
+    .warning { border-left: 4px solid var(--warning-border); background: var(--warning-bg); padding: 14px 18px; margin: 16px 0; font-size: 14px; line-height: 1.6; }
+
+    /* ── Current work block ── */
+    .current-work { background: var(--yellow-bg); border: 2px solid var(--yellow-border); padding: 24px 28px; margin: 28px 0; }
+    .cw-label { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--yellow-text); margin-bottom: 10px; }
+    .cw-title { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .cw-body { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .cw-progress { margin-top: 16px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .cw-sr { border: 1px solid; padding: 8px 10px; text-align: center; }
+    .cw-sr .sr-code { font-size: 12px; font-weight: 600; display: block; }
+    .cw-sr .sr-name { font-size: 11px; color: var(--text-muted); margin-top: 2px; display: block; }
+    .cw-sr.done { background: var(--green-bg); border-color: var(--green-border); }
+    .cw-sr.done .sr-code { color: var(--green-text); }
+    .cw-sr.active { background: var(--yellow-bg); border-color: var(--yellow-border); }
+    .cw-sr.active .sr-code { color: var(--yellow-text); }
+    .cw-sr.pending { background: #f7f7f6; border-color: var(--border); }
+    .cw-sr.pending .sr-code { color: var(--text-muted); }
+
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="doc-header">
+    <div class="eyebrow">Calmly Resolve · Systems Engineering Process</div>
+    <h1>Guiding the venture through the IVE V-model</h1>
+    <p class="subtitle">Calmly is built using the Integrated Venture Engine (IVE) methodology, mapped to the INCOSE Systems Engineering V-model. This page describes the process, what has been completed at each gate, and where the venture currently sits.</p>
+    <div class="header-meta">
+      <div class="header-meta-item"><strong>Methodology:</strong> IVE — Simanis et al. (2021), Cornell SC Johnson</div>
+      <div class="header-meta-item"><strong>Process standard:</strong> INCOSE Systems Engineering V-model</div>
+      <div class="header-meta-item"><strong>CDR closed:</strong> 22 May 2026</div>
+      <div class="header-meta-item"><strong>FMOS P50:</strong> 69.3% (Stage 4, 17 flows)</div>
+      <div class="header-meta-item"><strong>Last updated:</strong> 26 May 2026</div>
+    </div>
+  </div>
+
+  <!-- Position banner -->
+  <div class="position-banner">
+    <div>
+      <div class="pos-label">Current phase</div>
+      <div class="pos-value">Phase 5 — Implementation</div>
+    </div>
+    <div class="pos-divider"></div>
+    <div>
+      <div class="pos-label">Active gate</div>
+      <div class="pos-value">TRR — Test Readiness Review</div>
+    </div>
+    <div class="pos-divider"></div>
+    <div>
+      <div class="pos-label">Governing question</div>
+      <div class="pos-value" style="font-weight:400;font-family:var(--font-body);font-style:italic;font-size:14px;">Are individual components verified and the workflow integration test ready to run?</div>
+    </div>
+    <div style="margin-left:auto;"><span class="pos-gate">→ TRR IN PROGRESS</span></div>
+  </div>
+
+  <div class="body-content">
+
+    <!-- What is IVE -->
+    <h2 class="section-h2">What is systems engineering — and why IVE?</h2>
+    <p class="section-intro">Systems engineering is a structured, interdisciplinary development process for planning, designing, implementing, and validating a system. It front-loads definition work so that build and validation decisions are made against a verified architecture — not iteratively corrected after the fact. IVE applies this discipline specifically to new venture architectures, where the core risk is not technical failure but commercial architecture failure: the venture works operationally but cannot sustain a market position or pay back capital.</p>
+
+    <div class="inset">
+      <div class="inset-label">IVE — three levels</div>
+      <p>IVE operates at the level of the <strong>Core Business Architecture (CBA)</strong> — the logic that sets both the cost curve and the value curve for an industry. Below this sits the <strong>Business Form Factor (BFF)</strong> — the essential shape the product and operations take given a CBA. Below that sits the <strong>Business Model</strong> — the company's unique strategy for outcompeting others within a shared BFF. IVE intervenes at the CBA/BFF level. Business model decisions follow from a verified BFF, not precede it.</p>
+    </div>
+
+    <p class="section-intro" style="margin-top:0;">The IVE methodology decomposes CBA/BFF design into ten requirements (the BALM), organised across three functions: neutralise the value barrier (F1), normalise the customer routine (F2), and lock in the market position (F3). Each requirement is designed, theorised, and verified before the next begins. The output is a fully specified, internally consistent Business Form Factor — traceable from each requirement to every operational component.</p>
+
+    <!-- V-diagram -->
+    <h2 class="section-h2">The V-model — Calmly's process trajectory</h2>
+    <p class="section-intro">The V-model maps IVE's design-build-validate cycle. The left side decomposes requirements into progressively more detailed design specifications. The base is the build point — where components are constructed. The right side integrates and validates components against the original requirements. Verification plans created during decomposition govern what is tested on the right side.</p>
+
+    <div class="v-diagram">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" font-family="DM Sans, system-ui, sans-serif">
+        <!-- V lines -->
+        <line x1="50" y1="50" x2="450" y2="370" stroke="#dde1e7" stroke-width="2"/>
+        <line x1="450" y1="370" x2="850" y2="50" stroke="#dde1e7" stroke-width="2"/>
+        <!-- Horizontal validation arrows -->
+        <line x1="240" y1="185" x2="660" y2="185" stroke="#dde1e7" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="120" y1="115" x2="780" y2="115" stroke="#dde1e7" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- LEFT SIDE — Design decomposition -->
+        <!-- PCOR -->
+        <rect x="10" y="28" width="160" height="46" rx="0" fill="#e6f4ec" stroke="#a7d4b8" stroke-width="1.5"/>
+        <text x="90" y="46" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">✓ PCOR</text>
+        <text x="90" y="60" text-anchor="middle" font-size="10" fill="#4a5568">PCO — Prime Commercial Opportunity</text>
+        <text x="90" y="72" text-anchor="middle" font-size="9" fill="#718096">Market, customer, scale defined</text>
+
+        <!-- AR -->
+        <rect x="60" y="105" width="160" height="46" rx="0" fill="#e6f4ec" stroke="#a7d4b8" stroke-width="1.5"/>
+        <text x="140" y="123" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">✓ AR</text>
+        <text x="140" y="137" text-anchor="middle" font-size="10" fill="#4a5568">F1 — Neutralise the Value Barrier</text>
+        <text x="140" y="149" text-anchor="middle" font-size="9" fill="#718096">R1–R3 + FIT Verifier PASS</text>
+
+        <!-- PDR -->
+        <rect x="120" y="182" width="160" height="46" rx="0" fill="#e6f4ec" stroke="#a7d4b8" stroke-width="1.5"/>
+        <text x="200" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">✓ PDR</text>
+        <text x="200" y="214" text-anchor="middle" font-size="10" fill="#4a5568">F2+F3 — All 10 BALM requirements</text>
+        <text x="200" y="226" text-anchor="middle" font-size="9" fill="#718096">Verification + consistency audit PASS</text>
+
+        <!-- CDR -->
+        <rect x="220" y="295" width="160" height="46" rx="0" fill="#e6f4ec" stroke="#a7d4b8" stroke-width="1.5"/>
+        <text x="300" y="313" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">✓ CDR</text>
+        <text x="300" y="327" text-anchor="middle" font-size="10" fill="#4a5568">Design Definition</text>
+        <text x="300" y="339" text-anchor="middle" font-size="9" fill="#718096">CTM · AOM · ARM · Fin-Sim · RTM · ICDs</text>
+
+        <!-- BUILD POINT -->
+        <rect x="370" y="353" width="160" height="40" rx="0" fill="#0f2744" stroke="#0f2744" stroke-width="1.5"/>
+        <text x="450" y="369" text-anchor="middle" font-size="11" font-weight="600" fill="#ffffff">▼ BUILD POINT</text>
+        <text x="450" y="383" text-anchor="middle" font-size="10" fill="rgba(255,255,255,0.6)">CDR closed 22 May 2026</text>
+
+        <!-- RIGHT SIDE — Integration and validation -->
+        <!-- Phase 5 Implementation -->
+        <rect x="520" y="295" width="160" height="46" rx="0" fill="#fef9e6" stroke="#f0d98a" stroke-width="2"/>
+        <text x="600" y="313" text-anchor="middle" font-size="11" font-weight="600" fill="#854d0e">→ Phase 5</text>
+        <text x="600" y="327" text-anchor="middle" font-size="10" fill="#4a5568">Implementation</text>
+        <text x="600" y="339" text-anchor="middle" font-size="9" fill="#718096">Build + verify individual components</text>
+
+        <!-- TRR -->
+        <rect x="620" y="182" width="160" height="46" rx="0" fill="#fef9e6" stroke="#f0d98a" stroke-width="2"/>
+        <text x="700" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="#854d0e">→ TRR</text>
+        <text x="700" y="214" text-anchor="middle" font-size="10" fill="#4a5568">Test Readiness Review</text>
+        <text x="700" y="226" text-anchor="middle" font-size="9" fill="#718096">Workflow integration test ready</text>
+
+        <!-- ORR -->
+        <rect x="720" y="105" width="160" height="46" rx="0" fill="#f1f3f5" stroke="#dde1e7" stroke-width="1.5"/>
+        <text x="800" y="123" text-anchor="middle" font-size="11" font-weight="600" fill="#718096">· ORR</text>
+        <text x="800" y="137" text-anchor="middle" font-size="10" fill="#718096">Operational Readiness Review</text>
+        <text x="800" y="149" text-anchor="middle" font-size="9" fill="#9aa5b4">MRP — real customers, real conditions</text>
+
+        <!-- CURRENT POSITION marker -->
+        <circle cx="600" cy="318" r="6" fill="#d4820a" stroke="#fff" stroke-width="2"/>
+        <text x="690" y="270" text-anchor="middle" font-size="11" font-weight="600" fill="#d4820a">← YOU ARE HERE</text>
+
+        <!-- Validation arrows labels -->
+        <text x="450" y="178" text-anchor="middle" font-size="9" fill="#9aa5b4">verifies against</text>
+        <text x="450" y="108" text-anchor="middle" font-size="9" fill="#9aa5b4">verifies against</text>
+      </svg>
+    </div>
+
+    <!-- Gate status tracker -->
+    <h2 class="section-h2">Decision gates</h2>
+    <p class="section-intro">Each gate controls progression between phases. A gate passes when its governing question is fully answered with documented, defensible evidence. The gate sequence is load-bearing — CDR-quality design on an incomplete PDR produces the wrong system.</p>
+
+    <div class="gate-row">
+      <div class="gate-cell passed">
+        <div class="gate-inner">
+          <span class="gate-code">✓ PCOR</span>
+          <span class="gate-name-small">PCO Review</span>
+          <span class="gate-q">Is this the right problem, for the right customer, at a scale that can pay back capital?</span>
+        </div>
+      </div>
+      <div class="gate-cell passed">
+        <div class="gate-inner">
+          <span class="gate-code">✓ AR</span>
+          <span class="gate-name-small">Architecture Review</span>
+          <span class="gate-q">Is there a plausible F1 architecture with positive FMOS headroom?</span>
+        </div>
+      </div>
+      <div class="gate-cell passed">
+        <div class="gate-inner">
+          <span class="gate-code">✓ PDR</span>
+          <span class="gate-name-small">Preliminary Design Review</span>
+          <span class="gate-q">Are all 10 BALM requirements designed, FMOS ≥60%, and consistency audit PASS?</span>
+        </div>
+      </div>
+      <div class="gate-cell passed">
+        <div class="gate-inner">
+          <span class="gate-code">✓ CDR</span>
+          <span class="gate-name-small">Critical Design Review</span>
+          <span class="gate-q">Are requirements decomposed to components, RTM complete, interfaces defined, build sequence agreed?</span>
+        </div>
+      </div>
+      <div class="gate-cell current">
+        <div class="gate-inner">
+          <span class="gate-code">→ TRR</span>
+          <span class="gate-name-small">Test Readiness Review</span>
+          <span class="gate-q">Are individual components verified and the workflow integration test ready to run?</span>
+        </div>
+      </div>
+      <div class="gate-cell future">
+        <div class="gate-inner">
+          <span class="gate-code">· ORR</span>
+          <span class="gate-name-small">Operational Readiness Review</span>
+          <span class="gate-q">Has the MRP validated unit economics and does NPV exceed the hurdle rate?</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- What was done at each gate -->
+    <h2 class="section-h2">What was produced at each gate</h2>
+    <p class="section-intro">Each gate closes when its exit criteria are met and the corresponding artifacts are produced and verified. The left side of the V is now complete.</p>
+
+    <div class="phase-grid">
+      <div class="phase-panel">
+        <div class="phase-panel-head done">
+          <div class="ph-label">PCOR · Passed</div>
+          <div class="ph-title">Phase 1 — Stakeholder needs</div>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>PCO selected</strong><span>UK civil disputes £200–£25k. Power asymmetry, low access to resolution.</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>TAM established</strong><span>~750k qualifying disputes/year. First-principles filter passed.</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>High-import outcome defined</strong><span>Resolve the dispute with certainty, speed, and without a solicitor.</span></div></div>
+        </div>
+      </div>
+
+      <div class="phase-panel">
+        <div class="phase-panel-head done">
+          <div class="ph-label">AR · Passed</div>
+          <div class="ph-title">Phase 2 — F1 architecture (R1–R3)</div>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R1 — Workaround Strategy</strong><span>Pool model circumvents at-scale cost bottleneck. EV reports under proprietary methodology, independently endorsed (Spence 1973).</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R2 — Efficacy</strong><span>Key monetizable cost: financial loss + certainty of outcome. Pool insurance removes the fear of early loss.</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R3 — Scaling</strong><span>PP-C (purchase-pursue-as-principal) removes working capital bottleneck. FMOS ≥60% confirmed at FIT gate.</span></div></div>
+        </div>
+      </div>
+
+      <div class="phase-panel">
+        <div class="phase-panel-head done">
+          <div class="ph-label">PDR · Passed</div>
+          <div class="ph-title">Phase 3 — F2+F3 architecture (R4–R10)</div>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R4–R6 — Normalise customer routine</strong><span>Pool insurance resolves Want Block. ITP-mediated adoption resolves Use Block. Defendant deferred settlement resolves Buy Block.</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R7 — Gateway partners</strong><span>ITPs (housing associations, HR departments, marketplaces, payment providers) as two-sided originators. <em>Architecture in progress — see current work.</em></span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>R8–R10 — Lock in market position</strong><span>EV calibration data as switching cost. Assessment body as scarce resource. Data moat from claim volume.</span></div></div>
+        </div>
+      </div>
+
+      <div class="phase-panel">
+        <div class="phase-panel-head done">
+          <div class="ph-label">CDR · Passed · 22 May 2026</div>
+          <div class="ph-title">Phase 4 — Design definition</div>
+        </div>
+        <div class="phase-items">
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>CTM v3</strong><span>Customer Transformation Model. 4 phases × 7 dimensions. Claimant, Defendant, ITP, Operator tracks.</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>AOM v4 + ARM</strong><span>38 LMUs. Cost floor £258/claim (PVC £157 + RC £38 + SC/IC £63).</span></div></div>
+          <div class="phase-item"><span class="phase-item-icon">✓</span><div class="phase-item-text"><strong>Financial simulation — Stage 4</strong><span>FMOS P50 69.3%. 17 flow specs. 12 ICDs. RTM complete (R1–R10 all traced).</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current work -->
+    <div class="current-work">
+      <div class="cw-label">Currently building — Phase 5 · TRR preparation</div>
+      <div class="cw-title">BALM C7 — Activate Gateway Partners (R7 session)</div>
+      <div class="cw-body">
+        Completing the R7 architecture session. Five sub-requirements govern this challenge: customer segments and routines (SR1), gateway partner identification (SR2), integration theory of change (SR3), integration strategy (SR4), and cumulative BFF C1–C7 (SR5). SR1–SR4 are complete and locked into the VDR. SR5 (full BFF synthesis) is next, followed by CTM and AOM updates to reflect the completed F2 architecture.
+      </div>
+      <div class="cw-progress">
+        <div class="cw-sr done"><span class="sr-code">✓ SR1</span><span class="sr-name">Segments &amp; routines</span></div>
+        <div class="cw-sr done"><span class="sr-code">✓ SR2</span><span class="sr-name">Gateway partner</span></div>
+        <div class="cw-sr done"><span class="sr-code">✓ SR3</span><span class="sr-name">Integration ToC</span></div>
+        <div class="cw-sr done"><span class="sr-code">✓ SR4</span><span class="sr-name">Integration strategy</span></div>
+        <div class="cw-sr active"><span class="sr-code">→ SR5</span><span class="sr-name">BFF C1–C7</span></div>
+      </div>
+    </div>
+
+    <!-- The 10 BALM requirements -->
+    <h2 class="section-h2">The 10 BALM requirements</h2>
+    <p class="section-intro">The BALM decomposes the venture's core business architecture into ten requirements across three functions. Each requirement is designed to a specific IVE standard and carries a named Theory of Change. The cumulative BFF statement after each function represents the current architecture in full.</p>
+
+    <table class="balm-table">
+      <thead>
+        <tr>
+          <th style="width:60px;">#</th>
+          <th style="width:100px;">Function</th>
+          <th>Requirement</th>
+          <th>Calmly solution</th>
+          <th style="width:90px;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="fn">R1</span></td>
+          <td><span class="fn">F1</span></td>
+          <td><span class="req-name">Circumvent at-scale cost bottleneck</span><span class="req-answer">What is the conventional operational model, and how is the CLO circumvented?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Litigation pool replaces adversarial bilateral model. Assessment under proprietary EV methodology, independently endorsed. Spence (1973) signalling mechanism.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R2</span></td>
+          <td><span class="fn">F1</span></td>
+          <td><span class="req-name">Eliminate customer's biggest monetizable cost</span><span class="req-answer">What is the KMC? How does the product eliminate it?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">KMC: financial loss + certainty of outcome. Pool insurance removes the fear of early loss. Attendant routine: join → contribute → pursue collectively.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R3</span></td>
+          <td><span class="fn">F1</span></td>
+          <td><span class="req-name">Circumvent working capital bottleneck</span><span class="req-answer">What is the CLO II? How is working capital freed?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">PP-C: Calmly purchases civil claims at 40% of face value, pursues as principal. Removes financing obligation from pool. Casehub v Wolf Cola [2017] — commercial interest test passed.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr class="f-sep">
+          <td><span class="fn">R4</span></td>
+          <td><span class="fn">F2</span></td>
+          <td><span class="req-name">Circumvent customer doubt about value</span><span class="req-answer">What is the Want Block? How is it resolved?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Want Block: will the pool survive long enough for EV to materialise? Pool insurance resolves this. Framing theory (Kahneman &amp; Tversky): loss frame at point of final refusal.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R5</span></td>
+          <td><span class="fn">F2</span></td>
+          <td><span class="req-name">Eliminate biggest learning disruption</span><span class="req-answer">What is the Use Block? How is it reduced?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Use Block: product requires trust in an unknown operator for a high-stakes decision. ITP-mediated adoption: ITP's existing authority carries the referral. Rogers (2003) — trusted intermediary as adoption mechanism.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R6</span></td>
+          <td><span class="fn">F2</span></td>
+          <td><span class="req-name">Circumvent cash flow constraint</span><span class="req-answer">What is the Buy Block? How is cash flow managed?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Defendant pays deferred settlement (14–21 days post-notification). Claimant contribution timed after outcome certainty. Amortisation via outcome-contingent structure.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr class="current-row">
+          <td><span class="fn">R7</span></td>
+          <td><span class="fn">F2</span></td>
+          <td><span class="req-name">Activate gateway partners</span><span class="req-answer">Who are the gateway partners? How are they activated?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">ITPs (housing associations, HR departments, online marketplaces, payment providers). Unifying mission: build a bigger, better ecosystem. Guiding policy: replacement, not addition. Crux: defendant reach through existing ITP authority. <em>SR5 in progress.</em></td>
+          <td><span class="tag tag-yellow">→ In progress</span></td>
+        </tr>
+        <tr class="f-sep">
+          <td><span class="fn">R8</span></td>
+          <td><span class="fn">F3</span></td>
+          <td><span class="req-name">Create a switching cost</span><span class="req-answer">What accretes value over time? What is lost on switching?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">EV calibration data: ITP-specific outcomes dataset is non-portable and compounds with tenure and claim volume. Switching destroys the accuracy edge that justifies the EV methodology.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R9</span></td>
+          <td><span class="fn">F3</span></td>
+          <td><span class="req-name">Circumvent supplier/partner leverage</span><span class="req-answer">What is the scarce resource? How is it controlled?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Independent assessment body (university law clinic or equivalent). Scarcity manufactured through accreditation + proprietary methodology licence. Portfolio diversification (≤30% concentration per ITP).</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+        <tr>
+          <td><span class="fn">R10</span></td>
+          <td><span class="fn">F3</span></td>
+          <td><span class="req-name">Establish a competitive moat</span><span class="req-answer">What makes the position structurally durable?</span></td>
+          <td style="font-size:13px;color:var(--text-secondary);">Data moat: claim outcomes dataset grows with volume, enabling EV accuracy competitors cannot replicate without equivalent history. Network effect: more ITPs → more claim types → better EV calibration.</td>
+          <td><span class="tag tag-green">✓ Complete</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Model stack -->
+    <h2 class="section-h2">The model stack</h2>
+    <p class="section-intro">Six models constitute the full design definition. Each model has a defined input set, produces specific outputs, and connects to at least one other model in the stack. The CDM (Canonical Data Model) governs all inputs and confidence tiers — the financial simulation reads from it rather than maintaining independent assumptions.</p>
+
+    <div class="model-stack">
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">VDR</div>
+          <div class="mc-name">Venture Design Record</div>
+        </div>
+        <div class="model-card-body">The canonical architecture document. Contains all 10 BALM requirements in full — definitions, theories of change, strategies, cumulative BFF statements. The source of truth for all design decisions. Every other model is derived from it.</div>
+        <div class="model-card-foot"><span class="mc-status live">Live</span> <a href="calmlyresolve-venture-design-record-2026-05-18.html">Open VDR →</a></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">CDM</div>
+          <div class="mc-name">Canonical Data Model</div>
+        </div>
+        <div class="model-card-body">All input assumptions with sources and confidence tiers (T1–T4). Segment definitions locked 26 May 2026. The financial simulation reads from CDM — no independent assumptions. Head of Finance governs all updates.</div>
+        <div class="model-card-foot"><span class="mc-status live">Live</span> <a href="calmlyresolve-cdm-2026-05-25.html">Open CDM →</a></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">CTM</div>
+          <div class="mc-name">Customer Transformation Model</div>
+        </div>
+        <div class="model-card-body">Maps customer state changes across 4 phases × 7 dimensions. Tracks Claimant, Defendant, ITP (Track B), and Pool Operator. v3 reflects ITP gateway architecture (18 May 2026). Update required after C7 SR5.</div>
+        <div class="model-card-foot"><span class="mc-status updating">Update pending</span> <a href="calmly-ctm-v3.html">Open CTM →</a></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">AOM</div>
+          <div class="mc-name">At-Scale Operational Model</div>
+        </div>
+        <div class="model-card-body">38 LMUs. All actors, flows, and product nodes (CP1, WP1–6, PP1, PartP1). ARM cost structure derived from AOM. v4 is current. Update required after C7 SR5 to reflect full ITP integration layer.</div>
+        <div class="model-card-foot"><span class="mc-status updating">Update pending</span> <a href="calmly-cdr-package-2026-05-22.html">Open CDR Package →</a></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">ARM</div>
+          <div class="mc-name">At-Scale Resourcing Model</div>
+        </div>
+        <div class="model-card-body">Cost structure derived from AOM. Four layers: PVC £157.37/claim, RC £37.61/claim, SC+IC/HQ £62.26/claim. Total floor £258/claim at 38 LMUs. Feeds financial simulation as cost floor input.</div>
+        <div class="model-card-foot"><span class="mc-status live">Live</span> <a href="calmly-cdr-package-2026-05-22.html">Open ARM →</a></div>
+      </div>
+
+      <div class="model-card">
+        <div class="model-card-head">
+          <div class="mc-code">Fin-Sim</div>
+          <div class="mc-name">Financial Simulation</div>
+        </div>
+        <div class="model-card-body">17 flow specs. Stage 4 results: FMOS P50 69.3%, P10 48.2%, P90 87.4% (10,000 iterations). Reads from CDM. Per-segment penetration rates not yet split — flagged for Head of Finance.</div>
+        <div class="model-card-foot"><span class="mc-status live">Live</span> <a href="calmly-cdr-package-2026-05-22.html">Open Fin-Sim →</a></div>
+      </div>
+    </div>
+
+    <!-- Document registry -->
+    <h2 class="section-h2">Document registry</h2>
+    <p class="section-intro">All live design artifacts, ordered by gate. Each document is versioned. The VDR is the source of truth — other documents are derived from it and must be updated after each VDR change.</p>
+
+    <div class="doc-registry">
+      <div class="doc-registry-head">
+        <div>Document</div>
+        <div>Purpose</div>
+        <div>Gate</div>
+        <div>Date</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmlyresolve-venture-design-record-2026-05-18.html">Venture Design Record (VDR)</a></div>
+        <div class="doc-desc">Canonical architecture. All 10 BALM requirements, theories of change, strategies, and cumulative BFF statements. Source of truth for the design.</div>
+        <div class="doc-gate">PDR · CDR</div>
+        <div class="doc-date">18 May 2026<br><span style="font-size:11px;color:var(--green-text);">Updated 26 May 2026</span></div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmlyresolve-cdm-2026-05-25.html">Canonical Data Model (CDM)</a></div>
+        <div class="doc-desc">All input assumptions with sources and confidence tiers. Segment definitions (S-001 to S-005) locked 26 May 2026. Governs financial simulation inputs.</div>
+        <div class="doc-gate">CDR</div>
+        <div class="doc-date">25 May 2026<br><span style="font-size:11px;color:var(--green-text);">Updated 26 May 2026</span></div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmly-ctm-v3.html">Customer Transformation Model v3</a></div>
+        <div class="doc-desc">Customer state changes across 4 phases × 7 dimensions. ITP Track B rewritten for gateway partner architecture. Update required after C7 SR5.</div>
+        <div class="doc-gate">CDR</div>
+        <div class="doc-date">26 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmly-cdr-package-2026-05-22.html">CDR Package</a></div>
+        <div class="doc-desc">Complete design definition package. AOM v4, ARM, 17 flow specs, 12 ICDs, RTM, Capella model reference, build sequence. Gate: CDR closed 22 May 2026.</div>
+        <div class="doc-gate">CDR ✓</div>
+        <div class="doc-date">22 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmly-design-definition-2026-05-22.html">Design Definition</a></div>
+        <div class="doc-desc">17 flow specifications in full 11-field format. All actors, flows, acceptance criteria, interface definitions. Source for build sequencing.</div>
+        <div class="doc-gate">CDR ✓</div>
+        <div class="doc-date">22 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="conductor-2026-05-23.html">IVE Conductor Report</a></div>
+        <div class="doc-desc">Gate status, blockers, next action, horizon table. Produced at session start. This process page supersedes it for methodology reference; the conductor report is the live status check.</div>
+        <div class="doc-gate">TRR</div>
+        <div class="doc-date">23 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmlyresolve-cdm-2026-05-25.html">BALM Verification Report</a></div>
+        <div class="doc-desc">All 10 BALM challenges assessed against IVE completeness standards. All 10 COMPLETE. No Partial or Open items at PDR closure.</div>
+        <div class="doc-gate">PDR ✓</div>
+        <div class="doc-date">21 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmly-cdr-package-2026-05-22.html">Consistency Audit</a></div>
+        <div class="doc-desc">Cross-requirement dependency check across 9 known dependency pairs. Verdict: PASS. No material contradictions. Two open conditions (ITP pilot, PP-C legal opinion).</div>
+        <div class="doc-gate">PDR ✓</div>
+        <div class="doc-date">20 May 2026</div>
+      </div>
+      <div class="doc-row">
+        <div class="doc-name"><a href="calmlyresolve-design-note-itp-trust-signal-2026-05-26.md">Design Note — ITP Trust Signal</a></div>
+        <div class="doc-desc">Hypothesis: Calmly is the fair relationship guarantee ITPs embed in their value proposition — making their ecosystem more trustworthy to join. PayPal analogy. Payment providers re-added to ITP candidate list.</div>
+        <div class="doc-gate">TRR</div>
+        <div class="doc-date">26 May 2026</div>
+      </div>
+    </div>
+
+    <!-- Open conditions -->
+    <h2 class="section-h2">Open conditions</h2>
+    <p class="section-intro">Two conditions from the CDR remain open. Neither blocks TRR preparation, but both must be resolved before ORR.</p>
+
+    <div class="warning" style="margin-bottom:12px;">
+      <strong>Open condition 1 — PP-C legal opinion.</strong> Calmly's purchase-and-pursue model (PP-C) is architecturally sound (Casehub v Wolf Cola [2017], Trendtex commercial interest test). A qualified solicitor's opinion confirming SRA compliance is required before any live claim is processed. Legal instruction brief drafted — awaiting Tom to instruct a solicitor. Deadline: 7 June 2026.
+    </div>
+    <div class="warning">
+      <strong>Open condition 2 — ITP pilot validation.</strong> The ITP gateway architecture (R7) is designed but not field-validated. The pilot must confirm that ITPs will actively refer both claimants and defendants through their existing communication infrastructure. Priority ITPs: Checkatrade, Citizens Advice, Rated People, StepChange. O1 deadline: 19 July 2026.
+    </div>
+
+    <p style="font-family:var(--font-body);font-size:13px;color:var(--text-muted);margin-top:40px;border-top:1px solid var(--border);padding-top:20px;">
+      Calmly Resolve · IVE Systems Engineering Process · Last updated 26 May 2026 · Source of truth: VDR v4.x
+    </p>
+
+  </div><!-- /body-content -->
+</div><!-- /container -->
+</body>
+</html>
