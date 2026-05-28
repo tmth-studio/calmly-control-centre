@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P8 — Secondary Market Portal | Calmly Exchange</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --sidebar-bg: #0f2744;
+      --sidebar-border: #1c3a5e;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1f35; color: var(--text); font-family: var(--font-ui); font-size: 14px; line-height: 1.5; }
+
+    /* Prototype nav */
+    .proto-nav {
+      background: #1a2a3a;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-bottom: 2px solid #0d1a28;
+      position: relative;
+      z-index: 100;
+    }
+    .proto-nav-label {
+      color: #6b8096;
+      font-size: 11px;
+      font-family: var(--font-ui);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-right: 16px;
+      border-right: 1px solid #2d4060;
+      margin-right: 8px;
+    }
+    .proto-tab {
+      background: none;
+      border: none;
+      color: #6b8096;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+    }
+    .proto-tab:hover { color: #a0b8cc; }
+    .proto-tab.active { color: #e0eaf4; border-bottom-color: #4299e1; }
+
+    /* Screen containers */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ============ SCREEN 1 — Login ============ */
+    .login-page {
+      min-height: calc(100vh - 88px);
+      background: linear-gradient(160deg, #0d1f35 0%, #0f2744 60%, #0a1628 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+    .login-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 40px;
+      width: 100%;
+      max-width: 440px;
+      backdrop-filter: blur(4px);
+    }
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .login-header .logo-text { color: #e0eaf4; font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    .login-header .logo-sub { color: #6b8096; font-size: 13px; margin-top: 4px; }
+    .login-header .login-title { color: #a0b8cc; font-size: 14px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: #a0b8cc; margin-bottom: 6px; letter-spacing: 0.02em; }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: #e0eaf4;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      border-radius: 3px;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus { outline: none; border-color: #4299e1; background: rgba(255,255,255,0.09); }
+    .form-input.prefilled { color: #90cdf4; }
+    .form-input.redacted { color: transparent; background: rgba(255,255,255,0.06); background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.15) 0px, rgba(255,255,255,0.15) 8px, transparent 8px, transparent 12px); letter-spacing: 0.3em; }
+    .mfa-inputs { display: flex; gap: 8px; }
+    .mfa-digit { flex: 1; padding: 10px; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #e0eaf4; font-family: 'Courier New', monospace; font-size: 18px; font-weight: 600; border-radius: 3px; }
+    .role-selector { margin: 20px 0; padding: 16px; background: rgba(66,153,225,0.1); border: 1px solid rgba(66,153,225,0.3); border-radius: 3px; }
+    .role-selector .role-label { font-size: 12px; color: #90cdf4; font-weight: 600; margin-bottom: 8px; }
+    .role-item { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 13px; color: #e0eaf4; }
+    .role-item input { accent-color: #4299e1; }
+    .role-note { font-size: 11px; color: #6b8096; margin-top: 8px; }
+    .login-btn { width: 100%; padding: 12px; background: #1f4fa8; color: #fff; border: none; border-radius: 3px; font-family: var(--font-ui); font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: background 0.15s; }
+    .login-btn:hover { background: #2563e8; }
+    .auth-note { text-align: center; font-size: 11px; color: #4a6080; margin-top: 16px; }
+
+    /* ============ APP SHELL (Screens 2-4) ============ */
+    .app-shell { display: flex; height: calc(100vh - 88px); overflow: hidden; }
+    .sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--sidebar-border);
+    }
+    .sidebar-logo { padding: 18px 16px 14px; border-bottom: 1px solid var(--sidebar-border); }
+    .sidebar-logo .logo { color: #e0eaf4; font-size: 15px; font-weight: 600; }
+    .sidebar-logo .logo-sub { color: #6b8096; font-size: 11px; margin-top: 2px; }
+    .sidebar-role { padding: 10px 16px; border-bottom: 1px solid var(--sidebar-border); }
+    .sidebar-role .role-badge { display: inline-block; padding: 3px 8px; background: rgba(66,153,225,0.15); border: 1px solid rgba(66,153,225,0.3); color: #90cdf4; font-size: 11px; font-weight: 600; border-radius: 2px; margin-bottom: 4px; }
+    .sidebar-role .org-name { color: #a0b8cc; font-size: 12px; font-weight: 600; }
+    .sidebar-role .user-name { color: #6b8096; font-size: 11px; }
+    .sidebar-nav { padding: 8px 0; flex: 1; }
+    .sidebar-nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 16px; color: #6b8096; font-size: 13px; cursor: pointer; transition: all 0.1s; }
+    .sidebar-nav-item:hover { background: rgba(255,255,255,0.05); color: #a0b8cc; }
+    .sidebar-nav-item.active { background: rgba(66,153,225,0.12); color: #90cdf4; border-left: 3px solid #4299e1; padding-left: 13px; }
+    .main-content { flex: 1; overflow-y: auto; background: #f0f3f7; }
+    .page-header { background: var(--panel-bg); padding: 16px 28px; border-bottom: 1px solid var(--sidebar-border); display: flex; align-items: center; justify-content: space-between; }
+    .page-header h1 { color: #e0eaf4; font-size: 18px; font-weight: 600; }
+    .page-header .header-sub { color: #6b8096; font-size: 12px; margin-top: 2px; }
+    .page-header .header-date { color: #6b8096; font-size: 12px; }
+    .page-body { padding: 24px; }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); padding: 16px 18px; }
+    .stat-card .stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+    .stat-card .stat-value { font-size: 26px; font-weight: 600; color: var(--text); }
+    .stat-card .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .stat-card .stat-good { color: #166534; }
+    .stat-card .stat-warn { color: #d4820a; }
+
+    /* Data tables */
+    .data-table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: 13px; }
+    .data-table thead th { padding: 9px 14px; text-align: left; background: #f8f9fa; border-bottom: 2px solid var(--border); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); white-space: nowrap; }
+    .data-table tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: #f8f9fa; }
+
+    /* Cards */
+    .content-card { background: var(--surface); border: 1px solid var(--border); padding: 20px 24px; margin-bottom: 20px; }
+    .content-card h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+    .content-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+
+    /* Navy panel */
+    .navy-panel { background: var(--panel-bg); color: #fff; padding: 22px 24px; margin-bottom: 20px; }
+    .navy-panel h2 { color: #fff; font-size: 16px; margin-bottom: 6px; }
+    .navy-panel p { color: rgba(255,255,255,0.75); font-size: 14px; line-height: 1.6; font-family: var(--font-ui); }
+    .navy-panel .key-stat { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.15); display: flex; gap: 32px; }
+    .navy-panel .key-stat-item .ks-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.04em; }
+    .navy-panel .key-stat-item .ks-value { font-size: 20px; font-weight: 600; color: #90cdf4; margin-top: 2px; }
+
+    /* Inset block */
+    .inset { background: var(--accent-light); border-left: 4px solid var(--inset-border); padding: 14px 18px; margin-bottom: 20px; font-size: 14px; color: var(--text); }
+    .inset p { font-family: var(--font-ui); margin-bottom: 0; font-size: 14px; }
+    .inset strong { color: var(--accent); }
+
+    /* Tags */
+    .tag { display: inline-block; padding: 2px 7px; border-radius: var(--tag-radius); font-size: 11px; font-weight: 500; }
+    .tag-green { background: #e6f4ec; color: #166534; border: 1px solid #a7d4b8; }
+    .tag-blue { background: var(--accent-light); color: var(--accent); border: 1px solid #b8c8e8; }
+    .tag-yellow { background: #fef9e6; color: #854d0e; border: 1px solid #f0d98a; }
+    .tag-grey { background: #f1f3f5; color: #4a5568; border: 1px solid #d0d5dd; }
+    .tag-red { background: #fde8e8; color: #991b1b; border: 1px solid #f0b4b4; }
+
+    /* Bar chart (CSS) */
+    .bar-chart { display: flex; align-items: flex-end; gap: 20px; height: 120px; padding: 0 0 0 0; margin-bottom: 16px; }
+    .bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+    .bar-col { width: 100%; background: var(--accent); border-radius: 2px 2px 0 0; transition: height 0.3s; }
+    .bar-label { font-size: 12px; color: var(--text-muted); text-align: center; }
+    .bar-value { font-size: 13px; font-weight: 600; color: var(--text); text-align: center; }
+
+    /* Position table */
+    .position-stat { background: var(--bg); border: 1px solid var(--border); padding: 10px 14px; font-size: 13px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+    .position-stat .ps-label { color: var(--text-secondary); }
+    .position-stat .ps-value { font-weight: 600; }
+
+    /* Fee note */
+    .fee-note { background: #f8f9fa; border: 1px solid var(--border); padding: 12px 16px; font-size: 13px; color: var(--text-secondary); margin-top: 12px; }
+    .fee-note strong { color: var(--text); }
+
+    /* Switching cost block */
+    .switching-card { background: var(--panel-bg); color: #fff; padding: 24px; margin-bottom: 20px; }
+    .switching-card h2 { color: #fff; font-size: 16px; margin-bottom: 10px; }
+    .switching-card p { color: rgba(255,255,255,0.75); font-size: 14px; line-height: 1.6; font-family: var(--font-ui); margin-bottom: 0; }
+    .switching-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 18px; border-top: 1px solid rgba(255,255,255,0.12); padding-top: 18px; }
+    .sw-metric .sw-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+    .sw-metric .sw-value { font-size: 18px; font-weight: 600; color: #90cdf4; }
+    .sw-metric .sw-note { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+    /* Calibration mini bar chart */
+    .calib-chart { display: flex; gap: 0; align-items: flex-end; height: 80px; margin-bottom: 8px; }
+    .calib-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .calib-bar { width: 60%; border-radius: 2px 2px 0 0; }
+    .calib-bar-label { font-size: 11px; color: var(--text-muted); }
+    .calib-bar-value { font-size: 12px; font-weight: 600; color: var(--text); }
+    .calib-bar-count { font-size: 10px; color: var(--text-muted); }
+
+    /* Annotation strip */
+    .annotation-strip {
+      background: #f1f3f5;
+      border-top: 2px solid #d0d5dd;
+      padding: 14px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 11.5px;
+      color: #4a5568;
+      line-height: 1.7;
+    }
+    .annotation-strip .ann-label { font-weight: 700; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: #718096; margin-bottom: 6px; }
+    .annotation-strip .ann-row { margin-bottom: 3px; }
+    .annotation-strip .ann-pass { color: #166534; }
+    .annotation-strip .ann-fail { color: #991b1b; }
+
+    hr.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+  </style>
+</head>
+<body>
+
+<!-- Prototype navigation -->
+<nav class="proto-nav">
+  <span class="proto-nav-label">P8 — Secondary market portal</span>
+  <button class="proto-tab active" onclick="showScreen(0, this)">S1 — Login</button>
+  <button class="proto-tab" onclick="showScreen(1, this)">S2 — EV portfolio</button>
+  <button class="proto-tab" onclick="showScreen(2, this)">S3 — Live positions</button>
+  <button class="proto-tab" onclick="showScreen(3, this)">S4 — Calibration</button>
+</nav>
+
+<!-- ===================== SCREEN 1 — Login ===================== -->
+<div class="screen active" id="screen-0">
+  <div class="login-page">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-text">Calmly Resolve</div>
+        <div class="logo-sub">Exchange Marketplace</div>
+        <div class="login-title">Secondary market participant access<br>Authorised institutions only</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Organisation name</label>
+        <input class="form-input prefilled" type="text" value="Shield Underwriting Ltd" readonly>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Authorised user email</label>
+        <input class="form-input prefilled" type="text" value="authorised@shieldunderwriting.com" readonly>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Access token</label>
+        <input class="form-input redacted" type="text" value="REDACTED_TOKEN_VALUE" readonly>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Multi-factor authentication — 6-digit code</label>
+        <div class="mfa-inputs">
+          <input class="mfa-digit" type="text" maxlength="1" value="4">
+          <input class="mfa-digit" type="text" maxlength="1" value="8">
+          <input class="mfa-digit" type="text" maxlength="1" value="2">
+          <input class="mfa-digit" type="text" maxlength="1" value="1">
+          <input class="mfa-digit" type="text" maxlength="1" value="0">
+          <input class="mfa-digit" type="text" maxlength="1" value="6">
+        </div>
+      </div>
+
+      <div class="role-selector">
+        <div class="role-label">Role — access after authentication</div>
+        <div class="role-item">
+          <input type="radio" name="role" id="role-pool" checked>
+          <label for="role-pool"><strong>Pool insurer (C-track 1)</strong> — Shield Underwriting Ltd ✓</label>
+        </div>
+        <div class="role-item" style="opacity:0.4;pointer-events:none">
+          <input type="radio" name="role" id="role-buyout" disabled>
+          <label for="role-buyout">Buyout operator (C-track 2) — not authorised for this account</label>
+        </div>
+        <div class="role-note">Your role determines your data access. Pool insurer and buyout operator data sets are structurally isolated. Shield Underwriting Ltd is authorised as pool insurer only.</div>
+      </div>
+
+      <button class="login-btn" onclick="showScreen(1, document.querySelectorAll('.proto-tab')[1])">Access marketplace →</button>
+      <div class="auth-note">Authorised under Calmly Exchange Participation Agreement v2.1 · Role isolation enforced at data layer</div>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P8-S1</div>
+    <div class="ann-row">Flow ref: SMP-P1 · C8-SMP &nbsp;|&nbsp; T4: U-005 (Marketplace access fee — UNTESTED) · U-004 (FMOS)</div>
+    <div class="ann-row ann-pass">PASS: Pool insurer and buyout operator confirm their access is role-appropriate and that the other party's positions are not visible — role isolation holds</div>
+    <div class="ann-row ann-fail">FAIL: Either party can see the other party's positions — independence constraint between pool insurer and buyout operator is violated</div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 2 — EV portfolio ===================== -->
+<div class="screen" id="screen-1">
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo">Calmly Exchange</div>
+        <div class="logo-sub">Marketplace portal</div>
+      </div>
+      <div class="sidebar-role">
+        <div class="role-badge">Pool insurer — C-track 1</div>
+        <div class="org-name">Shield Underwriting Ltd</div>
+        <div class="user-name">authorised@shieldunderwriting.com</div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-nav-item active">📊 EV portfolio</div>
+        <div class="sidebar-nav-item">📁 My positions</div>
+        <div class="sidebar-nav-item">📈 Calibration</div>
+        <div class="sidebar-nav-item">📄 Reports</div>
+        <div class="sidebar-nav-item">⚙ Settings</div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Active EV portfolio</h1>
+          <div class="header-sub">Shared underwriting basis · Pool insurer view</div>
+        </div>
+        <div class="header-date">As at 28 May 2026</div>
+      </div>
+      <div class="page-body">
+
+        <!-- Portfolio stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total endorsed cases</div>
+            <div class="stat-value">247</div>
+            <div class="stat-sub">All time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Active (within 12 months)</div>
+            <div class="stat-value">142</div>
+            <div class="stat-sub">Open or pending resolution</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Resolved</div>
+            <div class="stat-value">93</div>
+            <div class="stat-sub">Outcome data available</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">EV accuracy (rolling)</div>
+            <div class="stat-value stat-good">87.3%</div>
+            <div class="stat-sub">Resolved cases only</div>
+          </div>
+        </div>
+
+        <!-- Vintage breakdown -->
+        <div class="content-card">
+          <h2>Vintage breakdown — cases by month added</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th style="text-align:right">Cases added</th>
+                <th style="text-align:right">Resolved</th>
+                <th style="text-align:right">EV accuracy</th>
+                <th>Maturity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>March 2026</strong></td>
+                <td style="text-align:right">18</td>
+                <td style="text-align:right">12</td>
+                <td style="text-align:right"><strong style="color:#166534">91.2%</strong></td>
+                <td><span class="tag tag-green">3 months — most calibrated</span></td>
+              </tr>
+              <tr>
+                <td><strong>April 2026</strong></td>
+                <td style="text-align:right">47</td>
+                <td style="text-align:right">31</td>
+                <td style="text-align:right"><strong>88.6%</strong></td>
+                <td><span class="tag tag-blue">2 months</span></td>
+              </tr>
+              <tr>
+                <td><strong>May 2026</strong></td>
+                <td style="text-align:right">77</td>
+                <td style="text-align:right">50</td>
+                <td style="text-align:right"><strong style="color:#854d0e">84.1%</strong></td>
+                <td><span class="tag tag-yellow">1 month — least calibrated</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Segment breakdown -->
+        <div class="content-card">
+          <h2>Segment breakdown</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Dispute type</th>
+                <th style="text-align:right">Active cases</th>
+                <th style="text-align:right">Share of portfolio</th>
+                <th style="text-align:right">Avg EV central</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Housing / Deposit (S-001)</td>
+                <td style="text-align:right">143</td>
+                <td style="text-align:right">57.9%</td>
+                <td style="text-align:right">£2,840</td>
+              </tr>
+              <tr>
+                <td>Employment (S-002)</td>
+                <td style="text-align:right">61</td>
+                <td style="text-align:right">24.7%</td>
+                <td style="text-align:right">£3,610</td>
+              </tr>
+              <tr>
+                <td>Marketplace (S-003)</td>
+                <td style="text-align:right">28</td>
+                <td style="text-align:right">11.3%</td>
+                <td style="text-align:right">£720</td>
+              </tr>
+              <tr>
+                <td>Payment (S-004)</td>
+                <td style="text-align:right">15</td>
+                <td style="text-align:right">6.1%</td>
+                <td style="text-align:right">£480</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="inset">
+          <p><strong>EV accuracy improves as the methodology calibrates to resolved outcomes.</strong> The March 2026 cohort — now 3 months post-endorsement — has achieved 91.2% accuracy, above the 85% underwriting threshold. This dataset is proprietary to Calmly's exchange and cannot be replicated on a competitor platform. A new entrant would require 6–9 months of equivalent live claims volume before reaching this accuracy level.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P8-S2</div>
+    <div class="ann-row">Flow ref: SMP-P2 · C8-SMP &nbsp;|&nbsp; T4: M-007 (EV accuracy) · U-005 (Marketplace access fee)</div>
+    <div class="ann-row ann-pass">PASS: SMP actuary uses EV portfolio data directly in pricing model without transformation — data is structured and machine-readable</div>
+    <div class="ann-row ann-fail">FAIL: SMP actuary says "we'd need to reformat this to run through our model" — data structure doesn't match SMP's underwriting workflow</div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 3 — Live positions ===================== -->
+<div class="screen" id="screen-2">
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo">Calmly Exchange</div>
+        <div class="logo-sub">Marketplace portal</div>
+      </div>
+      <div class="sidebar-role">
+        <div class="role-badge">Pool insurer — C-track 1</div>
+        <div class="org-name">Shield Underwriting Ltd</div>
+        <div class="user-name">authorised@shieldunderwriting.com</div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-nav-item">📊 EV portfolio</div>
+        <div class="sidebar-nav-item active">📁 My positions</div>
+        <div class="sidebar-nav-item">📈 Calibration</div>
+        <div class="sidebar-nav-item">📄 Reports</div>
+        <div class="sidebar-nav-item">⚙ Settings</div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Live positions</h1>
+          <div class="header-sub">Pool insurance — active positions</div>
+        </div>
+        <div class="header-date">As at 28 May 2026</div>
+      </div>
+      <div class="page-body">
+
+        <!-- Portfolio stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total insured claimants</div>
+            <div class="stat-value">142</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Aggregate exposure</div>
+            <div class="stat-value">£374k</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Expected loss rate</div>
+            <div class="stat-value">6.2%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Premium income to date</div>
+            <div class="stat-value stat-good">£28,400</div>
+          </div>
+        </div>
+
+        <!-- Fee summary -->
+        <div class="content-card">
+          <h2>Marketplace access fee — May 2026</h2>
+          <div class="position-stat">
+            <div class="ps-label">Total premium income (May)</div>
+            <div class="ps-value">£9,460</div>
+          </div>
+          <div class="position-stat">
+            <div class="ps-label">Calmly marketplace access fee (30% of premium)</div>
+            <div class="ps-value">£2,840</div>
+          </div>
+          <div class="position-stat">
+            <div class="ps-label">Cumulative access fee (since March 2026)</div>
+            <div class="ps-value">£8,520</div>
+          </div>
+          <div class="fee-note">
+            <strong>Marketplace access fee accrues on active positions, not resolved ones.</strong> The fee fires independently of settlement timing — Shield Underwriting is charged per active insured claimant each month, regardless of whether that case has reached resolution. This is the U-005 mechanism under test.
+          </div>
+        </div>
+
+        <!-- Active positions table -->
+        <div class="content-card">
+          <h2>Active positions — by ITP pool</h2>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Pool ID</th>
+                <th>ITP</th>
+                <th style="text-align:right">Claimants insured</th>
+                <th style="text-align:right">Exposure</th>
+                <th style="text-align:right">Premium rate</th>
+                <th style="text-align:right">Monthly fee</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>POOL-2026-CHK-001</td>
+                <td>Checkatrade</td>
+                <td style="text-align:right">23</td>
+                <td style="text-align:right">£52,400</td>
+                <td style="text-align:right">3.1%</td>
+                <td style="text-align:right">£484</td>
+                <td><span class="tag tag-green">Active</span></td>
+              </tr>
+              <tr>
+                <td>POOL-2026-CA-001</td>
+                <td>Citizens Advice</td>
+                <td style="text-align:right">41</td>
+                <td style="text-align:right">£96,200</td>
+                <td style="text-align:right">2.8%</td>
+                <td style="text-align:right">£896</td>
+                <td><span class="tag tag-green">Active</span></td>
+              </tr>
+              <tr>
+                <td>POOL-2026-RES-001</td>
+                <td>Resolver</td>
+                <td style="text-align:right">38</td>
+                <td style="text-align:right">£84,100</td>
+                <td style="text-align:right">3.4%</td>
+                <td style="text-align:right">£857</td>
+                <td><span class="tag tag-green">Active</span></td>
+              </tr>
+              <tr>
+                <td>POOL-2026-CHK-002</td>
+                <td>Checkatrade</td>
+                <td style="text-align:right">29</td>
+                <td style="text-align:right">£91,700</td>
+                <td style="text-align:right">2.9%</td>
+                <td style="text-align:right">£420</td>
+                <td><span class="tag tag-blue">New — June</span></td>
+              </tr>
+              <tr>
+                <td>POOL-2026-CA-002</td>
+                <td>Citizens Advice</td>
+                <td style="text-align:right">11</td>
+                <td style="text-align:right">£49,600</td>
+                <td style="text-align:right">3.2%</td>
+                <td style="text-align:right">£183</td>
+                <td><span class="tag tag-yellow">Pending activation</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P8-S3</div>
+    <div class="ann-row">Flow ref: SMP-P3 · C6 &nbsp;|&nbsp; T4: U-005 (Marketplace access fee — UNTESTED)</div>
+    <div class="ann-row ann-pass">PASS: SMP actuary confirms live position count, aggregate exposure, and Calmly fee in &lt;30 seconds — no calculation required</div>
+    <div class="ann-row ann-fail">FAIL: SMP says "we'd need to calculate our Calmly fee separately" — fee is not surfaced clearly enough to be self-service</div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 4 — Calibration / Switching cost ===================== -->
+<div class="screen" id="screen-3">
+  <div class="app-shell">
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo">Calmly Exchange</div>
+        <div class="logo-sub">Marketplace portal</div>
+      </div>
+      <div class="sidebar-role">
+        <div class="role-badge">Pool insurer — C-track 1</div>
+        <div class="org-name">Shield Underwriting Ltd</div>
+        <div class="user-name">authorised@shieldunderwriting.com</div>
+      </div>
+      <div class="sidebar-nav">
+        <div class="sidebar-nav-item">📊 EV portfolio</div>
+        <div class="sidebar-nav-item">📁 My positions</div>
+        <div class="sidebar-nav-item active">📈 Calibration</div>
+        <div class="sidebar-nav-item">📄 Reports</div>
+        <div class="sidebar-nav-item">⚙ Settings</div>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <div class="page-header">
+        <div>
+          <h1>Actuarial calibration</h1>
+          <div class="header-sub">EV accuracy trend and switching cost visibility</div>
+        </div>
+        <div class="header-date">As at 28 May 2026</div>
+      </div>
+      <div class="page-body">
+
+        <!-- Calibration chart card -->
+        <div class="content-card">
+          <h2>EV accuracy trend — month-on-month</h2>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;font-family:var(--font-ui)">Based on 93 resolved cases. Accuracy calculated as proportion of resolved cases where actual settlement fell within the endorsed EV range.</p>
+
+          <!-- CSS bar chart -->
+          <div style="display:flex;align-items:flex-end;gap:24px;height:140px;padding:0 20px;margin-bottom:0;border-bottom:2px solid var(--border)">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
+              <div style="font-size:13px;font-weight:600;color:#166534">91.2%</div>
+              <div style="width:60%;background:#166534;height:109px;border-radius:2px 2px 0 0;opacity:0.85"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--accent)">88.6%</div>
+              <div style="width:60%;background:var(--accent);height:106px;border-radius:2px 2px 0 0;opacity:0.85"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1">
+              <div style="font-size:13px;font-weight:600;color:#d4820a">84.1%</div>
+              <div style="width:60%;background:#d4820a;height:101px;border-radius:2px 2px 0 0;opacity:0.85"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:24px;padding:8px 20px 0">
+            <div style="flex:1;text-align:center;font-size:12px;color:var(--text-muted)">March 2026<br><span style="font-size:11px">12 resolved</span></div>
+            <div style="flex:1;text-align:center;font-size:12px;color:var(--text-muted)">April 2026<br><span style="font-size:11px">31 resolved</span></div>
+            <div style="flex:1;text-align:center;font-size:12px;color:var(--text-muted)">May 2026<br><span style="font-size:11px">50 resolved</span></div>
+          </div>
+          <div style="background:#f8f9fa;border:1px solid var(--border);padding:10px 14px;margin-top:16px;font-size:12px;color:var(--text-secondary)">
+            ↑ April dip reflects larger dataset with proportionally more early-stage cases. March cohort (oldest) has highest accuracy. As May 2026 cases resolve, accuracy is forecast to converge to the 88–91% range.
+          </div>
+        </div>
+
+        <!-- Switching cost block — causal ambiguity reversal -->
+        <div class="switching-card">
+          <h2>Your actuarial model — calibration depth</h2>
+          <p>Your pricing model has been calibrated against 93 resolved Calmly cases since March 2026. A competitor platform would require an equivalent calibration period — estimated 6–9 months of live claims volume at comparable scale — before achieving comparable pricing accuracy. This calibration is non-portable: the methodology, segment classifications, and outcome data are structurally tied to Calmly's endorsed EV framework.</p>
+          <div class="switching-metrics">
+            <div class="sw-metric">
+              <div class="sw-label">Resolved cases calibrated</div>
+              <div class="sw-value">93</div>
+              <div class="sw-note">Since March 2026</div>
+            </div>
+            <div class="sw-metric">
+              <div class="sw-label">Recalibration period (competitor)</div>
+              <div class="sw-value">6–9 months</div>
+              <div class="sw-note">Estimated live volume required</div>
+            </div>
+            <div class="sw-metric">
+              <div class="sw-label">Mispricing exposure (recal.)</div>
+              <div class="sw-value">£4,260–£5,680</div>
+              <div class="sw-note">15–20% on quarterly premium</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recalibration cost estimate -->
+        <div class="content-card">
+          <h2>Switching cost estimate — if migrating to a competitor platform</h2>
+          <p style="font-size:13px;color:var(--text-secondary);font-family:var(--font-ui);margin-bottom:16px">Based on current premium income (£28,400/quarter), a 15–20% mispricing risk during the recalibration period represents the following exposure:</p>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Scenario</th>
+                <th style="text-align:right">Recalibration period</th>
+                <th style="text-align:right">Mispricing risk</th>
+                <th style="text-align:right">Estimated exposure</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Best case</td>
+                <td style="text-align:right">6 months</td>
+                <td style="text-align:right">15%</td>
+                <td style="text-align:right">£4,260</td>
+              </tr>
+              <tr>
+                <td>Central case</td>
+                <td style="text-align:right">7 months</td>
+                <td style="text-align:right">17%</td>
+                <td style="text-align:right">£4,820</td>
+              </tr>
+              <tr>
+                <td>Worst case</td>
+                <td style="text-align:right">9 months</td>
+                <td style="text-align:right">20%</td>
+                <td style="text-align:right">£5,680</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="inset" style="margin-top:16px;margin-bottom:0">
+            <p>This analysis is not a retention offer — it is a direct representation of the economic cost of migrating away from Calmly's exchange. The calibration depth you have built since March 2026 represents a structural advantage that deteriorates if the methodology underpinning it (Calmly's endorsed EV) is no longer the basis for your pricing. This is the switching cost made visible before the switch, not after.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P8-S4</div>
+    <div class="ann-row">Flow ref: C8-SMP &nbsp;|&nbsp; T4: U-005 (Marketplace access fee) · M-007 (EV accuracy)</div>
+    <div class="ann-row ann-pass">PASS: SMP actuary says "moving platforms would set our model back — I can see that clearly here" — switching cost is legible without requiring explanation</div>
+    <div class="ann-row ann-fail">FAIL: SMP says "this doesn't affect our decision to stay" — the calibration depth is not perceived as a meaningful lock-in; causal ambiguity reversal has not landed</div>
+  </div>
+</div>
+
+<script>
+  function showScreen(index, tabEl) {
+    document.querySelectorAll('.screen').forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+</script>
+</body>
+</html>

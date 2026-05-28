@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Defendant Notice D1-2026-0291</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+      --grey-border: #8a95a3;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 900px;
+      --green: #166534;
+      --green-bg: #e6f4ec;
+      --green-border: #a7d4b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ── Tab navigation ── */
+    .tab-bar {
+      background: var(--panel-bg);
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      padding: 0 24px;
+      border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .tab-bar-logo {
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 24px 0 0;
+      display: flex;
+      align-items: center;
+      border-right: 1px solid rgba(255,255,255,0.15);
+      margin-right: 16px;
+      white-space: nowrap;
+    }
+
+    .tab-bar-label {
+      color: rgba(255,255,255,0.45);
+      font-family: var(--font-ui);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0 0 0 0;
+      display: flex;
+      align-items: center;
+      margin-right: 4px;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 14px 18px;
+      margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+
+    .tab:hover { color: rgba(255,255,255,0.85); }
+
+    .tab.active {
+      color: #ffffff;
+      border-bottom-color: #5b8ff0;
+    }
+
+    /* ── Screen wrapper ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Page document ── */
+    .doc-outer {
+      max-width: var(--width);
+      margin: 0 auto;
+      padding: 40px 24px 0;
+    }
+
+    .doc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Document header (navy banner) ── */
+    .doc-header {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 28px 36px;
+    }
+
+    .doc-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .doc-header-org {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 6px;
+    }
+
+    .doc-header-title {
+      font-family: var(--font-ui);
+      font-size: 20px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .doc-header-meta {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .doc-header-meta dl {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 2px 16px;
+    }
+
+    .doc-header-meta dt {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      text-align: right;
+    }
+
+    .doc-header-meta dd {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      color: rgba(255,255,255,0.9);
+      text-align: left;
+    }
+
+    /* ── Document body ── */
+    .doc-body {
+      padding: 36px;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 36px;
+    }
+
+    .section + .section {
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+    }
+
+    .section-label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: var(--font-ui);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .body-text {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    .body-text:last-child { margin-bottom: 0; }
+
+    /* ── Warning block ── */
+    .warning-block {
+      border-left: 4px solid var(--warning-border);
+      background: var(--warning-bg);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .warning-block-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .warning-block-text {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      line-height: 1.5;
+      color: #78350f;
+    }
+
+    .warning-block-text strong {
+      font-weight: 600;
+    }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    thead tr {
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    thead th {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    thead th.num { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover { background: #f9f9f8; }
+
+    tbody td {
+      padding: 10px 12px;
+      color: var(--text);
+      vertical-align: top;
+    }
+
+    tbody td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+
+    tbody td.ref {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    tfoot tr {
+      border-top: 2px solid var(--border-strong);
+      background: var(--accent-light);
+    }
+
+    tfoot td {
+      padding: 11px 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    tfoot td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Confidence badge ── */
+    .conf {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: var(--tag-radius);
+    }
+
+    .conf-high { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .conf-mid  { background: #e8eef8; color: var(--accent); border: 1px solid #b8c8e8; }
+
+    /* ── Inset / EV block ── */
+    .ev-block {
+      border-left: 4px solid var(--grey-border);
+      background: #f8f9fa;
+      padding: 24px 28px;
+      margin: 24px 0;
+    }
+
+    .ev-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 16px;
+    }
+
+    .ev-block-title {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ev-endorsement {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1px solid var(--border-strong);
+      padding: 6px 12px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .ev-endorsement-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .ev-endorsement-body {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ev-endorsement-seal {
+      font-size: 18px;
+    }
+
+    .ev-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 20px;
+    }
+
+    .ev-summary-cell {
+      background: #fff;
+      padding: 16px 20px;
+      text-align: center;
+    }
+
+    .ev-summary-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .ev-summary-val {
+      font-family: var(--font-ui);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ev-summary-cell.central .ev-summary-val {
+      color: var(--accent);
+      font-size: 26px;
+    }
+
+    .ev-summary-cell.central {
+      background: var(--accent-light);
+    }
+
+    .ev-note {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+      margin-top: 16px;
+      font-style: italic;
+    }
+
+    /* ── Screen 2 — buyout offer ── */
+    .offer-card {
+      border: 2px solid var(--border-strong);
+      background: var(--surface);
+      margin-bottom: 28px;
+    }
+
+    .offer-card-header {
+      background: var(--panel-bg);
+      color: #fff;
+      padding: 20px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .offer-card-header-left {}
+
+    .offer-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+
+    .offer-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .offer-card-header-right {
+      text-align: right;
+    }
+
+    .offer-card-header-right dl {
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 2px 12px;
+    }
+
+    .offer-card-header-right dt {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      text-align: right;
+    }
+
+    .offer-card-header-right dd {
+      font-size: 10px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .offer-card-body {
+      padding: 28px;
+    }
+
+    .offer-price-block {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .offer-price-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .offer-price-val {
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .offer-price-suffix {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .offer-body-text {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    /* Comparison table — 3 column cards */
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .comparison-card {
+      border: 1px solid var(--border);
+      padding: 18px 16px;
+    }
+
+    .comparison-card.highlight {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+
+    .comparison-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .comparison-card.highlight .comparison-card-label {
+      color: var(--accent);
+    }
+
+    .comparison-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+
+    .comparison-card-row {
+      margin-bottom: 8px;
+    }
+
+    .comparison-card-row-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .comparison-card-row-val {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .comparison-card-row-val.green { color: var(--green); }
+    .comparison-card-row-val.amber { color: #b45309; }
+    .comparison-card-row-val.red { color: #991b1b; }
+
+    .comparison-card-row-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    .independence-note {
+      border-left: 4px solid var(--border-strong);
+      background: #f8f9fa;
+      padding: 14px 18px;
+    }
+
+    .independence-note p {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    /* ── Screen 3 — response options ── */
+    .response-options {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .response-option {
+      border: 1px solid var(--border);
+      padding: 28px;
+    }
+
+    .response-option-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .response-option-num {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    .response-option-title {
+      font-family: var(--font-ui);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .response-option-body {
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .response-option-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .response-option-actions-left {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 11px 22px;
+      border: none;
+      cursor: pointer;
+      border-radius: 2px;
+      letter-spacing: 0.01em;
+      transition: opacity 0.15s;
+      text-align: center;
+    }
+
+    .btn:hover { opacity: 0.88; }
+
+    .btn-green {
+      background: #166534;
+      color: #fff;
+    }
+
+    .btn-blue {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border-strong);
+    }
+
+    .btn-ghost:hover { background: #f1f3f5; opacity: 1; }
+
+    .action-note {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 480px;
+    }
+
+    /* Counter input area */
+    .counter-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .counter-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .counter-row label {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 120px;
+    }
+
+    .input-prefix-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .input-prefix {
+      position: absolute;
+      left: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      pointer-events: none;
+    }
+
+    .input-amount {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 9px 12px 9px 22px;
+      border: 1.5px solid var(--border-strong);
+      width: 140px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .input-amount:focus { border-color: var(--accent); }
+
+    select.input-select {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--border-strong);
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      min-width: 240px;
+    }
+
+    select.input-select:focus { border-color: var(--accent); }
+
+    /* Escalation timeline */
+    .escalation-section {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      margin-top: 4px;
+    }
+
+    .escalation-label {
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .timeline {
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .timeline-step {
+      flex: 1;
+      position: relative;
+      padding-right: 12px;
+    }
+
+    .timeline-step:last-child { padding-right: 0; }
+
+    .timeline-connector {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .timeline-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-dot.active { background: var(--accent); }
+    .timeline-dot.upcoming { background: var(--border-strong); }
+    .timeline-dot.warning { background: #d4820a; }
+    .timeline-dot.danger { background: #991b1b; }
+
+    .timeline-line {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    .timeline-step:last-child .timeline-line { display: none; }
+
+    .timeline-content {
+      padding-left: 0;
+    }
+
+    .timeline-stage {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .timeline-when {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .timeline-cost {
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .timeline-cost.green { color: var(--green); }
+    .timeline-cost.amber { color: #b45309; }
+    .timeline-cost.red { color: #991b1b; }
+
+    .timeline-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 3px;
+    }
+
+    /* ── Annotation strip ── */
+    .annotation-strip {
+      background: #f1f3f5;
+      border-top: 1px solid var(--border);
+      padding: 14px 36px;
+      font-family: 'Courier New', 'Lucida Console', monospace;
+      font-size: 11px;
+      line-height: 1.7;
+      color: #4a5568;
+    }
+
+    .annotation-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .annotation-key {
+      font-weight: bold;
+      color: #2d3748;
+      flex-shrink: 0;
+    }
+
+    .annotation-pass { color: #166534; }
+    .annotation-fail { color: #991b1b; }
+
+    /* ── Utility ── */
+    .mono {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .subtle {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    hr.section-rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    .spacer { height: 40px; }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<!-- ── Tab bar ── -->
+<nav class="tab-bar">
+  <div class="tab-bar-logo">Calmly Resolve</div>
+  <div class="tab-bar-label">Prototype P5 —</div>
+  <button class="tab active" onclick="showTab('s1', this)">P5-S1 &nbsp;Demand + EV Report</button>
+  <button class="tab" onclick="showTab('s2', this)">P5-S2 &nbsp;Buyout Offer</button>
+  <button class="tab" onclick="showTab('s3', this)">P5-S3 &nbsp;Response Options</button>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCREEN 1 — Demand Notice + EV Report
+     ══════════════════════════════════════════════════════════════ -->
+<div id="screen-s1" class="screen active">
+  <div class="doc-outer">
+    <div class="doc">
+
+      <!-- Header -->
+      <div class="doc-header">
+        <div class="doc-header-top">
+          <div>
+            <div class="doc-header-org">Calmly Resolve — Dispute Resolution Exchange</div>
+            <div class="doc-header-title">Formal dispute resolution demand</div>
+          </div>
+          <div class="doc-header-meta">
+            <dl>
+              <dt>Reference</dt>
+              <dd>D1-2026-0291</dd>
+              <dt>Issued</dt>
+              <dd>28 May 2026</dd>
+              <dt>Respond by</dt>
+              <dd><strong style="color:#fff;">18 June 2026</strong></dd>
+              <dt>Defendant</dt>
+              <dd>HomeLet Properties Ltd</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="doc-body">
+
+        <!-- Deadline warning -->
+        <div class="warning-block">
+          <div class="warning-block-icon">⚠</div>
+          <div class="warning-block-text">
+            <strong>Response required by 18 June 2026.</strong> If no response is received by this date, Calmly Resolve will proceed to D2 — Final demand and mediation referral. Your right to defend individual claims is not affected by this process.
+          </div>
+        </div>
+
+        <!-- Section 1: The Demand -->
+        <div class="section">
+          <div class="section-label">Section 1 — The demand</div>
+          <div class="section-title">Notice to HomeLet Properties Ltd</div>
+
+          <p class="body-text">HomeLet Properties Ltd is named as defendant in 8 dispute cases currently within the Calmly Resolve pooled claim process. These claims arise from tenancies managed by HomeLet Properties Ltd during 2024–2025. The aggregate claim value currently before the exchange is <strong>£18,400</strong> across these 8 cases.</p>
+
+          <p class="body-text">This demand is issued on behalf of the following claimants:</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Case ref</th>
+                <th>Claimant</th>
+                <th>Dispute type</th>
+                <th class="num">Claim value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="ref">CLM-2026-0847</td>
+                <td>Sarah Thompson</td>
+                <td>Deposit not returned</td>
+                <td class="num">£3,200</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0851</td>
+                <td>James O'Brien</td>
+                <td>Deposit not returned</td>
+                <td class="num">£2,400</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0862</td>
+                <td>Priya Nair</td>
+                <td>Deposit not returned</td>
+                <td class="num">£1,800</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0876</td>
+                <td>Emma Singh</td>
+                <td>Repair not completed</td>
+                <td class="num">£4,200</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0881</td>
+                <td>David Okafor</td>
+                <td>Deposit not returned</td>
+                <td class="num">£1,400</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0894</td>
+                <td>Marcus Wells</td>
+                <td>Deposit not returned</td>
+                <td class="num">£2,100</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0901</td>
+                <td>Fatima Al-Rashid</td>
+                <td>Repair not completed</td>
+                <td class="num">£1,900</td>
+              </tr>
+              <tr>
+                <td class="ref">CLM-2026-0912</td>
+                <td>Tom Eriksson</td>
+                <td>Deposit not returned</td>
+                <td class="num">£1,400</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Total aggregate claim</td>
+                <td class="num">£18,400</td>
+              </tr>
+            </tfoot>
+          </table>
+
+          <p class="body-text">This demand does not constitute a court filing. It is the first stage in Calmly Resolve's structured resolution process, which is designed to enable fair settlement without the cost and delay of litigation.</p>
+        </div>
+
+        <!-- Section 2: EV Assessment -->
+        <div class="section">
+          <div class="section-label">Section 2 — Independent EV assessment</div>
+          <div class="section-title">Expected value report</div>
+
+          <p class="body-text">The following expected value assessment has been independently prepared by the Office of Fair Trading Independent Assessors and is not produced by or for Calmly Resolve. It represents an independent professional opinion on the fair settlement range for these disputes, based on comparable case outcomes in the county courts of England and Wales.</p>
+
+          <div class="ev-block">
+            <div class="ev-block-header">
+              <div class="ev-block-title">OFT Independent Assessors — Case EV Summary</div>
+              <div class="ev-endorsement">
+                <div class="ev-endorsement-seal">🔷</div>
+                <div>
+                  <div class="ev-endorsement-label">Endorsed by</div>
+                  <div class="ev-endorsement-body">OFT Independent Assessors</div>
+                </div>
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Claimant</th>
+                  <th class="num">EV low</th>
+                  <th class="num">EV central</th>
+                  <th class="num">EV high</th>
+                  <th style="text-align:center;">Confidence</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sarah Thompson</td>
+                  <td class="num">£1,800</td>
+                  <td class="num"><strong>£2,850</strong></td>
+                  <td class="num">£3,600</td>
+                  <td style="text-align:center;"><span class="conf conf-high">82%</span></td>
+                </tr>
+                <tr>
+                  <td>James O'Brien</td>
+                  <td class="num">£1,400</td>
+                  <td class="num"><strong>£2,100</strong></td>
+                  <td class="num">£2,600</td>
+                  <td style="text-align:center;"><span class="conf conf-high">78%</span></td>
+                </tr>
+                <tr>
+                  <td>Priya Nair</td>
+                  <td class="num">£900</td>
+                  <td class="num"><strong>£1,500</strong></td>
+                  <td class="num">£2,000</td>
+                  <td style="text-align:center;"><span class="conf conf-mid">71%</span></td>
+                </tr>
+                <tr>
+                  <td>Emma Singh</td>
+                  <td class="num">£2,200</td>
+                  <td class="num"><strong>£3,300</strong></td>
+                  <td class="num">£4,400</td>
+                  <td style="text-align:center;"><span class="conf conf-high">84%</span></td>
+                </tr>
+                <tr>
+                  <td>David Okafor</td>
+                  <td class="num">£700</td>
+                  <td class="num"><strong>£1,100</strong></td>
+                  <td class="num">£1,500</td>
+                  <td style="text-align:center;"><span class="conf conf-mid">74%</span></td>
+                </tr>
+                <tr>
+                  <td>Marcus Wells</td>
+                  <td class="num">£1,100</td>
+                  <td class="num"><strong>£1,750</strong></td>
+                  <td class="num">£2,200</td>
+                  <td style="text-align:center;"><span class="conf conf-high">79%</span></td>
+                </tr>
+                <tr>
+                  <td>Fatima Al-Rashid</td>
+                  <td class="num">£900</td>
+                  <td class="num"><strong>£1,300</strong></td>
+                  <td class="num">£1,800</td>
+                  <td style="text-align:center;"><span class="conf conf-mid">68%</span></td>
+                </tr>
+                <tr>
+                  <td>Tom Eriksson</td>
+                  <td class="num">£700</td>
+                  <td class="num"><strong>£700</strong></td>
+                  <td class="num">£1,000</td>
+                  <td style="text-align:center;"><span class="conf conf-mid">72%</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td>Aggregate</td>
+                  <td class="num">£9,700</td>
+                  <td class="num"><strong>£14,600</strong></td>
+                  <td class="num">£19,100</td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div class="ev-summary">
+              <div class="ev-summary-cell">
+                <div class="ev-summary-label">EV low</div>
+                <div class="ev-summary-val">£9,700</div>
+              </div>
+              <div class="ev-summary-cell central">
+                <div class="ev-summary-label">EV central — most likely recovery</div>
+                <div class="ev-summary-val">£14,600</div>
+              </div>
+              <div class="ev-summary-cell">
+                <div class="ev-summary-label">EV high</div>
+                <div class="ev-summary-val">£19,100</div>
+              </div>
+            </div>
+
+            <p class="ev-note">The EV Central figure (£14,600) represents the aggregate expected recovery if these claims were taken to judgment in England and Wales county courts, weighted by assessed probability of success. This figure has been disclosed simultaneously and in identical form to all claimants and to HomeLet Properties Ltd. OFT Independent Assessors receive no fee from Calmly Resolve contingent on outcome.</p>
+          </div>
+
+          <p class="body-text">This assessment is provided to support informed decision-making by both parties. It is not legally binding. HomeLet Properties Ltd may commission its own independent assessment and is entitled to contest any figure in the escalation process.</p>
+        </div>
+
+      </div><!-- /doc-body -->
+
+      <!-- Annotation strip -->
+      <div class="annotation-strip">
+        <div class="annotation-row">
+          <span class="annotation-key">Flow ref:</span> CP3 · D1 · C3 &nbsp;|&nbsp;
+          <span class="annotation-key">T4:</span> M-005 (Avg settlement £3,000) · M-007 (EV credibility) &nbsp;|&nbsp;
+          <span class="annotation-key annotation-pass">PASS:</span> Defendant can articulate EV figure and what endorses it &nbsp;|&nbsp;
+          <span class="annotation-key annotation-fail">FAIL:</span> Defendant dismisses EV as "Calmly's own estimate" — independence not credible
+        </div>
+      </div>
+
+    </div><!-- /doc -->
+  </div>
+  <div class="spacer"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCREEN 2 — Liability Buyout Offer
+     ══════════════════════════════════════════════════════════════ -->
+<div id="screen-s2" class="screen">
+  <div class="doc-outer">
+    <div class="doc">
+
+      <!-- Header -->
+      <div class="doc-header">
+        <div class="doc-header-top">
+          <div>
+            <div class="doc-header-org">Calmly Resolve — Dispute Resolution Exchange</div>
+            <div class="doc-header-title">Liability buyout offer</div>
+          </div>
+          <div class="doc-header-meta">
+            <dl>
+              <dt>Demand ref</dt>
+              <dd>D1-2026-0291</dd>
+              <dt>Defendant</dt>
+              <dd>HomeLet Properties Ltd</dd>
+              <dt>Cases</dt>
+              <dd>8 disputes</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-body">
+
+        <div class="warning-block">
+          <div class="warning-block-icon">⚠</div>
+          <div class="warning-block-text">
+            <strong>This offer expires 18 June 2026</strong> — the same date as the D1 response deadline. If no response is received, the offer lapses and the matter proceeds to D2.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Buyout offer from Litigation Resolution Capital Ltd</div>
+
+          <div class="offer-card">
+            <div class="offer-card-header">
+              <div class="offer-card-header-left">
+                <div class="offer-card-label">Offer from</div>
+                <div class="offer-card-title">Litigation Resolution Capital Ltd</div>
+              </div>
+              <div class="offer-card-header-right">
+                <dl>
+                  <dt>Offer ref</dt>
+                  <dd>LRC-2026-4821</dd>
+                  <dt>Issued</dt>
+                  <dd>28 May 2026</dd>
+                  <dt>Valid until</dt>
+                  <dd><strong style="color:#fff;">18 June 2026</strong></dd>
+                  <dt>Applies to</dt>
+                  <dd>All 8 cases — D1-2026-0291</dd>
+                </dl>
+              </div>
+            </div>
+
+            <div class="offer-card-body">
+              <div class="offer-price-block">
+                <div class="offer-price-label">Fixed buyout price</div>
+                <div class="offer-price-val">£11,200</div>
+                <div class="offer-price-suffix">— extinguishes all 8 claims</div>
+              </div>
+
+              <p class="offer-body-text">Litigation Resolution Capital Ltd offers to purchase your aggregate liability in the above claims for a fixed price of <strong>£11,200</strong>. On acceptance, your full legal liability in all 8 cases listed in demand D1-2026-0291 is extinguished. No further payment, legal action, or management of these claims will be required of HomeLet Properties Ltd.</p>
+
+              <p class="offer-body-text">This offer is made on a take-it-or-leave-it basis and is not subject to negotiation with the buyout operator. HomeLet Properties Ltd may submit a counter-offer to the claimant pool separately via the response process (see P5-S3).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Comparison of available options</div>
+
+          <div class="comparison-grid">
+            <div class="comparison-card highlight">
+              <div class="comparison-card-label">Option A — recommended path</div>
+              <div class="comparison-card-title">Accept this buyout</div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Your cost</div>
+                <div class="comparison-card-row-val green">£11,200 fixed</div>
+                <div class="comparison-card-row-sub">No further liability. Known, capped exposure.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Your exposure after</div>
+                <div class="comparison-card-row-val green">Zero</div>
+                <div class="comparison-card-row-sub">Liability extinguished. All 8 claims closed.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Legal management</div>
+                <div class="comparison-card-row-val green">None required</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Timeline</div>
+                <div class="comparison-card-row-val green">Resolved within 5 days</div>
+              </div>
+            </div>
+
+            <div class="comparison-card">
+              <div class="comparison-card-label">Option B</div>
+              <div class="comparison-card-title">Settle with claimants directly</div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Estimated cost</div>
+                <div class="comparison-card-row-val amber">£14,600</div>
+                <div class="comparison-card-row-sub">EV central — independent assessment.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Your exposure after</div>
+                <div class="comparison-card-row-val amber">Ongoing until settled</div>
+                <div class="comparison-card-row-sub">Requires active negotiation with each claimant.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Legal management</div>
+                <div class="comparison-card-row-val amber">Moderate</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Timeline</div>
+                <div class="comparison-card-row-val amber">4–12 weeks</div>
+              </div>
+            </div>
+
+            <div class="comparison-card">
+              <div class="comparison-card-label">Option C</div>
+              <div class="comparison-card-title">Dispute all claims</div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Estimated cost</div>
+                <div class="comparison-card-row-val red">£19,100+ legal costs</div>
+                <div class="comparison-card-row-sub">EV high plus solicitor and court fees.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Your exposure after</div>
+                <div class="comparison-card-row-val red">Active legal proceedings</div>
+                <div class="comparison-card-row-sub">3–18 months of ongoing case management.</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Legal management</div>
+                <div class="comparison-card-row-val red">High</div>
+              </div>
+              <div class="comparison-card-row">
+                <div class="comparison-card-row-label">Timeline</div>
+                <div class="comparison-card-row-val red">3–18 months</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="independence-note">
+            <p>This offer is from <strong>Litigation Resolution Capital Ltd</strong>, which is acting independently of Calmly Resolve. Calmly Resolve does not receive any fee from this buyout — the buyout operator's economics are separate from Calmly's platform fee structure, which is funded by claimants. Litigation Resolution Capital Ltd acquires the economic interest in the settled claims and assumes the residual risk of any deviation from settlement terms.</p>
+          </div>
+        </div>
+
+      </div><!-- /doc-body -->
+
+      <div class="annotation-strip">
+        <div class="annotation-row">
+          <span class="annotation-key">Flow ref:</span> D1 · C6 &nbsp;|&nbsp;
+          <span class="annotation-key">T4:</span> U-002 (Fee rate 20%) · U-001 (Cost floor £258) &nbsp;|&nbsp;
+          <span class="annotation-key annotation-pass">PASS:</span> Defendant identifies buyout price and compares to EV in &lt;60 seconds &nbsp;|&nbsp;
+          <span class="annotation-key annotation-fail">FAIL:</span> Defendant says "I don't understand what I'm agreeing to"
+        </div>
+      </div>
+
+    </div><!-- /doc -->
+  </div>
+  <div class="spacer"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCREEN 3 — Response Options
+     ══════════════════════════════════════════════════════════════ -->
+<div id="screen-s3" class="screen">
+  <div class="doc-outer">
+    <div class="doc">
+
+      <!-- Header -->
+      <div class="doc-header">
+        <div class="doc-header-top">
+          <div>
+            <div class="doc-header-org">Calmly Resolve — Dispute Resolution Exchange</div>
+            <div class="doc-header-title">Your response options — D1-2026-0291</div>
+          </div>
+          <div class="doc-header-meta">
+            <dl>
+              <dt>Defendant</dt>
+              <dd>HomeLet Properties Ltd</dd>
+              <dt>Respond by</dt>
+              <dd><strong style="color:#fff;">18 June 2026</strong></dd>
+              <dt>Cases</dt>
+              <dd>8 disputes · £18,400 aggregate</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <div class="doc-body">
+
+        <div class="warning-block">
+          <div class="warning-block-icon">⚠</div>
+          <div class="warning-block-text">
+            <strong>Choose one of the three options below.</strong> If no response is received by 18 June 2026, Calmly Resolve proceeds automatically to D2 — Final demand and mediation referral.
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">How to respond</div>
+
+          <div class="response-options">
+
+            <!-- Option 1 -->
+            <div class="response-option">
+              <div class="response-option-header">
+                <span class="response-option-num">Option 1</span>
+                <span class="response-option-title">Accept the buyout offer</span>
+              </div>
+              <p class="response-option-body">Accept the offer from Litigation Resolution Capital Ltd for <strong>£11,200</strong>. Your liability in all 8 cases listed in D1-2026-0291 is extinguished immediately on signing. No further payment, negotiation, or legal action will be required.</p>
+              <div class="response-option-actions">
+                <div class="response-option-actions-left">
+                  <button class="btn btn-green" onclick="handleAccept()">Accept buyout — proceed to signing</button>
+                  <div class="action-note">Acceptance triggers a formal deed of settlement, prepared by Litigation Resolution Capital Ltd's legal team. HomeLet Properties Ltd will receive the deed within 24 hours. No solicitor is required to review, though you may engage one at your own cost.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option 2 -->
+            <div class="response-option">
+              <div class="response-option-header">
+                <span class="response-option-num">Option 2</span>
+                <span class="response-option-title">Make a counter-offer</span>
+              </div>
+              <p class="response-option-body">Submit a counter-offer to the claimant pool. Your counter will be presented collectively to all 8 claimants. Claimants vote on acceptance; a simple majority (5 of 8) is sufficient to accept your counter and close all 8 cases.</p>
+              <div class="response-option-actions-left">
+                <div class="counter-inputs">
+                  <div class="counter-row">
+                    <label>Counter-offer amount</label>
+                    <div class="input-prefix-wrap">
+                      <span class="input-prefix">£</span>
+                      <input type="number" class="input-amount" value="12000" id="counter-amount" min="1000" max="20000" step="100">
+                    </div>
+                    <span class="subtle" style="font-size:13px;">Suggested: £12,000</span>
+                  </div>
+                  <div class="counter-row">
+                    <label>Applies to</label>
+                    <select class="input-select">
+                      <option>All 8 cases (recommended)</option>
+                      <option>CLM-2026-0847 — Sarah Thompson only</option>
+                      <option>CLM-2026-0851 — James O'Brien only</option>
+                      <option>CLM-2026-0862 — Priya Nair only</option>
+                      <option>CLM-2026-0876 — Emma Singh only</option>
+                      <option>CLM-2026-0881 — David Okafor only</option>
+                      <option>CLM-2026-0894 — Marcus Wells only</option>
+                      <option>CLM-2026-0901 — Fatima Al-Rashid only</option>
+                      <option>CLM-2026-0912 — Tom Eriksson only</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">
+                  <button class="btn btn-blue" onclick="handleCounter()">Submit counter-offer</button>
+                  <div class="action-note">Counter-offers are presented to claimants within 3 working days. You'll be notified of their collective response. Claimants may accept, reject, or submit a revised counter.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Option 3 -->
+            <div class="response-option">
+              <div class="response-option-header">
+                <span class="response-option-num">Option 3</span>
+                <span class="response-option-title">Formally dispute these claims</span>
+              </div>
+              <p class="response-option-body">If you believe these claims are without merit, or you wish to contest the independent EV assessment, you may formally dispute all or specific claims. This does not affect your right to defend individual claims — it triggers the D2 escalation process.</p>
+              <div class="response-option-actions">
+                <div class="response-option-actions-left">
+                  <button class="btn btn-ghost" onclick="handleDispute()">Formally dispute these claims</button>
+                  <div class="action-note">Formal dispute triggers the D2 process — final demand and mediation referral, issued within 14 days. See the escalation schedule below. You retain all legal rights throughout this process.</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /response-options -->
+        </div>
+
+        <!-- Escalation timeline -->
+        <div class="escalation-section">
+          <div class="escalation-label">Escalation schedule — if no resolution at D1</div>
+
+          <div class="timeline">
+            <!-- D1 -->
+            <div class="timeline-step">
+              <div class="timeline-connector">
+                <div class="timeline-dot active"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-stage">D1 — Formal demand</div>
+                <div class="timeline-when">Now — 18 June 2026</div>
+                <div class="timeline-cost green">Buyout: £11,200</div>
+                <div class="timeline-desc">Demand issued. Buyout offer active. Counter-offer window open.</div>
+              </div>
+            </div>
+
+            <!-- D2 -->
+            <div class="timeline-step">
+              <div class="timeline-connector">
+                <div class="timeline-dot warning"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-stage">D2 — Final demand + mediation</div>
+                <div class="timeline-when">+14 days — 2 July 2026</div>
+                <div class="timeline-cost amber">Est. £14,600 + mediation fees</div>
+                <div class="timeline-desc">Mediation referral issued. Legal management required. Buyout offer lapses.</div>
+              </div>
+            </div>
+
+            <!-- D3 -->
+            <div class="timeline-step">
+              <div class="timeline-connector">
+                <div class="timeline-dot danger"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-stage">D3 — Arbitration filing</div>
+                <div class="timeline-when">+28 days — 16 July 2026</div>
+                <div class="timeline-cost red">Est. £17,000 + arbitration costs</div>
+                <div class="timeline-desc">Claims filed with arbitration panel. Legally binding. Solicitor strongly advised.</div>
+              </div>
+            </div>
+
+            <!-- Court -->
+            <div class="timeline-step">
+              <div class="timeline-connector">
+                <div class="timeline-dot danger"></div>
+                <div class="timeline-line"></div>
+              </div>
+              <div class="timeline-content">
+                <div class="timeline-stage">Court filing</div>
+                <div class="timeline-when">+60 days — 17 Aug 2026</div>
+                <div class="timeline-cost red">£19,100+ plus court &amp; legal costs</div>
+                <div class="timeline-desc">County court proceedings. Judgment enforceable. Adverse costs risk.</div>
+              </div>
+            </div>
+          </div><!-- /timeline -->
+
+          <div style="margin-top:20px;">
+            <p class="subtle">For the full escalation protocol, including mediation service details and arbitration panel terms, see <a href="#" style="color:var(--accent);text-decoration:underline;">P6-S1 — Escalation notice</a>.</p>
+          </div>
+        </div>
+
+      </div><!-- /doc-body -->
+
+      <div class="annotation-strip">
+        <div class="annotation-row">
+          <span class="annotation-key">Flow ref:</span> D1 · C6 &nbsp;|&nbsp;
+          <span class="annotation-key">T4:</span> M-008 (Defendant settlement rate) &nbsp;|&nbsp;
+          <span class="annotation-key annotation-pass">PASS:</span> All three defendant response paths captured in structured data. D1 response rate ≥ 30% &nbsp;|&nbsp;
+          <span class="annotation-key annotation-fail">FAIL:</span> Defendants default to "ignore" because response interface too complex
+        </div>
+      </div>
+
+    </div><!-- /doc -->
+  </div>
+  <div class="spacer"></div>
+</div>
+
+
+<script>
+  function showTab(id, btn) {
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+    document.getElementById('screen-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function handleAccept() {
+    alert('Prototype note: In production, this would open a secure signing portal — DocuSign or equivalent — presenting the deed of settlement pre-populated with HomeLet Properties Ltd company details, the case references, and the £11,200 settlement figure.');
+  }
+
+  function handleCounter() {
+    const amount = document.getElementById('counter-amount').value;
+    if (!amount || amount < 1000) {
+      alert('Please enter a counter-offer amount of at least £1,000.');
+      return;
+    }
+    alert('Prototype note: Counter-offer of £' + parseInt(amount).toLocaleString() + ' submitted. In production, this is logged against D1-2026-0291, timestamped, and queued for presentation to all 8 claimants within 3 working days. HomeLet Properties Ltd receives a confirmation email with a reference number.');
+  }
+
+  function handleDispute() {
+    if (confirm('Confirm: you wish to formally dispute these claims and trigger the D2 escalation process?\n\nThis does not waive any legal rights. D2 — Final demand and mediation referral — will be issued within 14 days.')) {
+      alert('Prototype note: Dispute lodged. In production, D2 is queued automatically. HomeLet Properties Ltd receives a D2 issue confirmation and the mediation referral is generated. All 8 claimants are notified simultaneously.');
+    }
+  }
+</script>
+
+</body>
+</html>

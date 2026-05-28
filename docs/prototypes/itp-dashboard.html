@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Partner Portal · Checkatrade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Reset & tokens ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #f5f4f1;
+      --surface:        #ffffff;
+      --text:           #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted:     #718096;
+      --border:         #dde1e7;
+      --border-strong:  #b0b8c4;
+      --accent:         #1f4fa8;
+      --accent-light:   #e8eef8;
+      --navy:           #0f2744;
+      --navy-mid:       #1a3a5c;
+      --navy-light:     #1e4068;
+      --navy-text:      #a8c0d8;
+      --navy-text-dim:  #6b8aaa;
+      --green-bg:       #e6f4ec;
+      --green-text:     #166534;
+      --green-border:   #a7d4b8;
+      --blue-bg:        #dbeafe;
+      --blue-text:      #1e40af;
+      --blue-border:    #93c5fd;
+      --amber-bg:       #fef3c7;
+      --amber-text:     #92400e;
+      --grey-bg:        #f1f3f5;
+      --grey-text:      #4a5568;
+      --grey-border:    #d0d5dd;
+      --red-bg:         #fde8e8;
+      --red-text:       #991b1b;
+      --warning-bg:     #fff8e6;
+      --warning-border: #d4820a;
+      --sidebar-w:      240px;
+      --topbar-h:       56px;
+      --font:           'DM Sans', system-ui, sans-serif;
+      --mono:           'DM Mono', 'Courier New', monospace;
+    }
+
+    html, body { height: 100%; font-family: var(--font); font-size: 14px; color: var(--text); background: var(--bg); }
+
+    /* ── Prototype tab bar ── */
+    .proto-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: #1a1a2e; padding: 0 16px;
+      display: flex; align-items: center; gap: 8px;
+      height: 36px; border-bottom: 1px solid #2d2d4a;
+    }
+    .proto-bar__label {
+      font-family: var(--mono); font-size: 10px; color: #6b7280;
+      margin-right: 8px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .proto-tab {
+      font-family: var(--mono); font-size: 11px; padding: 4px 12px;
+      border-radius: 3px; border: 1px solid #3d3d5c; color: #9ca3af;
+      background: transparent; cursor: pointer; transition: all 0.15s;
+    }
+    .proto-tab:hover { background: #2d2d4a; color: #e5e7eb; }
+    .proto-tab.active { background: #1f4fa8; border-color: #1f4fa8; color: #fff; }
+
+    /* ── Shell layout ── */
+    .shell {
+      display: flex;
+      height: 100vh;
+      padding-top: 36px; /* proto bar */
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex; flex-direction: column;
+      flex-shrink: 0;
+      position: fixed; top: 36px; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar__logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .sidebar__logo-mark {
+      display: flex; align-items: center; gap: 9px;
+    }
+    .sidebar__logo-icon {
+      width: 28px; height: 28px; background: var(--accent);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .sidebar__logo-icon svg { width: 16px; height: 16px; }
+    .sidebar__logo-name {
+      font-size: 13px; font-weight: 600; color: #fff; line-height: 1.2;
+    }
+    .sidebar__logo-sub {
+      font-size: 10px; color: var(--navy-text-dim); letter-spacing: 0.06em;
+      text-transform: uppercase; margin-top: 2px;
+    }
+
+    .sidebar__nav {
+      flex: 1; padding: 12px 0;
+    }
+    .sidebar__section-label {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--navy-text-dim);
+      padding: 8px 20px 4px; margin-top: 4px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px; margin: 1px 8px;
+      border-radius: 5px; cursor: pointer;
+      color: var(--navy-text); font-size: 13px; font-weight: 400;
+      transition: all 0.12s; position: relative; border-left: 2px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: var(--navy-light); color: #fff; }
+    .nav-item.active {
+      background: rgba(31, 79, 168, 0.2);
+      border-left-color: var(--accent);
+      color: #fff; font-weight: 500;
+      margin-left: 8px; margin-right: 8px;
+    }
+    .nav-item svg { width: 15px; height: 15px; opacity: 0.7; flex-shrink: 0; }
+    .nav-item.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto; background: var(--accent);
+      color: #fff; font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 10px;
+    }
+
+    .sidebar__account {
+      padding: 12px; border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .account-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 6px;
+      background: rgba(255,255,255,0.05); cursor: pointer;
+    }
+    .account-avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0;
+    }
+    .account-info { min-width: 0; }
+    .account-name { font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .account-sub { font-size: 11px; color: var(--navy-text-dim); }
+
+    /* ── Main area ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex; flex-direction: column;
+      min-height: 0;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+    .topbar__breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .topbar__breadcrumb strong { color: var(--text); font-weight: 600; }
+    .topbar__breadcrumb-sep { color: var(--border-strong); }
+    .topbar__spacer { flex: 1; }
+    .topbar__user {
+      font-size: 12px; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .topbar__user-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: 5px;
+      padding: 8px 16px; font-size: 13px; font-weight: 500;
+      font-family: var(--font); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #1a44a0; }
+    .btn-primary svg { width: 14px; height: 14px; }
+
+    /* ── Content ── */
+    .content {
+      flex: 1; overflow-y: auto; padding: 28px 28px 0;
+    }
+
+    /* ── Screen panels ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Page header ── */
+    .page-header {
+      margin-bottom: 24px;
+    }
+    .page-header h1 {
+      font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+    }
+    .page-header p {
+      font-size: 13px; color: var(--text-secondary);
+    }
+
+    /* ── Tenure badge ── */
+    .tenure-inline {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-light); border: 1px solid #b8c8e8;
+      border-radius: 4px; padding: 3px 10px;
+      font-size: 12px; font-weight: 500; color: var(--accent);
+    }
+    .tenure-inline svg { width: 12px; height: 12px; }
+
+    /* ── KPI grid ── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 18px 20px;
+    }
+    .kpi-card__label {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .kpi-card__value {
+      font-size: 28px; font-weight: 600; color: var(--text);
+      line-height: 1; margin-bottom: 6px; letter-spacing: -0.5px;
+    }
+    .kpi-card__sub {
+      font-size: 12px; color: var(--text-secondary);
+      display: flex; align-items: center; gap: 4px;
+    }
+    .kpi-card__delta {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 11px; font-weight: 500; padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .delta-up { background: var(--green-bg); color: var(--green-text); }
+    .delta-neutral { background: var(--grey-bg); color: var(--grey-text); }
+    .kpi-card__bar {
+      margin-top: 10px; height: 3px; background: var(--border);
+      border-radius: 2px; overflow: hidden;
+    }
+    .kpi-card__bar-fill { height: 100%; border-radius: 2px; }
+    .bar-green { background: #22c55e; }
+    .bar-blue { background: var(--accent); }
+    .bar-amber { background: #f59e0b; }
+
+    /* ── Activity feed ── */
+    .section-title {
+      font-size: 13px; font-weight: 600; color: var(--text);
+      margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .section-title span {
+      font-size: 11px; font-weight: 400; color: var(--text-muted);
+    }
+
+    .activity-feed {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; margin-bottom: 20px;
+    }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; margin-top: 4px; flex-shrink: 0;
+    }
+    .dot-green { background: #22c55e; }
+    .dot-blue { background: #3b82f6; }
+    .dot-amber { background: #f59e0b; }
+    .dot-grey { background: #94a3b8; }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-ref {
+      font-size: 11px; font-weight: 500; color: var(--accent);
+      font-family: var(--mono); margin-bottom: 2px;
+    }
+    .activity-desc {
+      font-size: 13px; color: var(--text); line-height: 1.4;
+    }
+    .activity-desc strong { font-weight: 600; }
+    .activity-meta {
+      font-size: 11px; color: var(--text-muted); margin-top: 3px;
+    }
+    .activity-time {
+      font-size: 11px; color: var(--text-muted); flex-shrink: 0; margin-top: 2px;
+    }
+    .status-tag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; font-weight: 500; padding: 2px 7px;
+      border-radius: 3px; margin-left: 6px; vertical-align: middle;
+    }
+    .tag-resolved { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+    .tag-active   { background: var(--blue-bg);  color: var(--blue-text);  border: 1px solid var(--blue-border); }
+    .tag-review   { background: var(--amber-bg); color: var(--amber-text); border: 1px solid #d4820a; }
+    .tag-intake   { background: var(--grey-bg);  color: var(--grey-text);  border: 1px solid var(--grey-border); }
+
+    /* ── Tenure box ── */
+    .tenure-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--navy);
+      border-radius: 8px; padding: 16px 20px;
+      margin-bottom: 28px;
+      display: flex; gap: 14px; align-items: flex-start;
+    }
+    .tenure-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: var(--accent-light); display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tenure-icon svg { width: 18px; height: 18px; color: var(--accent); }
+    .tenure-box__title {
+      font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: 0.04em;
+    }
+    .tenure-box__body {
+      font-size: 13px; color: var(--text-secondary); line-height: 1.55;
+    }
+    .tenure-box__body strong { color: var(--text); font-weight: 600; }
+
+    /* ── Annotation strip ── */
+    .annotation {
+      margin: 0 -28px;
+      background: #1e2227; padding: 12px 28px;
+      border-top: 1px solid #2d333b;
+    }
+    .annotation__inner {
+      display: grid; grid-template-columns: auto 1fr 1fr; gap: 24px;
+      align-items: start;
+    }
+    .ann-block { }
+    .ann-label {
+      font-family: var(--mono); font-size: 9px; letter-spacing: 0.1em;
+      text-transform: uppercase; color: #4b5563; margin-bottom: 3px;
+    }
+    .ann-value {
+      font-family: var(--mono); font-size: 11px; color: #9ca3af; line-height: 1.5;
+    }
+    .ann-pass { color: #34d399; }
+    .ann-fail { color: #f87171; }
+    .ann-label-badge {
+      display: inline-block; background: #2d333b; border: 1px solid #374151;
+      border-radius: 3px; padding: 1px 6px; font-family: var(--mono);
+      font-size: 9px; color: #6b7280; margin-bottom: 4px; letter-spacing: 0.06em;
+    }
+
+    /* ═══════════════════════════════
+       P4-S2 — Outcomes
+    ═══════════════════════════════ */
+    .filter-bar {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .filter-label { font-size: 12px; color: var(--text-muted); margin-right: 4px; }
+    .filter-btn {
+      padding: 5px 14px; border-radius: 5px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary);
+      cursor: pointer; font-family: var(--font); transition: all 0.12s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .filter-divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+
+    .data-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--surface); border-radius: 8px;
+      overflow: hidden; border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .data-table thead th {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 11px 16px; text-align: left;
+      background: #fafafa; border-bottom: 1px solid var(--border);
+    }
+    .data-table thead th:not(:first-child) { text-align: right; }
+    .data-table tbody td {
+      padding: 12px 16px; border-bottom: 1px solid #f0f2f5;
+      font-size: 13px; color: var(--text); vertical-align: middle;
+    }
+    .data-table tbody td:not(:first-child) { text-align: right; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover td { background: #fafbfc; }
+    .data-table tfoot td {
+      padding: 11px 16px; border-top: 2px solid var(--border);
+      font-size: 13px; font-weight: 600; color: var(--text);
+      background: #fafafa;
+    }
+    .data-table tfoot td:not(:first-child) { text-align: right; }
+
+    .dispute-type { font-weight: 500; }
+    .dispute-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
+
+    .rate-bar-wrap {
+      display: flex; align-items: center; gap: 8px; justify-content: flex-end;
+    }
+    .rate-bar-track {
+      width: 48px; height: 5px; background: var(--border);
+      border-radius: 3px; overflow: hidden;
+    }
+    .rate-bar-fill { height: 100%; border-radius: 3px; }
+    .rate-val { font-size: 13px; font-weight: 500; min-width: 32px; text-align: right; }
+    .rate-green { color: var(--green-text); }
+    .rate-amber { color: #d97706; }
+    .rate-grey  { color: var(--text-muted); }
+
+    /* ── Chart ── */
+    .chart-container {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 20px 20px 14px;
+      margin-bottom: 20px;
+    }
+    .chart-title {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      margin-bottom: 4px;
+    }
+    .chart-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; }
+
+    .bar-chart {
+      display: flex; align-items: flex-end; gap: 10px;
+      height: 120px; padding-bottom: 24px;
+      position: relative;
+    }
+    .bar-chart::before {
+      content: ''; position: absolute; left: 0; right: 0;
+      top: 0; bottom: 24px;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent calc(100%/4 - 1px),
+        #f0f2f5 calc(100%/4 - 1px),
+        #f0f2f5 calc(100%/4)
+      );
+      pointer-events: none;
+    }
+    .bar-col {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: flex-end;
+      position: relative; gap: 4px;
+    }
+    .bar-col__bar {
+      width: 100%; border-radius: 3px 3px 0 0;
+      background: var(--accent); opacity: 0.85;
+      transition: opacity 0.15s;
+      position: relative; z-index: 1;
+    }
+    .bar-col:hover .bar-col__bar { opacity: 1; }
+    .bar-col__val {
+      font-size: 11px; font-weight: 600; color: var(--text);
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      white-space: nowrap;
+    }
+    .bar-col__label {
+      font-size: 10px; color: var(--text-muted);
+      text-align: center; line-height: 1.2;
+      width: 100%;
+    }
+
+    .y-axis {
+      position: absolute; left: -32px; top: 0; bottom: 24px;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .y-tick { font-size: 9px; color: var(--text-muted); }
+
+    .btn-secondary {
+      background: var(--surface); color: var(--text-secondary);
+      border: 1px solid var(--border); border-radius: 5px;
+      padding: 8px 16px; font-size: 13px; font-weight: 500;
+      font-family: var(--font); cursor: not-allowed;
+      display: inline-flex; align-items: center; gap: 7px;
+      opacity: 0.75; position: relative;
+    }
+    .btn-secondary:hover .tooltip { opacity: 1; pointer-events: auto; }
+    .tooltip {
+      position: absolute; bottom: calc(100% + 6px); left: 50%;
+      transform: translateX(-50%);
+      background: var(--text); color: #fff; font-size: 11px;
+      padding: 5px 10px; border-radius: 4px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.15s;
+      font-weight: 400;
+    }
+    .tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent; border-top-color: var(--text);
+    }
+
+    .report-note {
+      font-size: 12px; color: var(--text-muted); line-height: 1.55;
+      padding: 14px; background: var(--grey-bg); border-radius: 6px;
+      margin-bottom: 28px;
+    }
+    .report-note a { color: var(--accent); text-decoration: none; }
+
+    /* ═══════════════════════════════
+       P4-S3 — Fee statement
+    ═══════════════════════════════ */
+    .statement-header {
+      background: var(--navy); color: #fff;
+      border-radius: 8px 8px 0 0; padding: 24px 28px;
+      margin-bottom: 0;
+    }
+    .statement-header__top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .statement-header__logo {
+      font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.2px;
+    }
+    .statement-header__logo span { color: var(--navy-text-dim); font-weight: 400; }
+    .statement-ref {
+      font-family: var(--mono); font-size: 12px;
+      color: var(--navy-text-dim); text-align: right;
+    }
+    .statement-ref strong { display: block; color: #fff; font-size: 13px; margin-bottom: 2px; }
+    .statement-meta {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+      background: rgba(255,255,255,0.06); border-radius: 6px;
+      overflow: hidden;
+    }
+    .stmt-meta-item {
+      padding: 12px 16px; border-right: 1px solid rgba(255,255,255,0.08);
+    }
+    .stmt-meta-item:last-child { border-right: none; }
+    .stmt-meta-label { font-size: 10px; color: var(--navy-text-dim); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .stmt-meta-value { font-size: 13px; font-weight: 500; color: #fff; }
+
+    .statement-body {
+      background: var(--surface); border: 1px solid var(--border);
+      border-top: none; border-radius: 0 0 8px 8px;
+      overflow: hidden; margin-bottom: 20px;
+    }
+    .fee-table {
+      width: 100%; border-collapse: collapse;
+    }
+    .fee-table thead th {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 12px 20px; text-align: left;
+      background: #fafafa; border-bottom: 1px solid var(--border);
+    }
+    .fee-table thead th:not(:first-child):not(:nth-child(2)) { text-align: right; }
+    .fee-table tbody td {
+      padding: 14px 20px; border-bottom: 1px solid #f0f2f5;
+      font-size: 13px; color: var(--text); vertical-align: middle;
+    }
+    .fee-table tbody td:not(:first-child):not(:nth-child(2)) { text-align: right; }
+    .fee-table tbody tr:last-child td { border-bottom: none; }
+    .fee-table tbody tr:hover td { background: #fafbfc; }
+    .fee-table tfoot td {
+      padding: 14px 20px; border-top: 2px solid var(--border);
+      font-size: 13px; font-weight: 700; color: var(--text);
+      background: #f8f9fa;
+    }
+    .fee-table tfoot td:not(:first-child):not(:nth-child(2)) { text-align: right; }
+    .case-ref-cell {
+      font-family: var(--mono); font-size: 12px; color: var(--accent);
+    }
+    .fee-highlight { color: var(--green-text); font-weight: 600; }
+    .fee-amount { font-weight: 500; }
+    .net-amount { font-weight: 600; color: var(--green-text); }
+
+    .statement-note {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px 20px;
+      font-size: 13px; color: var(--text-secondary); line-height: 1.55;
+      margin-bottom: 20px;
+    }
+
+    .totals-summary {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+      margin-bottom: 20px;
+    }
+    .total-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px 18px;
+      text-align: center;
+    }
+    .total-card__label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--text-muted); margin-bottom: 6px;
+    }
+    .total-card__val {
+      font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.3px;
+    }
+    .total-card.is-primary .total-card__val { color: var(--green-text); }
+
+    /* ── Responsive tweaks ── */
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .annotation__inner { grid-template-columns: 1fr 1fr; }
+      .statement-meta { grid-template-columns: repeat(2, 1fr); }
+      .totals-summary { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<!-- ══ Prototype navigation ══ -->
+<div class="proto-bar">
+  <span class="proto-bar__label">Prototype · Calmly Resolve ITP Portal</span>
+  <button class="proto-tab active" onclick="showScreen('s1', this)">P4-S1 Dashboard</button>
+  <button class="proto-tab" onclick="showScreen('s2', this)">P4-S2 Outcomes</button>
+  <button class="proto-tab" onclick="showScreen('s3', this)">P4-S3 Fee statement</button>
+</div>
+
+<!-- ══ App shell ══ -->
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="sidebar__logo-icon">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2.4a1.6 1.6 0 110 3.2 1.6 1.6 0 010-3.2zm0 8.4a4.8 4.8 0 01-4-2.154c.02-1.327 2.667-2.046 4-2.046s3.98.72 4 2.046A4.8 4.8 0 018 12.8z" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <div class="sidebar__logo-name">Calmly Resolve</div>
+          <div class="sidebar__logo-sub">Partner Portal</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar__nav">
+      <div class="sidebar__section-label">Main</div>
+      <a class="nav-item active" id="nav-dashboard" href="#" onclick="navTo('dashboard', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" id="nav-referrals" href="#" onclick="navTo('referrals', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Referrals
+        <span class="nav-badge">11</span>
+      </a>
+      <a class="nav-item" id="nav-outcomes" href="#" onclick="navTo('outcomes', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Outcomes
+      </a>
+      <a class="nav-item" id="nav-fees" href="#" onclick="navTo('fees', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Fee statements
+      </a>
+      <div class="sidebar__section-label" style="margin-top:12px;">Configuration</div>
+      <a class="nav-item" href="#" onclick="return false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar__account">
+      <div class="account-card">
+        <div class="account-avatar">JW</div>
+        <div class="account-info">
+          <div class="account-name">Checkatrade</div>
+          <div class="account-sub">J. Williams</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main content ── -->
+  <main class="main">
+
+    <!-- ── Top bar ── -->
+    <div class="topbar">
+      <div class="topbar__breadcrumb" id="topbar-breadcrumb">
+        <span>Checkatrade</span>
+        <span class="topbar__breadcrumb-sep">›</span>
+        <strong>Dashboard</strong>
+      </div>
+      <div class="topbar__spacer"></div>
+      <div class="topbar__user">
+        <div class="topbar__user-dot"></div>
+        J. Williams · Checkatrade
+      </div>
+      <button class="btn-primary" onclick="return false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New referral
+      </button>
+    </div>
+
+    <!-- ── SCREEN P4-S1: Dashboard ── -->
+    <div class="content screen active" id="screen-s1">
+
+      <div class="page-header">
+        <h1>Partner dashboard</h1>
+        <p>
+          Account manager: <strong>Sophie Lambert</strong> ·
+          <span class="tenure-inline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Partner since 14 March 2026 · 8 weeks
+          </span>
+        </p>
+      </div>
+
+      <!-- KPI grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card__label">Total referrals</div>
+          <div class="kpi-card__value">23</div>
+          <div class="kpi-card__sub">
+            Since joining &nbsp;
+            <span class="kpi-card__delta delta-up">&#8593; +8 this month</span>
+          </div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-blue" style="width:100%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Active referrals</div>
+          <div class="kpi-card__value">11</div>
+          <div class="kpi-card__sub">Currently in process</div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-blue" style="width:48%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Resolved</div>
+          <div class="kpi-card__value">8</div>
+          <div class="kpi-card__sub">
+            Completed settlements &nbsp;
+            <span class="kpi-card__delta delta-up">+3 this month</span>
+          </div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-green" style="width:35%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Total member recovery</div>
+          <div class="kpi-card__value">£18,450</div>
+          <div class="kpi-card__sub">Gross, all resolved cases</div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-green" style="width:80%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Calmly platform fees</div>
+          <div class="kpi-card__value">£3,690</div>
+          <div class="kpi-card__sub">
+            20% of gross &nbsp;
+            <span class="kpi-card__delta delta-neutral">0% of ITP cost</span>
+          </div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-amber" style="width:20%"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card__label">Settlement rate</div>
+          <div class="kpi-card__value">67%</div>
+          <div class="kpi-card__sub">Of closed cases reaching settlement</div>
+          <div class="kpi-card__bar"><div class="kpi-card__bar-fill bar-green" style="width:67%"></div></div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="section-title">Recent activity <span>last 10 days</span></div>
+      <div class="activity-feed">
+
+        <div class="activity-item">
+          <div class="activity-dot dot-amber"></div>
+          <div class="activity-body">
+            <div class="activity-ref">CLM-2026-1851</div>
+            <div class="activity-desc">
+              <strong>Sarah Thompson</strong> — Settlement offer received (£2,600).
+              <span class="status-tag tag-review">Awaiting response</span>
+            </div>
+          </div>
+          <div class="activity-time">Today</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-dot dot-blue"></div>
+          <div class="activity-body">
+            <div class="activity-ref">CLM-2026-1831</div>
+            <div class="activity-desc">
+              <strong>David Okafor</strong> — EV assessment complete. Defendant demand issued.
+              <span class="status-tag tag-active">Active</span>
+            </div>
+          </div>
+          <div class="activity-time">Yesterday</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-dot dot-blue"></div>
+          <div class="activity-body">
+            <div class="activity-ref">CLM-2026-1802</div>
+            <div class="activity-desc">
+              <strong>Emma Singh</strong> — Specialist review in progress.
+              <span class="status-tag tag-active">Active</span>
+            </div>
+          </div>
+          <div class="activity-time">2 days ago</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-dot dot-green"></div>
+          <div class="activity-body">
+            <div class="activity-ref">CLM-2026-1798</div>
+            <div class="activity-desc">
+              <strong>Marcus Wells</strong> — <span class="status-tag tag-resolved">Resolved</span>
+              £3,100 settlement · £620 platform fee · £2,480 net to member.
+            </div>
+          </div>
+          <div class="activity-time">4 days ago</div>
+        </div>
+
+        <div class="activity-item">
+          <div class="activity-dot dot-grey"></div>
+          <div class="activity-body">
+            <div class="activity-ref">CLM-2026-1776</div>
+            <div class="activity-desc">
+              <strong>Priya Nair</strong> — Intake submitted.
+              <span class="status-tag tag-intake">Under review</span>
+            </div>
+          </div>
+          <div class="activity-time">1 week ago</div>
+        </div>
+
+      </div>
+
+      <!-- Tenure box -->
+      <div class="tenure-box">
+        <div class="tenure-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1f4fa8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="tenure-box__title">Your tenure · data calibration status</div>
+          <div class="tenure-box__body">
+            <strong>Checkatrade</strong> has been a Calmly partner since 14 March 2026. Your ITP-specific outcomes dataset is <strong>8 weeks old</strong>. Settlement rates typically improve <strong>15–20%</strong> between months 3 and 6 as the EV model calibrates to your dispute profile.
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotation strip -->
+      <div class="annotation">
+        <div class="annotation__inner">
+          <div class="ann-block">
+            <div class="ann-label">Flow ref</div>
+            <div class="ann-value">PartP2 · C8-SR2</div>
+            <div style="margin-top:6px">
+              <div class="ann-label-badge">T4 assumptions</div>
+              <div class="ann-value">U-002 (Fee rate 20%) · U-004 (FMOS 60.3%)</div>
+            </div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Pass criterion</div>
+            <div class="ann-value ann-pass">&#10003; ITP reads total member outcome value and fees in under 10 seconds</div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Fail criterion</div>
+            <div class="ann-value ann-fail">&#215; ITP asks "where do I see my results?" — dashboard not self-evident</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s1 -->
+
+
+    <!-- ── SCREEN P4-S2: Outcomes ── -->
+    <div class="content screen" id="screen-s2">
+
+      <div class="page-header">
+        <h1>Member outcomes report</h1>
+        <p>Dispute-level breakdown by category and period. Updated in real time.</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <span class="filter-label">Period:</span>
+        <button class="filter-btn" onclick="setFilter(this)">Last 30 days</button>
+        <button class="filter-btn active" onclick="setFilter(this)">Last 90 days</button>
+        <button class="filter-btn" onclick="setFilter(this)">All time</button>
+        <div class="filter-divider"></div>
+        <span class="filter-label">Dispute type:</span>
+        <button class="filter-btn active" onclick="setFilter(this)">All types</button>
+        <button class="filter-btn" onclick="setFilter(this)">Housing</button>
+        <button class="filter-btn" onclick="setFilter(this)">Payment</button>
+      </div>
+
+      <!-- Outcomes table -->
+      <table class="data-table" style="margin-bottom: 28px;">
+        <thead>
+          <tr>
+            <th style="text-align:left">Dispute type</th>
+            <th>Referrals</th>
+            <th>Resolved</th>
+            <th>Settlement rate</th>
+            <th>Avg recovery</th>
+            <th>Avg platform fee</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="dispute-type">Housing — Deposit disputes</div>
+            </td>
+            <td>9</td>
+            <td>4</td>
+            <td>
+              <div class="rate-bar-wrap">
+                <div class="rate-bar-track"><div class="rate-bar-fill bar-green" style="width:67%"></div></div>
+                <span class="rate-val rate-green">67%</span>
+              </div>
+            </td>
+            <td>£2,350</td>
+            <td>£470</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="dispute-type">Housing — Repair disputes</div>
+            </td>
+            <td>6</td>
+            <td>2</td>
+            <td>
+              <div class="rate-bar-wrap">
+                <div class="rate-bar-track"><div class="rate-bar-fill" style="width:50%; background:#f59e0b"></div></div>
+                <span class="rate-val rate-amber">50%</span>
+              </div>
+            </td>
+            <td>£1,800</td>
+            <td>£360</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="dispute-type">Payment disputes</div>
+            </td>
+            <td>4</td>
+            <td>1</td>
+            <td>
+              <div class="rate-bar-wrap">
+                <div class="rate-bar-track"><div class="rate-bar-fill bar-green" style="width:100%"></div></div>
+                <span class="rate-val rate-green">100%</span>
+              </div>
+            </td>
+            <td>£650</td>
+            <td>£130</td>
+          </tr>
+          <tr>
+            <td>
+              <div class="dispute-type">Other</div>
+              <div class="dispute-sub">3 withdrawn</div>
+            </td>
+            <td>4</td>
+            <td>1</td>
+            <td>
+              <div class="rate-bar-wrap">
+                <span class="rate-val rate-grey" style="min-width:auto">—</span>
+              </div>
+            </td>
+            <td>—</td>
+            <td>—</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td>23</td>
+            <td>8</td>
+            <td style="text-align:right">67%</td>
+            <td>£2,100 avg</td>
+            <td>£420 avg</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- Bar chart -->
+      <div class="chart-container">
+        <div class="chart-title">Referrals per week since joining</div>
+        <div class="chart-sub">14 March 2026 — 28 May 2026 · 8 weeks</div>
+
+        <div style="position:relative; padding-left: 36px;">
+          <div class="bar-chart">
+            <div class="bar-col">
+              <div class="bar-col__val">3</div>
+              <div class="bar-col__bar" style="height: calc(3/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 1</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">4</div>
+              <div class="bar-col__bar" style="height: calc(4/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 2</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">2</div>
+              <div class="bar-col__bar" style="height: calc(2/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 3</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">5</div>
+              <div class="bar-col__bar" style="height: calc(5/5 * 96px); opacity: 1; background: #1f4fa8;"></div>
+              <div class="bar-col__label">Wk 4</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">3</div>
+              <div class="bar-col__bar" style="height: calc(3/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 5</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">3</div>
+              <div class="bar-col__bar" style="height: calc(3/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 6</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">2</div>
+              <div class="bar-col__bar" style="height: calc(2/5 * 96px)"></div>
+              <div class="bar-col__label">Wk 7</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-col__val">1</div>
+              <div class="bar-col__bar" style="height: calc(1/5 * 96px); opacity: 0.5;"></div>
+              <div class="bar-col__label">Wk 8</div>
+            </div>
+          </div>
+          <div class="y-axis">
+            <span class="y-tick">5</span>
+            <span class="y-tick">4</span>
+            <span class="y-tick">3</span>
+            <span class="y-tick">2</span>
+            <span class="y-tick">1</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Download -->
+      <div style="margin-bottom: 20px;">
+        <button class="btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download report
+          <div class="tooltip">Export as CSV or PDF — coming soon</div>
+        </button>
+      </div>
+
+      <!-- Report note -->
+      <div class="report-note">
+        This report covers Checkatrade's dispute resolution outcomes since 14 March 2026. Data is updated in real time as cases progress. For board-level reporting, contact your account manager <a href="#">Sophie Lambert</a>.
+      </div>
+
+      <!-- Annotation strip -->
+      <div class="annotation">
+        <div class="annotation__inner">
+          <div class="ann-block">
+            <div class="ann-label">Flow ref</div>
+            <div class="ann-value">C8-SR1</div>
+            <div style="margin-top:6px">
+              <div class="ann-label-badge">T4 assumptions</div>
+              <div class="ann-value">M-005 (Avg settlement £3,000) · O-001 (Capacity)</div>
+            </div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Pass criterion</div>
+            <div class="ann-value ann-pass">&#10003; ITP decision-maker says "I'd put this in my board pack"</div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Fail criterion</div>
+            <div class="ann-value ann-fail">&#215; Data doesn't correspond to anything ITP tracks internally</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s2 -->
+
+
+    <!-- ── SCREEN P4-S3: Fee statement ── -->
+    <div class="content screen" id="screen-s3">
+
+      <div class="page-header">
+        <h1>Fee statement</h1>
+        <p>Period-based record of platform fees for reconciliation.</p>
+      </div>
+
+      <!-- Statement wrapper -->
+      <div style="margin-bottom: 28px;">
+
+        <!-- Statement header (navy) -->
+        <div class="statement-header">
+          <div class="statement-header__top">
+            <div>
+              <div class="statement-header__logo">Calmly Resolve <span>Partner Portal</span></div>
+              <div style="font-size:12px; color: #6b8aaa; margin-top:4px;">Fee statement</div>
+            </div>
+            <div class="statement-ref">
+              <strong>STMT-CHK-2026-05</strong>
+              Issued 28 May 2026
+            </div>
+          </div>
+
+          <div class="statement-meta">
+            <div class="stmt-meta-item">
+              <div class="stmt-meta-label">ITP partner</div>
+              <div class="stmt-meta-value">Checkatrade</div>
+            </div>
+            <div class="stmt-meta-item">
+              <div class="stmt-meta-label">Statement ref</div>
+              <div class="stmt-meta-value" style="font-family: var(--mono); font-size:12px;">STMT-CHK-2026-05</div>
+            </div>
+            <div class="stmt-meta-item">
+              <div class="stmt-meta-label">Period</div>
+              <div class="stmt-meta-value">1 May – 28 May 2026</div>
+            </div>
+            <div class="stmt-meta-item">
+              <div class="stmt-meta-label">Cases settled</div>
+              <div class="stmt-meta-value">3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fee table -->
+        <div class="statement-body">
+          <table class="fee-table">
+            <thead>
+              <tr>
+                <th>Case ref</th>
+                <th>Member</th>
+                <th>Settlement date</th>
+                <th>Gross settlement</th>
+                <th>Platform fee (20%)</th>
+                <th>Net to member</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="case-ref-cell">CLM-2026-1798</td>
+                <td>Marcus Wells</td>
+                <td>24 May 2026</td>
+                <td class="fee-amount">£3,100</td>
+                <td class="fee-highlight">£620</td>
+                <td class="net-amount">£2,480</td>
+              </tr>
+              <tr>
+                <td class="case-ref-cell">CLM-2026-1771</td>
+                <td>Fatima Al-Rashid</td>
+                <td>19 May 2026</td>
+                <td class="fee-amount">£1,900</td>
+                <td class="fee-highlight">£380</td>
+                <td class="net-amount">£1,520</td>
+              </tr>
+              <tr>
+                <td class="case-ref-cell">CLM-2026-1743</td>
+                <td>Tom Eriksson</td>
+                <td>12 May 2026</td>
+                <td class="fee-amount">£2,450</td>
+                <td class="fee-highlight">£490</td>
+                <td class="net-amount">£1,960</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Total — May 2026</td>
+                <td>£7,450</td>
+                <td style="color: var(--green-text);">£1,490</td>
+                <td style="color: var(--green-text);">£5,960</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+      </div>
+
+      <!-- Summary totals -->
+      <div class="totals-summary">
+        <div class="total-card">
+          <div class="total-card__label">Gross settlements</div>
+          <div class="total-card__val">£7,450</div>
+        </div>
+        <div class="total-card">
+          <div class="total-card__label">Platform fees</div>
+          <div class="total-card__val" style="color: var(--accent);">£1,490</div>
+        </div>
+        <div class="total-card is-primary">
+          <div class="total-card__label">Net to members</div>
+          <div class="total-card__val">£5,960</div>
+        </div>
+      </div>
+
+      <!-- Statement note -->
+      <div class="statement-note">
+        Platform fees are deducted from settlement proceeds at the point of recovery. Calmly does not invoice separately — fees are accounted for within the disbursement to the member. This statement is for your records only.
+      </div>
+
+      <!-- Download -->
+      <div style="margin-bottom: 20px;">
+        <button class="btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download as PDF
+          <div class="tooltip">PDF export — coming soon</div>
+        </button>
+      </div>
+
+      <!-- Annotation strip -->
+      <div class="annotation">
+        <div class="annotation__inner">
+          <div class="ann-block">
+            <div class="ann-label">Flow ref</div>
+            <div class="ann-value">C6 · PartP2</div>
+            <div style="margin-top:6px">
+              <div class="ann-label-badge">T4 assumptions</div>
+              <div class="ann-value">U-002 (Fee rate 20%)</div>
+            </div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Pass criterion</div>
+            <div class="ann-value ann-pass">&#10003; ITP finance team reconciles fee statement without contacting Calmly</div>
+          </div>
+          <div class="ann-block">
+            <div class="ann-label">Fail criterion</div>
+            <div class="ann-value ann-fail">&#215; ITP raises query on every statement — format not self-explanatory</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /s3 -->
+
+  </main>
+</div>
+
+<script>
+  // ── Tab switching ──
+  function showScreen(id, btn) {
+    // Deactivate all screens and proto tabs
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+
+    // Activate selected
+    document.getElementById('screen-' + id).classList.add('active');
+    btn.classList.add('active');
+
+    // Sync sidebar nav
+    const navMap = { s1: 'dashboard', s2: 'outcomes', s3: 'fees' };
+    syncNav(navMap[id]);
+
+    // Sync topbar breadcrumb
+    const breadcrumbs = { s1: 'Dashboard', s2: 'Outcomes', s3: 'Fee statements' };
+    document.getElementById('topbar-breadcrumb').innerHTML =
+      '<span>Checkatrade</span><span class="topbar__breadcrumb-sep">›</span><strong>' + breadcrumbs[id] + '</strong>';
+  }
+
+  function syncNav(active) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById('nav-' + active);
+    if (target) target.classList.add('active');
+  }
+
+  function navTo(dest, e) {
+    e.preventDefault();
+    const tabMap = { dashboard: 's1', outcomes: 's2', fees: 's3', referrals: null };
+    const screenId = tabMap[dest];
+    if (!screenId) return; // referrals screen not in this prototype set
+
+    const protoTabs = document.querySelectorAll('.proto-tab');
+    const tabIndex = { s1: 0, s2: 1, s3: 2 };
+    const tabBtn = protoTabs[tabIndex[screenId]];
+    if (tabBtn) showScreen(screenId, tabBtn);
+  }
+
+  // ── Filter buttons ──
+  function setFilter(btn) {
+    // Find sibling buttons in the same logical group
+    // Simple: toggle within the nearest group of adjacent filter-btn elements
+    const allFilters = document.querySelectorAll('#screen-s2 .filter-btn');
+    // Determine group by checking if btn and its siblings share the same position context
+    // Simplified: just toggle this button active (keeps UX minimal)
+    btn.classList.toggle('active');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Claimant Intake (Prototype)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --success-bg: #e6f4ec;
+      --success-border: #166534;
+      --success-text: #166534;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1a1a2e;
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── PROTOTYPE NAV BAR ─── */
+    .proto-nav {
+      background: #0d0d1a;
+      border-bottom: 1px solid #333;
+      padding: 0 20px;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .proto-nav-label {
+      font-family: monospace;
+      font-size: 11px;
+      color: #888;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0 16px 0 0;
+      display: flex;
+      align-items: center;
+      border-right: 1px solid #333;
+      margin-right: 4px;
+    }
+    .proto-tab {
+      font-family: monospace;
+      font-size: 12px;
+      color: #666;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      white-space: nowrap;
+    }
+    .proto-tab:hover { color: #aaa; }
+    .proto-tab.active {
+      color: #7eb8ff;
+      border-bottom-color: #7eb8ff;
+    }
+
+    /* ─── PRODUCT SHELL ─── */
+    .product-shell {
+      background: var(--bg);
+      min-height: calc(100vh - 46px);
+    }
+
+    /* ─── PRODUCT HEADER ─── */
+    .product-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+    }
+    .product-header-inner {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 18px;
+      color: var(--panel-bg);
+      letter-spacing: -0.02em;
+    }
+    .logo span {
+      color: var(--accent);
+    }
+    .referral-badge {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .referral-badge strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .referral-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+      display: inline-block;
+    }
+
+    /* ─── SCREEN WRAPPER ─── */
+    .screen {
+      display: none;
+      padding-bottom: 120px;
+    }
+    .screen.active { display: block; }
+
+    /* ─── CONTENT COLUMN ─── */
+    .content {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 40px 24px 0;
+    }
+
+    /* ─── LANDING SCREEN ─── */
+    .referral-strip {
+      background: var(--accent-light);
+      border: 1px solid #b8c8e8;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: var(--accent);
+    }
+    .referral-strip strong { font-weight: 600; }
+    .referral-strip-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .referral-strip-icon svg { fill: #fff; }
+
+    .hero-heading {
+      font-family: var(--font-ui);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+    .hero-sub {
+      font-family: var(--font-body);
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .claim-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .claim-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .claim-icon svg { color: var(--accent); }
+    .claim-text h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .claim-text p {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .pool-counter {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 24px;
+      margin: 32px 0;
+      text-align: center;
+    }
+    .pool-counter .number {
+      font-size: 48px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .pool-counter .label {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ─── CTA BUTTON ─── */
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      font-weight: 600;
+      padding: 14px 28px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+    .btn-primary:hover { background: #1a3f8a; }
+
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: var(--accent);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 500;
+      padding: 10px 0;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .fee-note {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* ─── ELIGIBILITY SCREEN ─── */
+    .screen-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .screen-sub {
+      font-family: var(--font-body);
+      color: var(--text-secondary);
+      font-size: 16px;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    .question-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .question-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+    .question-text {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 15px;
+      color: var(--text);
+    }
+    .option-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .option-item.selected {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .option-radio {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-strong);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+    }
+    .option-item.selected .option-radio {
+      border-color: var(--accent);
+    }
+    .option-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: none;
+    }
+    .option-item.selected .option-dot { display: block; }
+
+    .holding-message {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning-border);
+      padding: 20px;
+      margin-top: 20px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.6;
+      display: none;
+    }
+
+    .elig-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .elig-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.2s;
+    }
+    .elig-dot.done { background: var(--accent); }
+    .elig-dot.current { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+
+    /* ─── INTAKE FORM SCREEN ─── */
+    .progress-bar-wrap {
+      background: var(--border);
+      height: 4px;
+      margin-bottom: 32px;
+    }
+    .progress-bar-fill {
+      height: 4px;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-label-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .progress-step-count {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .form-step { display: none; }
+    .form-step.active { display: block; }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-label-hint {
+      font-weight: 400;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-left: 4px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      font-family: var(--font-ui);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      appearance: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    textarea.form-input { resize: vertical; min-height: 120px; }
+    .form-input-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .checkbox-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .checkbox-item:hover { border-color: var(--accent); background: var(--accent-light); }
+    .checkbox-item.checked { border-color: var(--accent); background: var(--accent-light); }
+    .checkbox-box {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-strong);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .checkbox-item.checked .checkbox-box {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .check-tick {
+      width: 10px;
+      height: 10px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: none;
+    }
+    .checkbox-item.checked .check-tick { display: block; }
+
+    .form-section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+
+    .word-count {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .word-count.warning { color: var(--warning-border); }
+
+    .time-note {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn-back {
+      padding: 13px 20px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-back:hover { border-color: var(--border-strong); }
+
+    /* ─── CONFIRMATION SCREEN ─── */
+    .confirm-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--success-bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+    .confirm-icon svg { color: var(--success-text); }
+
+    .ref-number {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      padding: 20px 24px;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .ref-number-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+    .ref-number-value {
+      font-family: monospace;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--panel-bg);
+      letter-spacing: 0.04em;
+    }
+
+    .next-steps {
+      margin-bottom: 32px;
+    }
+    .next-steps-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .step-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--panel-bg);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content h4 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 3px;
+    }
+    .step-content p {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .confirm-message {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .confirm-message p {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.9);
+    }
+    .confirm-message .email-highlight {
+      color: #93c5fd;
+      font-style: normal;
+    }
+
+    .status-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--accent);
+      font-weight: 500;
+      text-decoration: none;
+      transition: border-color 0.15s;
+      margin-bottom: 8px;
+    }
+    .status-link:hover { border-color: var(--accent); }
+    .status-link svg { flex-shrink: 0; }
+
+    /* ─── ANNOTATION STRIP ─── */
+    .annotation-strip {
+      background: #23272f;
+      border-top: 1px solid #444;
+      padding: 14px 24px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+    }
+    .annotation-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr 1fr 1fr;
+      gap: 0 24px;
+      align-items: start;
+    }
+    .annotation-meta-label {
+      font-family: monospace;
+      font-size: 10px;
+      color: #777;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 3px;
+    }
+    .annotation-meta-value {
+      font-family: monospace;
+      font-size: 12px;
+      color: #ccc;
+      line-height: 1.4;
+    }
+    .annotation-badge {
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 2px;
+      display: inline-block;
+      margin-bottom: 4px;
+      letter-spacing: 0.06em;
+    }
+    .badge-proto { background: #2d3748; color: #a0aec0; border: 1px solid #4a5568; }
+    .badge-pass { background: #1a3a2a; color: #6ee7b7; border: 1px solid #2d6a4f; }
+    .badge-fail { background: #3a1a1a; color: #fca5a5; border: 1px solid #7f1d1d; }
+    .annotation-divider {
+      width: 1px;
+      background: #444;
+      align-self: stretch;
+    }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<!-- PROTOTYPE NAV BAR -->
+<nav class="proto-nav">
+  <span class="proto-nav-label">Prototype viewer</span>
+  <button class="proto-tab active" onclick="showScreen('s1', this)">P1-S1 &nbsp;Landing</button>
+  <button class="proto-tab" onclick="showScreen('s2', this)">P1-S2 &nbsp;Eligibility</button>
+  <button class="proto-tab" onclick="showScreen('s3', this)">P1-S3 &nbsp;Intake form</button>
+  <button class="proto-tab" onclick="showScreen('s4', this)">P1-S4 &nbsp;Confirmation</button>
+</nav>
+
+<div class="product-shell">
+
+  <!-- PRODUCT HEADER -->
+  <header class="product-header">
+    <div class="product-header-inner">
+      <div class="logo">Calmly <span>Resolve</span></div>
+      <div class="referral-badge">
+        <span class="referral-dot"></span>
+        Referred by <strong>Checkatrade</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       P1-S1 — LANDING / POOL EXPLAINER
+  ══════════════════════════════════════════ -->
+  <section class="screen active" id="screen-s1">
+    <div class="content">
+
+      <div class="referral-strip">
+        <div class="referral-strip-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2L13.09 8.26L20 9L14 14.14L15.18 21.02L9 17.77L2.82 21.02L4 14.14L-2 9L4.91 8.26L12 2Z" opacity="0"/><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <strong>Referred by Checkatrade</strong> — they've connected you to Calmly Resolve because of your unresolved dispute.
+        </div>
+      </div>
+
+      <h1 class="hero-heading">You don't have to fight this on your own.</h1>
+      <p class="hero-sub">Calmly Resolve handles dispute resolution collectively. You join a group of people in the same position. We do the work. You share in the outcome.</p>
+
+      <div class="claim-card">
+        <div class="claim-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="claim-text">
+          <h3>We manage the process for you</h3>
+          <p>From submitting your claim to negotiating with the other party — our specialists handle the whole process. You stay informed, but you don't have to do anything except tell us what happened.</p>
+        </div>
+      </div>
+
+      <div class="claim-card">
+        <div class="claim-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        </div>
+        <div class="claim-text">
+          <h3>You're part of a larger group</h3>
+          <p>You're not the only one. 140 members are currently in the pool with disputes similar to yours. A collective claim is far harder to dismiss than a single complaint — which means better outcomes for everyone.</p>
+        </div>
+      </div>
+
+      <div class="claim-card">
+        <div class="claim-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <div class="claim-text">
+          <h3>No upfront cost — ever</h3>
+          <p>Our fee is 20% of whatever you recover. If you recover nothing, we charge nothing. You're risking no money by joining — only the time it takes to fill in the intake form.</p>
+        </div>
+      </div>
+
+      <div class="pool-counter">
+        <div class="number">140+</div>
+        <div class="label">members currently in the pool with similar disputes</div>
+      </div>
+
+      <button class="btn-primary" onclick="showScreen('s2', document.querySelectorAll('.proto-tab')[1])">
+        Check if you're eligible
+      </button>
+      <p class="fee-note">No upfront cost · 20% fee applies only if you recover money</p>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       P1-S2 — ELIGIBILITY CHECK
+  ══════════════════════════════════════════ -->
+  <section class="screen" id="screen-s2">
+    <div class="content">
+
+      <h2 class="screen-title">Is Calmly Resolve right for you?</h2>
+      <p class="screen-sub">Three quick questions. This takes about 60 seconds — and it will tell you whether we can help.</p>
+
+      <div class="elig-progress" id="elig-dots">
+        <div class="elig-dot current" id="dot-0"></div>
+        <div class="elig-dot" id="dot-1"></div>
+        <div class="elig-dot" id="dot-2"></div>
+      </div>
+
+      <!-- Question 1 -->
+      <div class="question-block" id="eq-1">
+        <div class="question-label">Question 1 of 3</div>
+        <div class="question-text">What type of dispute is this?</div>
+        <div class="option-list">
+          <div class="option-item" onclick="selectEligOption(this, 'q1', 'housing')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Housing (landlord, letting agent, repairs)</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q1', 'employment')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Employment (unpaid wages, dismissal, contract)</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q1', 'marketplace')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Online marketplace (goods not received, fake seller)</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q1', 'payment')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Payment transaction (unauthorised charge, refund refused)</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q1', 'other')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Other</span>
+          </div>
+        </div>
+        <div class="holding-message" id="other-holding">
+          We're not yet set up to handle this type of dispute. We're actively expanding the categories we cover — we'll let Checkatrade know when we're ready to take referrals in this area, and they'll be able to connect you then.
+        </div>
+        <div id="eq-1-next" style="display:none; margin-top: 20px;">
+          <button class="btn-primary" style="width:auto; padding: 12px 24px;" onclick="nextEligQ(2)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Question 2 -->
+      <div class="question-block" id="eq-2" style="display:none;">
+        <div class="question-label">Question 2 of 3</div>
+        <div class="question-text">Approximately how much money are you claiming?</div>
+        <div class="option-list">
+          <div class="option-item" onclick="selectEligOption(this, 'q2', 'under500')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Under £500</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q2', '500-2000')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>£500 – £2,000</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q2', '2000-10000')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>£2,000 – £10,000</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q2', 'over10000')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Over £10,000</span>
+          </div>
+        </div>
+        <div id="eq-2-next" style="display:none; margin-top: 20px;">
+          <button class="btn-primary" style="width:auto; padding: 12px 24px;" onclick="nextEligQ(3)">Continue</button>
+        </div>
+      </div>
+
+      <!-- Question 3 -->
+      <div class="question-block" id="eq-3" style="display:none;">
+        <div class="question-label">Question 3 of 3</div>
+        <div class="question-text">Are you still in an active relationship with the other party?</div>
+        <p style="font-family: var(--font-body); font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">For example: still a tenant, still a customer, still employed there.</p>
+        <div class="option-list">
+          <div class="option-item" onclick="selectEligOption(this, 'q3', 'yes')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>Yes — the relationship is ongoing</span>
+          </div>
+          <div class="option-item" onclick="selectEligOption(this, 'q3', 'no')">
+            <div class="option-radio"><div class="option-dot"></div></div>
+            <span>No — the relationship has ended</span>
+          </div>
+        </div>
+        <div id="eq-3-next" style="display:none; margin-top: 20px;">
+          <button class="btn-primary" onclick="showScreen('s3', document.querySelectorAll('.proto-tab')[2])">
+            Start your intake — takes about 5 minutes
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       P1-S3 — INTAKE FORM
+  ══════════════════════════════════════════ -->
+  <section class="screen" id="screen-s3">
+    <div class="content">
+
+      <div class="time-note">
+        This usually takes about 5 minutes. Your progress is saved automatically if you need to come back.
+      </div>
+
+      <div class="progress-label">
+        <span class="progress-label-text" id="step-label">Step 1 of 4 — Your details</span>
+        <span class="progress-step-count" id="step-count">25%</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill" style="width: 25%;"></div>
+      </div>
+
+      <!-- Step 1: Your details -->
+      <div class="form-step active" id="step-1">
+        <div class="form-section-label">Your details</div>
+        <div class="form-group">
+          <label class="form-label" for="f-name">Full name</label>
+          <input type="text" id="f-name" class="form-input" placeholder="e.g. Sarah Jenkins">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-email">Email address</label>
+          <input type="email" id="f-email" class="form-input" placeholder="you@example.com">
+          <div class="form-input-note">We'll send updates here. No marketing — only claim-related communication.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-phone">Phone number <span class="form-label-hint">(optional)</span></label>
+          <input type="tel" id="f-phone" class="form-input" placeholder="+44 7700 000000">
+          <div class="form-input-note">Only used if we need to clarify something in your intake.</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-primary" onclick="nextFormStep(2)" style="flex:1;">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Who are you in dispute with? -->
+      <div class="form-step" id="step-2">
+        <div class="form-section-label">The other party</div>
+        <div class="form-group">
+          <label class="form-label" for="f-party-name">Company or person name</label>
+          <input type="text" id="f-party-name" class="form-input" placeholder="e.g. Apex Builders Ltd">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-party-trading">Trading name <span class="form-label-hint">(if different)</span></label>
+          <input type="text" id="f-party-trading" class="form-input" placeholder="e.g. Apex Home Improvements">
+          <div class="form-input-note">Some businesses operate under a different name to their registered company name.</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="nextFormStep(1)">Back</button>
+          <button class="btn-primary" onclick="nextFormStep(3)" style="flex:1;">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 3: What happened? -->
+      <div class="form-step" id="step-3">
+        <div class="form-section-label">What happened</div>
+        <div class="form-group">
+          <label class="form-label">Select all that apply</label>
+          <div class="checkbox-list">
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Goods not delivered</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Service not completed as agreed</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Deposit or prepayment not returned</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Goods or service not as described</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Faulty or damaged goods</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Overcharged or charged without authorisation</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Refund refused after valid request</span>
+            </div>
+            <div class="checkbox-item" onclick="toggleCheckbox(this)">
+              <div class="checkbox-box"><svg class="check-tick" viewBox="0 0 12 10"><polyline points="1,5 4,8 11,1"/></svg></div>
+              <span>Something else not listed here</span>
+            </div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 24px;">
+          <label class="form-label" for="f-narrative">Describe what happened <span class="form-label-hint">(max 300 words)</span></label>
+          <textarea id="f-narrative" class="form-input" rows="6" placeholder="Describe the situation in your own words — what you paid for, what went wrong, and what response (if any) you received." oninput="updateWordCount(this)"></textarea>
+          <div class="word-count" id="word-count-display">0 / 300 words</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="nextFormStep(2)">Back</button>
+          <button class="btn-primary" onclick="nextFormStep(4)" style="flex:1;">Continue</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Dates and amount -->
+      <div class="form-step" id="step-4">
+        <div class="form-section-label">Dates and amount</div>
+        <div class="form-group">
+          <label class="form-label" for="f-date">When did this happen?</label>
+          <input type="date" id="f-date" class="form-input">
+          <div class="form-input-note">Approximate is fine — use the first of the month if you're unsure of the exact date.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="f-amount">How much are you claiming? (£)</label>
+          <input type="number" id="f-amount" class="form-input" placeholder="e.g. 1500" min="0" step="1">
+          <div class="form-input-note">This is your estimate — your specialist will assess the actual figure when they review your case.</div>
+        </div>
+        <div style="background: var(--accent-light); border-left: 4px solid var(--accent); padding: 14px 16px; margin-bottom: 20px; font-size: 14px; color: var(--text-secondary);">
+          By submitting, you confirm that the information you've provided is accurate to the best of your knowledge. You'll be able to add more detail once your specialist reviews your intake.
+        </div>
+        <div class="btn-row">
+          <button class="btn-back" onclick="nextFormStep(3)">Back</button>
+          <button class="btn-primary" onclick="showScreen('s4', document.querySelectorAll('.proto-tab')[3])" style="flex:1;">Submit intake</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+       P1-S4 — SUBMISSION CONFIRMATION
+  ══════════════════════════════════════════ -->
+  <section class="screen" id="screen-s4">
+    <div class="content" style="text-align:center; padding-top:48px;">
+
+      <div class="confirm-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 8px; text-align:center;">Your intake has been submitted.</h2>
+      <p style="font-family: var(--font-body); color: var(--text-secondary); font-size: 16px; margin-bottom: 32px; text-align:center; line-height:1.6;">We've received everything we need. Here's your claim reference.</p>
+
+      <div class="ref-number">
+        <div class="ref-number-label">Claim reference</div>
+        <div class="ref-number-value">CLM-2026-0847</div>
+      </div>
+
+      <div class="confirm-message">
+        <p>You don't need to do anything else right now. We'll email you at <em class="email-highlight">your@email.com</em> when there's an update. Check your spam folder if you don't hear from us within 3 working days.</p>
+      </div>
+
+      <div class="next-steps" style="text-align:left; margin-top:28px;">
+        <div class="next-steps-title">What happens next</div>
+
+        <div class="step-item">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>A specialist reviews your intake</h4>
+            <p>Within 3 working days, one of our dispute specialists will review what you've submitted. If anything is unclear, they may contact you — but most intakes are complete without follow-up.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>You receive an independent assessment of your claim's value</h4>
+            <p>We'll send you a clear, jargon-free assessment of what your claim is worth and how it compares to similar disputes in the pool. No obligation at this stage.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Your claim is presented to the other party as part of the pool</h4>
+            <p>We present the collective claim to the other party. The strength of the group — and the cost of ignoring it — makes resolution far more likely than individual complaints. Your 20% fee only applies if you recover money.</p>
+          </div>
+        </div>
+      </div>
+
+      <a class="status-link" href="#" onclick="return false;">
+        <span>Check your claim status</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <p style="font-size:13px; color:var(--text-muted); text-align:left; font-family: var(--font-body); font-style:italic;">You'll need your claim reference (CLM-2026-0847) to access the status portal.</p>
+
+    </div>
+  </section>
+
+</div><!-- /.product-shell -->
+
+<!-- ══════════════════════════════════════════
+     ANNOTATION STRIP (fixed, prototype meta)
+══════════════════════════════════════════ -->
+<div class="annotation-strip">
+  <div class="annotation-inner">
+    <div>
+      <span class="annotation-badge badge-proto">PROTOTYPE ANNOTATION</span>
+      <div class="annotation-meta-label">Screen</div>
+      <div class="annotation-meta-value" id="ann-screen-id">P1-S1</div>
+    </div>
+    <div>
+      <div class="annotation-meta-label">Flow ref</div>
+      <div class="annotation-meta-value" id="ann-flow-ref">CP-ITP · C7-SR4</div>
+      <div style="margin-top:6px;">
+        <div class="annotation-meta-label">T4 assumption</div>
+        <div class="annotation-meta-value" id="ann-assumption">M-003 — Claimant segment willingness to engage</div>
+      </div>
+    </div>
+    <div>
+      <span class="annotation-badge badge-pass">PASS</span>
+      <div class="annotation-meta-value" id="ann-pass">Completion rate landing → eligibility check ≥ 40%</div>
+    </div>
+    <div>
+      <span class="annotation-badge badge-fail">FAIL</span>
+      <div class="annotation-meta-value" id="ann-fail">&lt;25% proceed — pool framing is not compelling for this segment</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── Screen tab switching ──
+  const annotations = {
+    s1: {
+      id: 'P1-S1',
+      flow: 'CP-ITP · C7-SR4',
+      assumption: 'M-003 — Claimant segment willingness to engage',
+      pass: 'Completion rate landing → eligibility check ≥ 40%',
+      fail: '<25% proceed — pool framing is not compelling for this segment'
+    },
+    s2: {
+      id: 'P1-S2',
+      flow: 'CP1-pre',
+      assumption: 'M-004 — Segment composition',
+      pass: 'Eligibility check correctly routes ≥ 90% of known test cases to correct segment',
+      fail: '>15% "ineligible" rate on warm ITP referrals — ITP is referring mismatched members'
+    },
+    s3: {
+      id: 'P1-S3',
+      flow: 'CP1 · C5-SR4',
+      assumption: 'M-005 — Avg settlement £3,000 · M-003',
+      pass: '≥ 80% of intakes produce a structured case file usable for EV assessment without specialist follow-up',
+      fail: 'Specialist needs to call >50% of claimants for missing information — form is not fit for EV methodology'
+    },
+    s4: {
+      id: 'P1-S4',
+      flow: 'CP1',
+      assumption: 'O-001 — Specialist capacity 40/month',
+      pass: 'Confirmation screen matches actual processing time — claimant does not chase before first update window',
+      fail: '>30% of claimants email/call before promised first update'
+    }
+  };
+
+  function showScreen(id, tabEl) {
+    // Hide all screens
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+
+    // Show target
+    document.getElementById('screen-' + id).classList.add('active');
+    tabEl.classList.add('active');
+
+    // Update annotation
+    const ann = annotations[id];
+    document.getElementById('ann-screen-id').textContent = ann.id;
+    document.getElementById('ann-flow-ref').textContent = ann.flow;
+    document.getElementById('ann-assumption').textContent = ann.assumption;
+    document.getElementById('ann-pass').textContent = ann.pass;
+    document.getElementById('ann-fail').innerHTML = ann.fail;
+
+    window.scrollTo(0, 0);
+  }
+
+  // ── Eligibility Q&A ──
+  const eligAnswers = {};
+
+  function selectEligOption(el, qKey, value) {
+    // Deselect siblings
+    el.closest('.option-list').querySelectorAll('.option-item').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    eligAnswers[qKey] = value;
+
+    // Handle "other" special case
+    const holding = document.getElementById('other-holding');
+    if (qKey === 'q1' && value === 'other') {
+      holding.style.display = 'block';
+      document.getElementById('eq-1-next').style.display = 'none';
+      return;
+    } else if (qKey === 'q1') {
+      holding.style.display = 'none';
+    }
+
+    // Show next button for current question
+    const nextId = qKey === 'q1' ? 'eq-1-next' : qKey === 'q2' ? 'eq-2-next' : 'eq-3-next';
+    document.getElementById(nextId).style.display = 'block';
+  }
+
+  function nextEligQ(n) {
+    // Hide current, show next question block
+    document.querySelectorAll('[id^="eq-"]').forEach(b => b.style.display = 'none');
+    document.getElementById('eq-' + n).style.display = 'block';
+
+    // Update dots
+    for (let i = 0; i < 3; i++) {
+      const dot = document.getElementById('dot-' + i);
+      if (i < n - 1) {
+        dot.className = 'elig-dot done';
+      } else if (i === n - 1) {
+        dot.className = 'elig-dot current';
+      } else {
+        dot.className = 'elig-dot';
+      }
+    }
+  }
+
+  // ── Intake form steps ──
+  const stepLabels = [
+    '',
+    'Step 1 of 4 — Your details',
+    'Step 2 of 4 — The other party',
+    'Step 3 of 4 — What happened',
+    'Step 4 of 4 — Dates and amount'
+  ];
+  const stepPct = ['', '25%', '50%', '75%', '100%'];
+
+  function nextFormStep(n) {
+    document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    document.getElementById('step-label').textContent = stepLabels[n];
+    document.getElementById('step-count').textContent = stepPct[n];
+    document.getElementById('progress-fill').style.width = stepPct[n];
+    window.scrollTo(0, 0);
+  }
+
+  // ── Checkboxes ──
+  function toggleCheckbox(el) {
+    el.classList.toggle('checked');
+  }
+
+  // ── Word count ──
+  function updateWordCount(textarea) {
+    const words = textarea.value.trim() === '' ? 0 : textarea.value.trim().split(/\s+/).length;
+    const el = document.getElementById('word-count-display');
+    el.textContent = words + ' / 300 words';
+    if (words > 280) {
+      el.classList.add('warning');
+    } else {
+      el.classList.remove('warning');
+    }
+    if (words > 300) {
+      const trimmed = textarea.value.trim().split(/\s+/).slice(0, 300).join(' ');
+      textarea.value = trimmed;
+    }
+  }
+</script>
+
+</body>
+</html>

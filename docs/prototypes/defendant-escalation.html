@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P6 — Defendant Escalation | Calmly Resolve</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --inset-border: #1f4fa8;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 900px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; }
+
+    /* Prototype nav tab bar */
+    .proto-nav {
+      background: #2d3748;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border-bottom: 2px solid #1a202c;
+    }
+    .proto-nav-label {
+      color: #a0aec0;
+      font-size: 11px;
+      font-family: var(--font-ui);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding-right: 16px;
+      border-right: 1px solid #4a5568;
+      margin-right: 8px;
+    }
+    .proto-tab {
+      background: none;
+      border: none;
+      color: #a0aec0;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+    }
+    .proto-tab:hover { color: #e2e8f0; }
+    .proto-tab.active { color: #ffffff; border-bottom-color: #4299e1; }
+
+    /* Screen containers */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* Product header */
+    .product-header {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 20px 32px;
+    }
+    .product-header .org { font-size: 13px; font-weight: 500; letter-spacing: 0.04em; opacity: 0.7; text-transform: uppercase; margin-bottom: 4px; }
+    .product-header h1 { font-size: 20px; font-weight: 600; margin-bottom: 2px; }
+    .product-header .ref { font-size: 13px; opacity: 0.7; }
+
+    .container { max-width: var(--width); margin: 0 auto; padding: 40px 24px 24px; }
+
+    /* Summary list */
+    .summary-list { border-top: 1px solid var(--border); margin-bottom: 32px; }
+    .summary-list dl { }
+    .summary-list .row { display: grid; grid-template-columns: 200px 1fr; border-bottom: 1px solid var(--border); padding: 10px 0; gap: 16px; }
+    .summary-list dt { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .summary-list dd { font-size: 14px; color: var(--text); }
+
+    /* Sections */
+    h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+    h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+    p { font-family: var(--font-body); font-size: 16px; margin-bottom: 16px; color: var(--text); }
+
+    .section { margin-bottom: 32px; }
+
+    /* Comparison table */
+    .data-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 14px; }
+    .data-table thead th { font-weight: 600; padding: 10px 14px; text-align: left; background: var(--bg); border-bottom: 2px solid var(--border-strong); font-size: 13px; color: var(--text-secondary); letter-spacing: 0.02em; }
+    .data-table tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table tbody tr.highlight td { background: var(--accent-light); font-weight: 600; }
+    .data-table tbody tr.expired td { color: var(--text-muted); text-decoration: line-through; }
+
+    /* Warning block */
+    .warning {
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning-border);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #7c4f00;
+    }
+    .warning strong { display: block; margin-bottom: 4px; font-weight: 600; }
+
+    /* Inset block */
+    .inset {
+      background: var(--accent-light);
+      border-left: 4px solid var(--inset-border);
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    /* Button */
+    .btn { display: inline-block; padding: 12px 24px; border: none; cursor: pointer; font-family: var(--font-ui); font-size: 15px; font-weight: 600; border-radius: 4px; transition: all 0.15s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #1a3f8a; }
+    .btn-secondary { background: var(--surface); color: var(--accent); border: 1.5px solid var(--accent); }
+    .btn-secondary:hover { background: var(--accent-light); }
+    .btn-success { background: #166534; color: #fff; }
+    .btn-success:hover { background: #14532d; }
+
+    /* Tags */
+    .tag { display: inline-block; padding: 2px 8px; border-radius: var(--tag-radius); font-size: 12px; font-weight: 500; }
+    .tag-red { background: #fde8e8; color: #991b1b; border: 1px solid #f0b4b4; }
+    .tag-green { background: #e6f4ec; color: #166534; border: 1px solid #a7d4b8; }
+    .tag-blue { background: var(--accent-light); color: var(--accent); border: 1px solid #b8c8e8; }
+    .tag-yellow { background: #fef9e6; color: #854d0e; border: 1px solid #f0d98a; }
+    .tag-grey { background: #f1f3f5; color: #4a5568; border: 1px solid #d0d5dd; }
+
+    /* Timeline */
+    .timeline { display: flex; gap: 0; margin-bottom: 32px; position: relative; }
+    .timeline::before { content: ''; position: absolute; top: 20px; left: 0; right: 0; height: 2px; background: var(--border); z-index: 0; }
+    .timeline-stage { flex: 1; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 8px; }
+    .timeline-dot { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; margin-bottom: 10px; border: 2px solid var(--border); background: var(--surface); color: var(--text-muted); flex-shrink: 0; }
+    .timeline-dot.missed { background: #fde8e8; border-color: #f0b4b4; color: #991b1b; }
+    .timeline-dot.current { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .timeline-dot.upcoming { background: #f1f3f5; border-color: var(--border); color: var(--text-muted); }
+    .timeline-dot.resolved { background: #e6f4ec; border-color: #a7d4b8; color: #166534; }
+    .timeline-label { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+    .timeline-date { font-size: 11px; color: var(--text-muted); }
+    .timeline-status { font-size: 11px; font-weight: 600; margin-top: 4px; }
+    .timeline-status.missed { color: #991b1b; }
+    .timeline-status.current { color: var(--accent); }
+    .timeline-status.upcoming { color: var(--text-muted); }
+    .timeline-status.resolved { color: #166534; }
+
+    /* Status table for claims */
+    .claims-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 24px; }
+    .claims-table th { font-weight: 600; padding: 8px 12px; text-align: left; background: var(--bg); border-bottom: 2px solid var(--border-strong); color: var(--text-secondary); font-size: 12px; letter-spacing: 0.02em; }
+    .claims-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .claims-table tr:last-child td { border-bottom: none; }
+
+    /* Stage detail card */
+    .stage-card { background: var(--surface); border: 1px solid var(--border); padding: 20px 24px; margin-bottom: 16px; }
+    .stage-card.current-stage { border-color: var(--accent); border-left: 4px solid var(--accent); }
+    .stage-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .stage-card .stage-meta { display: flex; gap: 16px; margin-bottom: 10px; flex-wrap: wrap; }
+    .stage-card .stage-meta span { font-size: 12px; color: var(--text-secondary); }
+    .stage-card p { font-family: var(--font-ui); font-size: 14px; color: var(--text-secondary); margin-bottom: 0; }
+
+    /* Options block */
+    .options-list { list-style: none; padding: 0; margin-bottom: 24px; }
+    .options-list li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; align-items: flex-start; }
+    .options-list li:last-child { border-bottom: none; }
+    .options-list .opt-num { background: var(--accent); color: #fff; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Settlement outcome */
+    .outcome-header { background: #e6f4ec; border: 1px solid #a7d4b8; padding: 20px 24px; margin-bottom: 28px; }
+    .outcome-header h2 { color: #166534; margin-bottom: 4px; }
+    .outcome-header .outcome-date { font-size: 14px; color: #166534; opacity: 0.8; }
+
+    .cost-note { background: #fef9e6; border: 1px solid #f0d98a; padding: 14px 18px; margin-bottom: 24px; font-size: 14px; color: #7c4f00; }
+    .cost-note strong { font-weight: 600; }
+
+    /* Annotation strip */
+    .annotation-strip {
+      background: #f1f3f5;
+      border-top: 2px solid #d0d5dd;
+      padding: 16px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 11.5px;
+      color: #4a5568;
+      line-height: 1.7;
+    }
+    .annotation-strip .ann-label {
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #718096;
+      margin-bottom: 6px;
+    }
+    .annotation-strip .ann-row { margin-bottom: 4px; }
+    .annotation-strip .ann-pass { color: #166534; }
+    .annotation-strip .ann-fail { color: #991b1b; }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+    .amount-large { font-size: 28px; font-weight: 600; color: var(--text); }
+    .amount-context { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+    .button-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 28px; }
+
+    .completed-all { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #166534; font-weight: 600; padding: 12px 16px; background: #e6f4ec; border: 1px solid #a7d4b8; margin-bottom: 20px; }
+    .completed-all .check-icon { font-size: 18px; }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<!-- Prototype navigation -->
+<nav class="proto-nav">
+  <span class="proto-nav-label">P6 — Defendant escalation</span>
+  <button class="proto-tab active" onclick="showScreen(0, this)">S1 — Escalation notice</button>
+  <button class="proto-tab" onclick="showScreen(1, this)">S2 — Stage tracker</button>
+  <button class="proto-tab" onclick="showScreen(2, this)">S3 — Settlement outcome</button>
+</nav>
+
+<!-- ===================== SCREEN 1 — Escalation notice ===================== -->
+<div class="screen active" id="screen-0">
+  <div class="product-header">
+    <div class="org">Calmly Resolve</div>
+    <h1>Escalation notice — D3</h1>
+    <div class="ref">Reference: D1-2026-0291 &nbsp;·&nbsp; HomeLet Properties Ltd &nbsp;·&nbsp; Issued: 5 July 2026</div>
+  </div>
+
+  <div class="container">
+    <div class="section">
+      <h2>Notice of escalation to arbitration filing</h2>
+      <p>HomeLet Properties Ltd did not respond to the D1 formal demand issued 28 May 2026, or to the D2 final demand issued 18 June 2026. Calmly Resolve is now proceeding to arbitration filing in respect of 8 unresolved claims.</p>
+      <p>The original D1 buyout offer from Litigation Resolution Capital Ltd has expired. A revised buyout offer is available at D3 — the price has increased to reflect the additional legal costs incurred.</p>
+    </div>
+
+    <div class="section">
+      <h3>D3 revised buyout offer</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Offer stage</th>
+            <th style="text-align:right">Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="expired">
+            <td>D1 buyout offer</td>
+            <td style="text-align:right">£11,200</td>
+            <td><span class="tag tag-grey">Expired</span></td>
+          </tr>
+          <tr class="highlight">
+            <td>D3 revised buyout <strong>(current)</strong></td>
+            <td style="text-align:right"><strong>£14,200</strong></td>
+            <td><span class="tag tag-blue">Available now</span></td>
+          </tr>
+          <tr>
+            <td>Estimated cost at arbitration</td>
+            <td style="text-align:right">£18,400<span style="color:var(--text-muted)">+</span></td>
+            <td><span class="tag tag-red">Plus legal costs</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="warning">
+      <strong>⚠ Failure to engage at D3 will result in arbitration proceedings commencing.</strong>
+      You retain the right to defend individual claims through arbitration. Calmly Resolve does not provide legal advice — you should seek independent legal counsel before responding to this notice.
+    </div>
+
+    <div class="button-row">
+      <button class="btn btn-primary" onclick="showScreen(1, document.querySelectorAll('.proto-tab')[1])">
+        Respond to D3 escalation →
+      </button>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P6-S1</div>
+    <div class="ann-row">Flow ref: OP4 · D3 &nbsp;|&nbsp; T4: M-008 (Defendant settlement rate) · M-005 (Avg settlement)</div>
+    <div class="ann-row ann-pass">PASS: Defendant responds to D3 at higher rate than D1 — escalation notice drives re-engagement</div>
+    <div class="ann-row ann-fail">FAIL: D3 response rate = D1 rate — escalation notice has no marginal effect on defendant behaviour</div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 2 — Stage tracker ===================== -->
+<div class="screen" id="screen-1">
+  <div class="product-header">
+    <div class="org">Calmly Resolve</div>
+    <h1>Escalation stage tracker</h1>
+    <div class="ref">Reference: D1-2026-0291 &nbsp;·&nbsp; HomeLet Properties Ltd &nbsp;·&nbsp; Engaging at D3</div>
+  </div>
+
+  <div class="container">
+    <!-- Timeline -->
+    <div class="section">
+      <h2>Your escalation stage</h2>
+      <div class="timeline">
+        <div class="timeline-stage">
+          <div class="timeline-dot missed">D1</div>
+          <div class="timeline-label">D1 Demand</div>
+          <div class="timeline-date">28 May 2026</div>
+          <div class="timeline-status missed">Missed — no response</div>
+        </div>
+        <div class="timeline-stage">
+          <div class="timeline-dot missed">D2</div>
+          <div class="timeline-label">D2 Final demand</div>
+          <div class="timeline-date">18 Jun 2026</div>
+          <div class="timeline-status missed">Missed — no response</div>
+        </div>
+        <div class="timeline-stage">
+          <div class="timeline-dot current">D3</div>
+          <div class="timeline-label">D3 Arbitration filing</div>
+          <div class="timeline-date">5 Jul 2026</div>
+          <div class="timeline-status current">CURRENT — action required</div>
+        </div>
+        <div class="timeline-stage">
+          <div class="timeline-dot upcoming">D4</div>
+          <div class="timeline-label">D4 Arbitration hearing</div>
+          <div class="timeline-date">Est. Aug 2026</div>
+          <div class="timeline-status upcoming">Upcoming</div>
+        </div>
+        <div class="timeline-stage">
+          <div class="timeline-dot upcoming">✓</div>
+          <div class="timeline-label">Resolution</div>
+          <div class="timeline-date">—</div>
+          <div class="timeline-status upcoming">Pending</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stage detail cards -->
+    <div class="section">
+      <div class="stage-card">
+        <div class="stage-meta">
+          <span>D1 — Formal demand</span>
+          <span>28 May 2026</span>
+          <span class="tag tag-red" style="font-size:11px">No response</span>
+        </div>
+        <h4>What happened</h4>
+        <p>A formal D1 demand was issued on behalf of 8 claimants. A buyout offer of £11,200 was available. No response was received within the 21-day response window.</p>
+      </div>
+
+      <div class="stage-card">
+        <div class="stage-meta">
+          <span>D2 — Final demand</span>
+          <span>18 June 2026</span>
+          <span class="tag tag-red" style="font-size:11px">No response</span>
+        </div>
+        <h4>What happened</h4>
+        <p>A final D2 demand was issued. No further buyout offer was made at this stage. No response was received within the 14-day response window. Associated costs: £420 (additional administrative and legal preparation).</p>
+      </div>
+
+      <div class="stage-card current-stage">
+        <div class="stage-meta">
+          <span>D3 — Arbitration filing</span>
+          <span>5 July 2026</span>
+          <span class="tag tag-blue" style="font-size:11px">Current stage</span>
+        </div>
+        <h4>What is required now</h4>
+        <p>Arbitration filing is being prepared. You may still settle all 8 claims by accepting the D3 buyout offer (£14,200) or by submitting individual counter-offers for each claim before <strong>19 July 2026</strong>.</p>
+        <p style="margin-top:10px; margin-bottom:0">Associated costs if proceeding to D4: £2,200 arbitration filing fee + legal costs. Deadline to respond: 19 July 2026.</p>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Active claims table -->
+    <div class="section">
+      <h3>Active claims — 8 total</h3>
+      <table class="claims-table">
+        <thead>
+          <tr>
+            <th>Case ref</th>
+            <th>Claimant</th>
+            <th>Claim type</th>
+            <th style="text-align:right">EV central</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CLM-2026-0847</td>
+            <td>S. Thompson</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£2,850</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0851</td>
+            <td>J. Okafor</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,600</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0862</td>
+            <td>P. Chen</td>
+            <td>Unlawful deduction</td>
+            <td style="text-align:right">£950</td>
+            <td><span class="tag tag-yellow">Counter-offer pending</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0871</td>
+            <td>A. Williams</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£3,200</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0879</td>
+            <td>M. Hassan</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,800</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0884</td>
+            <td>R. Patel</td>
+            <td>Unlawful deduction</td>
+            <td style="text-align:right">£720</td>
+            <td><span class="tag tag-yellow">Counter-offer pending</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0891</td>
+            <td>T. Andersen</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£2,100</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0903</td>
+            <td>L. Osei</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,400</td>
+            <td><span class="tag tag-red">Unresolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-family:var(--font-ui); font-size:13px; color:var(--text-muted)">6 claims unresolved · 2 claims with counter-offers pending review</p>
+    </div>
+
+    <hr class="divider">
+
+    <!-- What this means -->
+    <div class="section">
+      <h3>What this means for you</h3>
+      <ul class="options-list">
+        <li>
+          <div class="opt-num">1</div>
+          <div><strong>Cost trajectory:</strong> Each missed stage increases the total settlement cost. At D1 the buyout was £11,200. It is now £14,200. At arbitration hearing (D4) the estimated total cost — including legal fees — exceeds £18,400.</div>
+        </li>
+        <li>
+          <div class="opt-num">2</div>
+          <div><strong>Timeline:</strong> Arbitration proceedings, once filed, typically conclude within 60–90 days. The D3 deadline for settlement without filing is 19 July 2026.</div>
+        </li>
+        <li>
+          <div class="opt-num">3</div>
+          <div><strong>Your options at D3:</strong> Accept the revised D3 buyout offer (£14,200, pooled settlement for all 8 claims) or submit individual counter-offers on each claim by 19 July 2026. Arbitration will proceed for any claim without a counter-offer.</div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="button-row">
+      <button class="btn btn-primary" onclick="showScreen(2, document.querySelectorAll('.proto-tab')[2])">Accept D3 buyout — £14,200</button>
+      <button class="btn btn-secondary">Submit individual counter-offers</button>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P6-S2</div>
+    <div class="ann-row">Flow ref: OP4 · CP-ESC &nbsp;|&nbsp; T4: U-001 (Cost floor £258)</div>
+    <div class="ann-row ann-pass">PASS: Both parties can articulate the current stage, deadline, and available options without contacting Calmly</div>
+    <div class="ann-row ann-fail">FAIL: Either party calls or emails to ask "what's happening?" — screen is insufficiently clear</div>
+  </div>
+</div>
+
+<!-- ===================== SCREEN 3 — Settlement outcome ===================== -->
+<div class="screen" id="screen-2">
+  <div class="product-header">
+    <div class="org">Calmly Resolve</div>
+    <h1>Settlement record</h1>
+    <div class="ref">Reference: D1-2026-0291 &nbsp;·&nbsp; HomeLet Properties Ltd &nbsp;·&nbsp; Closed</div>
+  </div>
+
+  <div class="container">
+    <div class="outcome-header">
+      <h2>Settlement reached — 15 July 2026</h2>
+      <div class="outcome-date">All 8 claims resolved. No further action required.</div>
+    </div>
+
+    <div class="section">
+      <h3>Settlement breakdown</h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th style="text-align:right">Amount</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Gross settlement</td>
+            <td style="text-align:right"><strong>£13,500</strong></td>
+            <td>Agreed between HomeLet Properties Ltd and pool claimants</td>
+          </tr>
+          <tr>
+            <td>Calmly platform fee (claimant side)</td>
+            <td style="text-align:right">—</td>
+            <td>20% deducted from individual claimant proceeds — not charged to defendant</td>
+          </tr>
+          <tr class="highlight">
+            <td><strong>Net defendant liability</strong></td>
+            <td style="text-align:right"><strong>£13,500</strong></td>
+            <td>Total due to pool. No additional Calmly fees apply to HomeLet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cost-note">
+      <strong>The cost of non-response at D1.</strong> You paid £2,300 more than the D1 buyout offer (£11,200). The D1 offer was available for 21 days and required no further engagement. Engaging at D1 would have resolved all claims at the lower amount.
+    </div>
+
+    <div class="section">
+      <h3>All claims closed</h3>
+      <table class="claims-table">
+        <thead>
+          <tr>
+            <th>Case ref</th>
+            <th>Claimant</th>
+            <th>Claim type</th>
+            <th style="text-align:right">Settlement</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CLM-2026-0847</td>
+            <td>S. Thompson</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£2,430</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0851</td>
+            <td>J. Okafor</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,380</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0862</td>
+            <td>P. Chen</td>
+            <td>Unlawful deduction</td>
+            <td style="text-align:right">£820</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0871</td>
+            <td>A. Williams</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£2,760</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0879</td>
+            <td>M. Hassan</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,540</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0884</td>
+            <td>R. Patel</td>
+            <td>Unlawful deduction</td>
+            <td style="text-align:right">£610</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0891</td>
+            <td>T. Andersen</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£1,800</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+          <tr>
+            <td>CLM-2026-0903</td>
+            <td>L. Osei</td>
+            <td>Deposit not returned</td>
+            <td style="text-align:right">£2,160</td>
+            <td><span class="tag tag-green">Resolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="button-row">
+      <button class="btn btn-success">Download settlement record</button>
+      <span style="font-size:14px; color:var(--text-muted)">No further action required from HomeLet Properties Ltd in respect of reference D1-2026-0291.</span>
+    </div>
+  </div>
+
+  <div class="annotation-strip">
+    <div class="ann-label">Prototype annotation — P6-S3</div>
+    <div class="ann-row">Flow ref: OP4-RES &nbsp;|&nbsp; T4: M-005 (Avg settlement £3,000) · M-007 (EV accuracy)</div>
+    <div class="ann-row ann-pass">PASS: Outcome data captured in structured form and flows automatically to EV calibration model — no manual entry required</div>
+    <div class="ann-row ann-fail">FAIL: Outcome requires manual data entry by specialist — structured capture breaks down at D3+ stage</div>
+  </div>
+</div>
+
+<script>
+  function showScreen(index, tabEl) {
+    document.querySelectorAll('.screen').forEach((s, i) => {
+      s.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+  }
+</script>
+</body>
+</html>

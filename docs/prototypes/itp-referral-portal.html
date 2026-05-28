@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — ITP Referral Portal · Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+
+      /* Brand */
+      --navy: #0f2744;
+      --navy-hover: #1a3a5c;
+      --navy-light: #e8eef8;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+
+      /* Status badges */
+      --badge-received-bg: #e8eef8;
+      --badge-received-text: #1f4fa8;
+      --badge-received-border: #b8c8e8;
+
+      --badge-review-bg: #fef9e6;
+      --badge-review-text: #854d0e;
+      --badge-review-border: #f0d98a;
+
+      --badge-ev-bg: #f0ebfb;
+      --badge-ev-text: #5b21b6;
+      --badge-ev-border: #c4aff0;
+
+      --badge-offer-bg: #fff4ed;
+      --badge-offer-text: #9a3412;
+      --badge-offer-border: #fdba74;
+
+      --badge-resolved-bg: #e6f4ec;
+      --badge-resolved-text: #166534;
+      --badge-resolved-border: #a7d4b8;
+
+      --badge-withdrawn-bg: #f1f3f5;
+      --badge-withdrawn-text: #4a5568;
+      --badge-withdrawn-border: #d0d5dd;
+
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+
+      --sidebar-w: 220px;
+      --header-h: 56px;
+      --annotation-h: 80px;
+
+      --font: 'DM Sans', system-ui, sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font);
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ─────────────────────────────────────────────
+       PROTOTYPE NAV TABS
+    ───────────────────────────────────────────── */
+    .proto-tabs {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      height: 40px;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .proto-tabs .proto-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+    .proto-tab {
+      padding: 0 14px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: all 0.15s;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+    .proto-tab:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.07); }
+    .proto-tab.active {
+      color: #ffffff;
+      background: rgba(31,79,168,0.6);
+      border-color: rgba(31,79,168,0.8);
+    }
+    .proto-tab .tab-code {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      opacity: 0.6;
+      margin-right: 6px;
+    }
+
+    /* ─────────────────────────────────────────────
+       WRAPPER / LAYOUT
+    ───────────────────────────────────────────── */
+    .app-wrapper {
+      margin-top: 40px;
+      height: calc(100vh - 40px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Screens */
+    .screen { display: none; flex: 1; overflow: hidden; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ─────────────────────────────────────────────
+       SHELL: HEADER + SIDEBAR + CONTENT
+    ───────────────────────────────────────────── */
+    .shell {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .shell-header {
+      height: var(--header-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .header-logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--navy);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo-mark svg { width: 16px; height: 16px; }
+    .header-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .header-logo-text .brand { font-size: 14px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+    .header-logo-text .sublabel { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .header-divider { width: 1px; height: 28px; background: var(--border); margin: 0 4px; }
+    .header-itp {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .header-itp .itp-logo {
+      background: #f0a500;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+    .header-itp .itp-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .header-spacer { flex: 1; }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .header-user .avatar {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .header-user .user-info { text-align: right; }
+    .header-user .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .header-user .user-role { font-size: 11px; color: var(--text-muted); }
+
+    /* Body below header */
+    .shell-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      padding: 0 20px 8px;
+      margin-top: 16px;
+    }
+    .sidebar-section-label:first-child { margin-top: 0; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      cursor: pointer;
+      border-radius: 0;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06); }
+    .nav-item.active {
+      color: #ffffff;
+      background: rgba(255,255,255,0.1);
+      border-left-color: #5b9cf6;
+    }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+
+    /* Content area */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+      background: #f7f8fa;
+    }
+    .content-inner {
+      max-width: 760px;
+    }
+
+    /* ─────────────────────────────────────────────
+       ANNOTATION STRIP
+    ───────────────────────────────────────────── */
+    .annotation-strip {
+      background: #f0f2f5;
+      border-top: 1px solid var(--border);
+      padding: 12px 24px;
+      flex-shrink: 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      color: #4a5568;
+      line-height: 1.6;
+    }
+    .annotation-strip .ann-row { display: flex; gap: 24px; flex-wrap: wrap; }
+    .annotation-strip .ann-item { display: flex; gap: 6px; }
+    .annotation-strip .ann-label { font-weight: 700; color: #0f1923; }
+    .annotation-strip .ann-pass { color: #166534; }
+    .annotation-strip .ann-fail { color: #991b1b; }
+
+    /* ─────────────────────────────────────────────
+       TYPOGRAPHY / UTIL
+    ───────────────────────────────────────────── */
+    .page-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 9px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .badge-received  { background: var(--badge-received-bg);  color: var(--badge-received-text);  border-color: var(--badge-received-border); }
+    .badge-review    { background: var(--badge-review-bg);    color: var(--badge-review-text);    border-color: var(--badge-review-border); }
+    .badge-ev        { background: var(--badge-ev-bg);        color: var(--badge-ev-text);        border-color: var(--badge-ev-border); }
+    .badge-offer     { background: var(--badge-offer-bg);     color: var(--badge-offer-text);     border-color: var(--badge-offer-border); }
+    .badge-resolved  { background: var(--badge-resolved-bg);  color: var(--badge-resolved-text);  border-color: var(--badge-resolved-border); }
+    .badge-withdrawn { background: var(--badge-withdrawn-bg); color: var(--badge-withdrawn-text); border-color: var(--badge-withdrawn-border); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #1a3f8a; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--border-strong); background: #f7f8fa; }
+    .btn-ghost { background: transparent; color: var(--accent); padding: 9px 0; }
+    .btn-ghost:hover { color: #1a3f8a; }
+    .btn-lg { padding: 12px 24px; font-size: 15px; }
+
+    /* Form elements */
+    .form-group { margin-bottom: 20px; }
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .form-sublabel { font-size: 12px; font-weight: 400; color: var(--text-muted); margin-left: 6px; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: var(--font);
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31,79,168,0.12);
+    }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23718096' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+
+    .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .radio-option:hover { border-color: var(--accent); color: var(--accent); }
+    .radio-option.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+    .radio-option input { display: none; }
+
+    .input-prefix-wrap { position: relative; }
+    .input-prefix {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: #f7f8fa;
+      border-right: 1px solid var(--border);
+      border-radius: var(--radius) 0 0 var(--radius);
+    }
+    .input-prefix + .form-input { padding-left: 42px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-tight { padding: 16px 20px; }
+
+    /* Warning block */
+    .warning-block {
+      display: flex;
+      gap: 10px;
+      background: var(--warning-bg);
+      border-left: 4px solid var(--warning-border);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px;
+      margin-top: 10px;
+      font-size: 13px;
+      color: #7a4a00;
+    }
+    .warning-block .warn-icon { flex-shrink: 0; font-size: 15px; }
+
+    /* Inset block */
+    .inset-block {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #1a3a6b;
+      margin-top: 10px;
+    }
+
+    /* ─────────────────────────────────────────────
+       P3-S1: LOGIN SCREEN
+    ───────────────────────────────────────────── */
+    #screen-login {
+      background: #f7f8fa;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-wrapper {
+      width: 100%;
+      max-width: 440px;
+      padding: 0 24px;
+    }
+    .login-brand {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .login-brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .login-brand-logo .logo-mark {
+      width: 40px; height: 40px;
+      background: var(--navy);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-brand-logo .logo-mark svg { width: 22px; height: 22px; }
+    .login-brand-logo .logo-text { text-align: left; }
+    .login-brand-logo .logo-text .name { font-size: 20px; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; }
+    .login-brand-logo .logo-text .sub { font-size: 11px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .login-itp-context {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .login-itp-context .itp-badge {
+      background: #f0a500;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    }
+    .login-card h2 { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .login-card .login-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    .divider-or {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+    .divider-or::before, .divider-or::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .btn-google {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-google:hover { background: #f7f8fa; border-color: var(--border-strong); }
+    .login-footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.6;
+    }
+    .login-footer a { color: var(--accent); text-decoration: none; }
+    .login-footer a:hover { text-decoration: underline; }
+
+    /* ─────────────────────────────────────────────
+       P3-S2: REFERRAL FORM
+    ───────────────────────────────────────────── */
+    .step-progress {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 28px;
+    }
+    .step-item {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex: 1;
+    }
+    .step-item:last-child { flex: none; }
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .step-dot.done { background: var(--accent); color: white; }
+    .step-dot.active { background: var(--navy); color: white; box-shadow: 0 0 0 3px rgba(31,79,168,0.2); }
+    .step-dot.pending { background: var(--border); color: var(--text-muted); }
+    .step-label {
+      font-size: 11px;
+      font-weight: 500;
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    .step-label.active { color: var(--navy); font-weight: 600; }
+    .step-label.done { color: var(--accent); }
+    .step-label.pending { color: var(--text-muted); }
+    .step-connector {
+      flex: 1;
+      height: 1px;
+      margin: 0 8px;
+      background: var(--border);
+    }
+    .step-connector.done { background: var(--accent); }
+
+    .form-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 16px;
+    }
+    .form-panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .form-panel-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* Step tabs (shown as step content) */
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+
+    /* Review summary */
+    .review-section { margin-bottom: 20px; }
+    .review-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .review-dl { }
+    .review-row {
+      display: flex;
+      gap: 16px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .review-row:last-child { border-bottom: none; }
+    .review-key { width: 160px; font-weight: 600; color: var(--text-secondary); flex-shrink: 0; }
+    .review-val { color: var(--text); flex: 1; }
+    .review-edit { margin-left: auto; font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; }
+    .review-edit:hover { text-decoration: underline; }
+
+    /* ─────────────────────────────────────────────
+       P3-S3: CONFIRMATION SCREEN
+    ───────────────────────────────────────────── */
+    .confirm-banner {
+      background: var(--badge-resolved-bg);
+      border: 1px solid var(--badge-resolved-border);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .confirm-icon {
+      width: 40px; height: 40px;
+      background: var(--badge-resolved-text);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .confirm-icon svg { width: 20px; height: 20px; }
+    .confirm-ref { font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--badge-resolved-text); margin-bottom: 4px; }
+    .confirm-heading { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .confirm-sub { font-size: 13px; color: var(--text-muted); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .summary-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+    }
+    .summary-item .si-label { font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .summary-item .si-val { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    .timeline-card {
+      background: var(--navy);
+      color: white;
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .timeline-card .tc-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; }
+    .timeline-card .tc-text { font-size: 14px; line-height: 1.6; opacity: 0.9; }
+
+    .action-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    /* ─────────────────────────────────────────────
+       P3-S4: REFERRAL HISTORY
+    ───────────────────────────────────────────── */
+    .stats-bar {
+      background: var(--navy);
+      border-radius: var(--radius-lg);
+      padding: 16px 24px;
+      display: flex;
+      gap: 0;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .stat-item {
+      flex: 1;
+      text-align: center;
+      padding: 0 16px;
+      border-right: 1px solid rgba(255,255,255,0.12);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-item .sv { font-size: 22px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+    .stat-item .sl { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.55); margin-top: 2px; }
+
+    .history-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .search-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px; height: 15px;
+      color: var(--text-muted);
+    }
+    .search-wrap .form-input { padding-left: 38px; }
+    .toggle-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .toggle-btn {
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font);
+      background: var(--surface);
+      color: var(--text-muted);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toggle-btn.active { background: var(--navy); color: white; }
+    .toggle-btn + .toggle-btn { border-left: 1px solid var(--border); }
+
+    .referral-table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f7f8fa; }
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text);
+      border-bottom: 1px solid #f0f2f5;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafbfc; }
+    .td-ref { font-family: 'Courier New', monospace; font-size: 12px; color: var(--accent); font-weight: 600; }
+    .td-member { font-weight: 500; }
+    .td-outcome { font-size: 12px; line-height: 1.5; }
+    .td-outcome .outcome-resolved { color: var(--badge-resolved-text); font-weight: 600; }
+    .td-outcome .outcome-label { color: var(--text-muted); }
+    .td-outcome .outcome-fee { color: var(--text-muted); }
+    .td-outcome .outcome-net { color: var(--badge-resolved-text); font-weight: 700; }
+
+    /* Since joined tag */
+    .since-joined {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .since-joined::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+
+    /* ─────────────────────────────────────────────
+       WARNING STATES / INLINE
+    ───────────────────────────────────────────── */
+    .field-hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+
+    /* Scrollable area for annotation */
+    .screen-with-annotation {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+    .screen-main-scroll {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     PROTOTYPE NAVIGATION TABS
+═══════════════════════════════════════════ -->
+<div class="proto-tabs">
+  <span class="proto-label">Prototype · P3</span>
+  <div class="proto-tab active" onclick="showScreen('login')" id="tab-login">
+    <span class="tab-code">P3-S1</span> Login
+  </div>
+  <div class="proto-tab" onclick="showScreen('form')" id="tab-form">
+    <span class="tab-code">P3-S2</span> New Referral
+  </div>
+  <div class="proto-tab" onclick="showScreen('confirm')" id="tab-confirm">
+    <span class="tab-code">P3-S3</span> Confirmation
+  </div>
+  <div class="proto-tab" onclick="showScreen('history')" id="tab-history">
+    <span class="tab-code">P3-S4</span> Referral History
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     APP WRAPPER
+═══════════════════════════════════════════ -->
+<div class="app-wrapper">
+
+  <!-- ─────────────────────────────────────────
+       P3-S1: LOGIN
+  ───────────────────────────────────────────── -->
+  <div class="screen active" id="screen-login">
+    <div class="screen-with-annotation">
+      <div class="screen-main-scroll" style="background:#f7f8fa; display:flex; align-items:center; justify-content:center; min-height: calc(100vh - 40px - 80px);">
+        <div class="login-wrapper">
+
+          <div class="login-brand">
+            <div class="login-brand-logo">
+              <div class="logo-mark">
+                <!-- Calmly "C" mark -->
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 8.5C17.5 5.8 14.9 4 12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C14.9 20 17.5 18.2 19 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="logo-text">
+                <div class="name">Calmly Resolve</div>
+                <div class="sub">Partner Portal</div>
+              </div>
+            </div>
+            <div class="login-itp-context">
+              <span class="itp-badge">Checkatrade</span>
+              <span>Organisation account</span>
+            </div>
+          </div>
+
+          <div class="login-card">
+            <h2>Sign in to your account</h2>
+            <p class="login-desc">Use your work email. We'll send you a secure link — no password needed.</p>
+
+            <div class="form-group">
+              <label class="form-label">Work email address</label>
+              <input type="email" class="form-input" placeholder="j.williams@checkatrade.com" value="j.williams@checkatrade.com">
+            </div>
+
+            <button class="btn btn-primary btn-lg" style="width:100%; margin-bottom:0;" onclick="showScreen('form')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              Send magic link
+            </button>
+
+            <div class="divider-or">or</div>
+
+            <button class="btn-google" onclick="showScreen('form')">
+              <svg width="18" height="18" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+              Sign in with Google
+            </button>
+          </div>
+
+          <div class="login-footer">
+            Having trouble? Contact your Calmly account manager at<br>
+            <a href="#">partners@calmlyresolve.com</a>
+            <br><br>
+            <span style="font-size:12px;">Protected by Calmly SSO · Data processed under GDPR · <a href="#">Privacy notice</a></span>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="annotation-strip">
+        <div class="ann-row">
+          <div class="ann-item"><span class="ann-label">Flow ref:</span> PartP1</div>
+          <div class="ann-item"><span class="ann-label">T4:</span> O-002 (ITP workflow integration)</div>
+          <div class="ann-item"><span class="ann-label ann-pass">Pass:</span> Adviser completes login and first referral in &lt;5 minutes</div>
+          <div class="ann-item"><span class="ann-label ann-fail">Fail:</span> Auth friction causes &gt;20% abandonment before first referral</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       P3-S2: NEW REFERRAL FORM
+  ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-form">
+    <div class="shell">
+      <!-- Header -->
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 8.5C17.5 5.8 14.9 4 12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C14.9 20 17.5 18.2 19 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="header-logo-text">
+            <span class="brand">Calmly Resolve</span>
+            <span class="sublabel">Partner Portal</span>
+          </div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp">
+          <span class="itp-logo">Checkatrade</span>
+          <span class="itp-name"></span>
+        </div>
+        <div class="header-spacer"></div>
+        <div class="header-user">
+          <div class="user-info">
+            <div class="user-name">J. Williams</div>
+            <div class="user-role">Adviser</div>
+          </div>
+          <div class="avatar">JW</div>
+        </div>
+      </div>
+
+      <div class="shell-body">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item active" onclick="showScreen('form')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            New referral
+          </div>
+          <div class="nav-item" onclick="showScreen('history')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            My referrals
+            <span class="nav-badge">11</span>
+          </div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            Organisation overview
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+            Settings
+          </div>
+          <div style="flex:1;"></div>
+          <div style="padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top:16px;">
+            <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-bottom:4px;">Support</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.55);">partners@calmlyresolve.com</div>
+          </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="screen-with-annotation" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+          <div class="screen-main-scroll">
+            <div class="content-area">
+              <div class="content-inner">
+
+                <div class="page-title">New referral</div>
+                <div class="page-subtitle">Submit a member referral. Fill in each step — takes under 3 minutes.</div>
+
+                <!-- Step progress -->
+                <div class="step-progress" id="step-progress">
+                  <div class="step-item">
+                    <div class="step-dot active" id="sdot-1">1</div>
+                    <span class="step-label active" id="slabel-1">Member details</span>
+                  </div>
+                  <div class="step-connector" id="sconn-1"></div>
+                  <div class="step-item">
+                    <div class="step-dot pending" id="sdot-2">2</div>
+                    <span class="step-label pending" id="slabel-2">Dispute details</span>
+                  </div>
+                  <div class="step-connector" id="sconn-2"></div>
+                  <div class="step-item">
+                    <div class="step-dot pending" id="sdot-3">3</div>
+                    <span class="step-label pending" id="slabel-3">Other party</span>
+                  </div>
+                  <div class="step-connector" id="sconn-3"></div>
+                  <div class="step-item">
+                    <div class="step-dot pending" id="sdot-4">4</div>
+                    <span class="step-label pending" id="slabel-4">Review &amp; submit</span>
+                  </div>
+                </div>
+
+                <!-- STEP 1: Member details -->
+                <div class="step-content active" id="step-1">
+                  <div class="form-panel">
+                    <div class="form-panel-title">Member details</div>
+                    <div class="form-panel-sub">The person you're referring. They should be aware you're submitting on their behalf.</div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Full name</label>
+                        <input type="text" class="form-input" value="David Okafor">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Email address</label>
+                        <input type="email" class="form-input" value="d.okafor@gmail.com">
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">Phone number <span class="form-sublabel">optional</span></label>
+                      <input type="tel" class="form-input" value="07712 834 221" style="max-width:280px;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                      <label class="form-label">Is the member aware you're referring them?</label>
+                      <div class="radio-group">
+                        <label class="radio-option selected" id="aware-yes" onclick="setAware('yes')">
+                          <input type="radio" name="aware" value="yes" checked>
+                          Yes — they've been told
+                        </label>
+                        <label class="radio-option" id="aware-no" onclick="setAware('no')">
+                          <input type="radio" name="aware" value="no">
+                          Not yet
+                        </label>
+                      </div>
+                      <div class="warning-block" id="aware-warning" style="display:none;">
+                        <span class="warn-icon">⚠</span>
+                        <span>We recommend telling the member before referring — it significantly improves their engagement with the resolution process and increases the likelihood of a successful outcome.</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:flex-end; gap:12px;">
+                    <button class="btn btn-primary" onclick="goStep(2)">
+                      Continue to dispute details
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 2: Dispute details -->
+                <div class="step-content" id="step-2">
+                  <div class="form-panel">
+                    <div class="form-panel-title">Dispute details</div>
+                    <div class="form-panel-sub">Describe what's happened. Keep it factual — this is used to assign the right specialist.</div>
+
+                    <div class="form-group">
+                      <label class="form-label">Dispute type</label>
+                      <select class="form-select">
+                        <option value="">Select a category…</option>
+                        <option value="housing" selected>Housing — deposit not returned or repairs dispute</option>
+                        <option value="employment">Employment — wages, conditions, or dismissal</option>
+                        <option value="marketplace">Online marketplace — goods or services not delivered</option>
+                        <option value="payment">Payment transaction</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">What happened?
+                        <span class="form-sublabel">Keep this factual. Max 200 words.</span>
+                      </label>
+                      <textarea class="form-textarea" style="min-height:110px;">The member hired a Checkatrade-registered tradesperson (M. Singh, Singh Plumbing Ltd) to fix a burst pipe in January 2026. Work cost £1,400. Member says the pipe was not properly repaired and failed again within 3 weeks, causing further water damage. The tradesperson has refused to return to remedy the work or provide a refund.</textarea>
+                      <div class="field-hint">147 / 200 words</div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label class="form-label">Date dispute arose</label>
+                        <input type="date" class="form-input" value="2026-02-14">
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Approximate claim value</label>
+                        <div class="input-prefix-wrap">
+                          <span class="input-prefix">£</span>
+                          <input type="number" class="form-input" value="1400">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; gap:12px;">
+                    <button class="btn btn-secondary" onclick="goStep(1)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                      Back
+                    </button>
+                    <button class="btn btn-primary" onclick="goStep(3)">
+                      Continue to other party
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 3: Other party -->
+                <div class="step-content" id="step-3">
+                  <div class="form-panel">
+                    <div class="form-panel-title">Other party details</div>
+                    <div class="form-panel-sub">Who is the member in dispute with? This helps us contact them and verify their registration status.</div>
+
+                    <div class="form-group">
+                      <label class="form-label">Organisation or person name</label>
+                      <input type="text" class="form-input" value="Singh Plumbing Ltd">
+                    </div>
+
+                    <div class="form-group">
+                      <label class="form-label">Trading-as name <span class="form-sublabel">if different from registered name</span></label>
+                      <input type="text" class="form-input" placeholder="e.g. 'M. Singh Plumbing'" value="M. Singh Plumbing">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:0;">
+                      <label class="form-label">Is the other party a registered Checkatrade member?</label>
+                      <div class="radio-group">
+                        <label class="radio-option selected" id="cts-yes" onclick="setCts('yes')">
+                          <input type="radio" name="cts" value="yes" checked>
+                          Yes, they're registered
+                        </label>
+                        <label class="radio-option" id="cts-no" onclick="setCts('no')">
+                          <input type="radio" name="cts" value="no">
+                          No
+                        </label>
+                        <label class="radio-option" id="cts-dk" onclick="setCts('dk')">
+                          <input type="radio" name="cts" value="dk">
+                          Don't know
+                        </label>
+                      </div>
+                      <div class="inset-block" id="cts-note" style="display:flex;">
+                        Both parties are Checkatrade members — this referral will be flagged for priority routing. Calmly will attempt to contact both parties simultaneously.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; gap:12px;">
+                    <button class="btn btn-secondary" onclick="goStep(2)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                      Back
+                    </button>
+                    <button class="btn btn-primary" onclick="goStep(4)">
+                      Review referral
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- STEP 4: Review & Submit -->
+                <div class="step-content" id="step-4">
+                  <div class="form-panel">
+                    <div class="form-panel-title">Review your referral</div>
+                    <div class="form-panel-sub">Check all details before submitting. Once submitted, you'll receive a reference number for your records.</div>
+
+                    <div class="review-section">
+                      <div class="review-section-title">Member details</div>
+                      <div class="review-dl">
+                        <div class="review-row">
+                          <span class="review-key">Name</span>
+                          <span class="review-val">David Okafor</span>
+                          <span class="review-edit" onclick="goStep(1)">Edit</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Email</span>
+                          <span class="review-val">d.okafor@gmail.com</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Phone</span>
+                          <span class="review-val">07712 834 221</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Aware of referral</span>
+                          <span class="review-val">Yes — told before submission</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="review-section">
+                      <div class="review-section-title">Dispute details</div>
+                      <div class="review-dl">
+                        <div class="review-row">
+                          <span class="review-key">Type</span>
+                          <span class="review-val">Housing — deposit not returned or repairs dispute</span>
+                          <span class="review-edit" onclick="goStep(2)">Edit</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Date arose</span>
+                          <span class="review-val">14 February 2026</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Claim value</span>
+                          <span class="review-val">£1,400</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Description</span>
+                          <span class="review-val" style="font-size:12px; line-height:1.6;">The member hired a Checkatrade-registered tradesperson (M. Singh, Singh Plumbing Ltd) to fix a burst pipe in January 2026. Work cost £1,400. Member says the pipe was not properly repaired and failed again within 3 weeks...</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="review-section" style="margin-bottom:0;">
+                      <div class="review-section-title">Other party</div>
+                      <div class="review-dl">
+                        <div class="review-row">
+                          <span class="review-key">Name</span>
+                          <span class="review-val">Singh Plumbing Ltd (M. Singh Plumbing)</span>
+                          <span class="review-edit" onclick="goStep(3)">Edit</span>
+                        </div>
+                        <div class="review-row">
+                          <span class="review-key">Checkatrade member</span>
+                          <span class="review-val">Yes — will be flagged for priority routing</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="inset-block">
+                    You'll receive a reference number by email at <strong>j.williams@checkatrade.com</strong> once submitted. Calmly will send an update when the case progresses.
+                  </div>
+
+                  <div style="display:flex; justify-content:space-between; gap:12px; margin-top:20px;">
+                    <button class="btn btn-secondary" onclick="goStep(3)">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                      Back
+                    </button>
+                    <button class="btn btn-primary btn-lg" onclick="showScreen('confirm')" style="padding: 12px 28px;">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                      Refer this member
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="annotation-strip">
+            <div class="ann-row">
+              <div class="ann-item"><span class="ann-label">Flow ref:</span> PartP1 · CP1</div>
+              <div class="ann-item"><span class="ann-label">T4:</span> U-003 (ITP referral rate) · M-004 (Segment composition)</div>
+              <div class="ann-item"><span class="ann-pass ann-label">Pass:</span> Adviser submits complete referral in &lt;3 min; form maps 1:1 to CDM segments</div>
+              <div class="ann-item"><span class="ann-fail ann-label">Fail:</span> Adviser omits claim value in &gt;40% of referrals</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       P3-S3: CONFIRMATION
+  ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-confirm">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M19 8.5C17.5 5.8 14.9 4 12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C14.9 20 17.5 18.2 19 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="header-logo-text">
+            <span class="brand">Calmly Resolve</span>
+            <span class="sublabel">Partner Portal</span>
+          </div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-logo">Checkatrade</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user">
+          <div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div>
+          <div class="avatar">JW</div>
+        </div>
+      </div>
+
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen('form')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            New referral
+          </div>
+          <div class="nav-item" onclick="showScreen('history')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            My referrals <span class="nav-badge">12</span>
+          </div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Organisation overview</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>Settings</div>
+        </nav>
+
+        <div class="screen-with-annotation" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+          <div class="screen-main-scroll">
+            <div class="content-area">
+              <div class="content-inner">
+
+                <div class="confirm-banner">
+                  <div class="confirm-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  </div>
+                  <div>
+                    <div class="confirm-ref">REF-CHK-2026-1847 · Submitted 28 May 2026 at 14:32</div>
+                    <div class="confirm-heading">Referral submitted successfully</div>
+                    <div class="confirm-sub">David Okafor has been referred into the Calmly Resolve process. A confirmation has been sent to j.williams@checkatrade.com.</div>
+                  </div>
+                </div>
+
+                <div class="summary-grid">
+                  <div class="summary-item">
+                    <div class="si-label">Member</div>
+                    <div class="si-val">David Okafor</div>
+                  </div>
+                  <div class="summary-item">
+                    <div class="si-label">Dispute type</div>
+                    <div class="si-val">Housing — deposit not returned</div>
+                  </div>
+                  <div class="summary-item">
+                    <div class="si-label">Claim value estimate</div>
+                    <div class="si-val">£1,400</div>
+                  </div>
+                  <div class="summary-item">
+                    <div class="si-label">Current status</div>
+                    <div class="si-val" style="display:flex; align-items:center; gap:8px; margin-top:2px;">
+                      <span class="badge badge-received">Received</span>
+                      <span style="font-size:12px; color:var(--text-muted); font-weight:400;">Under specialist review</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="timeline-card">
+                  <div class="tc-label">What happens next</div>
+                  <div class="tc-text">A Calmly specialist will review this referral within 3 working days. Both parties will be contacted to confirm participation. You'll receive an email update at adviser@checkatrade.com when this case progresses to the evidence stage.</div>
+                </div>
+
+                <div class="card card-tight" style="display:flex; align-items:center; gap:16px; border-color: var(--border);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                  <div style="flex:1;">
+                    <div style="font-size:13px; font-weight:600; color:var(--text);">Track this referral</div>
+                    <div style="font-size:12px; color:var(--text-muted);">REF-CHK-2026-1847 · View full status history and outcome data</div>
+                  </div>
+                  <button class="btn btn-secondary" onclick="showScreen('history')" style="font-size:13px; padding:7px 14px;">View in referral history</button>
+                </div>
+
+                <div class="action-row">
+                  <button class="btn btn-primary" onclick="showScreen('form')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    Submit another referral
+                  </button>
+                  <button class="btn btn-secondary" onclick="showScreen('history')">
+                    View all referrals
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="annotation-strip">
+            <div class="ann-row">
+              <div class="ann-item"><span class="ann-label">Flow ref:</span> PartP1</div>
+              <div class="ann-item"><span class="ann-label">T4:</span> O-001 (Specialist capacity 40/month)</div>
+              <div class="ann-item"><span class="ann-pass ann-label">Pass:</span> ITP satisfaction with referral process ≥ 4/5</div>
+              <div class="ann-item"><span class="ann-fail ann-label">Fail:</span> ITP says "too slow / too unclear / doesn't fit our workflow"</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────────────────
+       P3-S4: REFERRAL HISTORY
+  ───────────────────────────────────────────── -->
+  <div class="screen" id="screen-history">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M19 8.5C17.5 5.8 14.9 4 12 4C7.6 4 4 7.6 4 12C4 16.4 7.6 20 12 20C14.9 20 17.5 18.2 19 15.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </div>
+          <div class="header-logo-text">
+            <span class="brand">Calmly Resolve</span>
+            <span class="sublabel">Partner Portal</span>
+          </div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-logo">Checkatrade</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user">
+          <div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div>
+          <div class="avatar">JW</div>
+        </div>
+      </div>
+
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen('form')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            New referral
+          </div>
+          <div class="nav-item active">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            My referrals
+            <span class="nav-badge">12</span>
+          </div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Organisation overview</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>Settings</div>
+        </nav>
+
+        <div class="screen-with-annotation" style="flex:1; overflow:hidden; display:flex; flex-direction:column;">
+          <div class="screen-main-scroll">
+            <div class="content-area">
+              <div class="content-inner" style="max-width:100%;">
+
+                <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:6px;">
+                  <div>
+                    <div class="page-title">Referral history</div>
+                    <div class="since-joined">Since you joined Calmly · February 2026</div>
+                    <div class="page-subtitle" style="margin-bottom:0;">All referrals submitted by your organisation through Calmly Resolve.</div>
+                  </div>
+                  <button class="btn btn-primary" onclick="showScreen('form')" style="flex-shrink:0; margin-top:4px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                    New referral
+                  </button>
+                </div>
+
+                <!-- Stats bar -->
+                <div class="stats-bar" style="margin-top:20px;">
+                  <div class="stat-item">
+                    <div class="sv">23</div>
+                    <div class="sl">Total referrals</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="sv">8</div>
+                    <div class="sl">Resolved</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="sv">11</div>
+                    <div class="sl">Active</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="sv">4</div>
+                    <div class="sl">Withdrawn</div>
+                  </div>
+                  <div class="stat-item">
+                    <div class="sv" style="color:#6ee7a8;">£18,450</div>
+                    <div class="sl">Total member recovery</div>
+                  </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="history-controls">
+                  <div class="search-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" class="form-input" placeholder="Search by member name, reference, or dispute type…">
+                  </div>
+                  <div class="toggle-group">
+                    <button class="toggle-btn active">My referrals</button>
+                    <button class="toggle-btn">Whole organisation</button>
+                  </div>
+                  <select class="form-select" style="width:auto; min-width:140px;">
+                    <option>All statuses</option>
+                    <option>Active only</option>
+                    <option>Resolved</option>
+                    <option>Withdrawn</option>
+                  </select>
+                </div>
+
+                <!-- Table -->
+                <div class="referral-table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Reference</th>
+                        <th>Member</th>
+                        <th>Dispute type</th>
+                        <th>Claim value</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Outcome</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1847</td>
+                        <td class="td-member">David Okafor</td>
+                        <td>Housing — repairs</td>
+                        <td>£1,400</td>
+                        <td>28 May 2026</td>
+                        <td><span class="badge badge-received">Received</span></td>
+                        <td class="td-outcome" style="color:var(--text-muted); font-size:12px;">Pending</td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1831</td>
+                        <td class="td-member">Priya Sharma</td>
+                        <td>Housing — deposit</td>
+                        <td>£2,200</td>
+                        <td>21 May 2026</td>
+                        <td><span class="badge badge-review">Under review</span></td>
+                        <td class="td-outcome" style="color:var(--text-muted); font-size:12px;">Pending</td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1804</td>
+                        <td class="td-member">James Whitmore</td>
+                        <td>Online marketplace</td>
+                        <td>£850</td>
+                        <td>12 May 2026</td>
+                        <td><span class="badge badge-ev">EV complete</span></td>
+                        <td class="td-outcome" style="color:var(--text-muted); font-size:12px;">Pending</td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1789</td>
+                        <td class="td-member">Amara Diallo</td>
+                        <td>Housing — repairs</td>
+                        <td>£3,100</td>
+                        <td>5 May 2026</td>
+                        <td><span class="badge badge-offer">Settlement offer</span></td>
+                        <td class="td-outcome" style="color:var(--text-muted); font-size:12px;">Awaiting response</td>
+                      </tr>
+                      <tr style="background:#f9fffe;">
+                        <td class="td-ref">REF-CHK-2026-1762</td>
+                        <td class="td-member">Marcus Obi</td>
+                        <td>Housing — deposit</td>
+                        <td>£2,600</td>
+                        <td>22 Apr 2026</td>
+                        <td><span class="badge badge-resolved">Resolved</span></td>
+                        <td class="td-outcome">
+                          <div class="outcome-resolved">£2,600 settlement</div>
+                          <div class="outcome-fee" style="font-size:11px; color:var(--text-muted);">Calmly fee: £520</div>
+                          <div class="outcome-net" style="font-size:12px;">£2,080 net to member</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1744</td>
+                        <td class="td-member">Fatima Al-Hassan</td>
+                        <td>Employment — wages</td>
+                        <td>£1,800</td>
+                        <td>15 Apr 2026</td>
+                        <td><span class="badge badge-resolved">Resolved</span></td>
+                        <td class="td-outcome">
+                          <div class="outcome-resolved">£1,800 settlement</div>
+                          <div class="outcome-fee" style="font-size:11px; color:var(--text-muted);">Calmly fee: £360</div>
+                          <div class="outcome-net" style="font-size:12px;">£1,440 net to member</div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1718</td>
+                        <td class="td-member">Robert Chen</td>
+                        <td>Online marketplace</td>
+                        <td>£420</td>
+                        <td>8 Apr 2026</td>
+                        <td><span class="badge badge-withdrawn">Withdrawn</span></td>
+                        <td class="td-outcome" style="color:var(--text-muted); font-size:12px;">Withdrew</td>
+                      </tr>
+                      <tr>
+                        <td class="td-ref">REF-CHK-2026-1695</td>
+                        <td class="td-member">Sophie Mensah</td>
+                        <td>Housing — deposit</td>
+                        <td>£1,950</td>
+                        <td>1 Apr 2026</td>
+                        <td><span class="badge badge-resolved">Resolved</span></td>
+                        <td class="td-outcome">
+                          <div class="outcome-resolved">£1,500 settlement</div>
+                          <div class="outcome-fee" style="font-size:11px; color:var(--text-muted);">Calmly fee: £300</div>
+                          <div class="outcome-net" style="font-size:12px;">£1,200 net to member</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding: 0 4px;">
+                  <span style="font-size:13px; color:var(--text-muted);">Showing 8 of 23 referrals</span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-secondary" style="font-size:13px; padding:6px 14px;">Previous</button>
+                    <button class="btn btn-secondary" style="font-size:13px; padding:6px 14px; background: var(--accent); color:white; border-color:var(--accent);">1</button>
+                    <button class="btn btn-secondary" style="font-size:13px; padding:6px 14px;">2</button>
+                    <button class="btn btn-secondary" style="font-size:13px; padding:6px 14px;">3</button>
+                    <button class="btn btn-secondary" style="font-size:13px; padding:6px 14px;">Next</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="annotation-strip">
+            <div class="ann-row">
+              <div class="ann-item"><span class="ann-label">Flow ref:</span> PartP2 · C8-SR1</div>
+              <div class="ann-item"><span class="ann-label">T4:</span> U-003 (ITP referral rate)</div>
+              <div class="ann-item"><span class="ann-pass ann-label">Pass:</span> ITP can articulate what the status screen shows without prompting</div>
+              <div class="ann-item"><span class="ann-fail ann-label">Fail:</span> ITP does not check referral list after submitting — not useful enough to return for</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app-wrapper -->
+
+<script>
+  // ═══════════════════════════════════════════
+  //  SCREEN SWITCHING
+  // ═══════════════════════════════════════════
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+
+    const screen = document.getElementById('screen-' + id);
+    const tab = document.getElementById('tab-' + id);
+    if (screen) screen.classList.add('active');
+    if (tab) tab.classList.add('active');
+
+    // Reset form steps when returning to form
+    if (id === 'form') goStep(1);
+  }
+
+  // ═══════════════════════════════════════════
+  //  MULTI-STEP FORM
+  // ═══════════════════════════════════════════
+  let currentStep = 1;
+  const totalSteps = 4;
+
+  function goStep(n) {
+    // Hide all steps
+    for (let i = 1; i <= totalSteps; i++) {
+      const el = document.getElementById('step-' + i);
+      if (el) el.classList.remove('active');
+    }
+    // Show target step
+    const target = document.getElementById('step-' + n);
+    if (target) target.classList.add('active');
+    currentStep = n;
+
+    // Update progress indicators
+    for (let i = 1; i <= totalSteps; i++) {
+      const dot = document.getElementById('sdot-' + i);
+      const label = document.getElementById('slabel-' + i);
+      if (!dot || !label) continue;
+
+      if (i < n) {
+        dot.className = 'step-dot done';
+        dot.innerHTML = '✓';
+        label.className = 'step-label done';
+      } else if (i === n) {
+        dot.className = 'step-dot active';
+        dot.innerHTML = i;
+        label.className = 'step-label active';
+      } else {
+        dot.className = 'step-dot pending';
+        dot.innerHTML = i;
+        label.className = 'step-label pending';
+      }
+    }
+
+    // Update connectors
+    for (let i = 1; i < totalSteps; i++) {
+      const conn = document.getElementById('sconn-' + i);
+      if (!conn) continue;
+      conn.className = i < n ? 'step-connector done' : 'step-connector';
+    }
+  }
+
+  // ═══════════════════════════════════════════
+  //  RADIO INTERACTIONS
+  // ═══════════════════════════════════════════
+  function setAware(val) {
+    document.getElementById('aware-yes').classList.toggle('selected', val === 'yes');
+    document.getElementById('aware-no').classList.toggle('selected', val === 'no');
+    document.getElementById('aware-warning').style.display = val === 'no' ? 'flex' : 'none';
+  }
+
+  function setCts(val) {
+    ['yes','no','dk'].forEach(v => {
+      document.getElementById('cts-' + v).classList.toggle('selected', v === val);
+    });
+    const note = document.getElementById('cts-note');
+    if (val === 'yes') {
+      note.style.display = 'block';
+      note.textContent = 'Both parties are Checkatrade members — this referral will be flagged for priority routing. Calmly will attempt to contact both parties simultaneously.';
+    } else if (val === 'no') {
+      note.style.display = 'block';
+      note.textContent = 'The other party is not a Checkatrade member. Calmly will make contact using the details provided in the dispute description.';
+      note.style.borderColor = 'var(--border-strong)';
+      note.style.background = '#f7f8fa';
+      note.style.color = 'var(--text-secondary)';
+    } else {
+      note.style.display = 'none';
+    }
+  }
+
+  // ═══════════════════════════════════════════
+  //  KEYBOARD NAVIGATION
+  // ═══════════════════════════════════════════
+  const screenOrder = ['login', 'form', 'confirm', 'history'];
+  let currentScreenIdx = 0;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.key === 'ArrowRight') {
+      currentScreenIdx = Math.min(currentScreenIdx + 1, screenOrder.length - 1);
+      showScreen(screenOrder[currentScreenIdx]);
+    } else if (e.key === 'ArrowLeft') {
+      currentScreenIdx = Math.max(currentScreenIdx - 1, 0);
+      showScreen(screenOrder[currentScreenIdx]);
+    }
+  });
+
+  // Track screen switches via tab clicks to keep keyboard nav in sync
+  document.querySelectorAll('.proto-tab').forEach((tab, idx) => {
+    tab.addEventListener('click', () => { currentScreenIdx = idx; });
+  });
+
+  // Also sync when nav items or buttons call showScreen
+  const _origShowScreen = showScreen;
+
+  // Initialise
+  showScreen('login');
+  currentScreenIdx = 0;
+</script>
+
+</body>
+</html>

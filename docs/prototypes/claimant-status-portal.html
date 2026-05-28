@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Claimant Portal · CLM-2026-0847</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --accent-mid: #b8c8e8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --green: #166534;
+      --green-bg: #e6f4ec;
+      --green-border: #a7d4b8;
+      --green-mid: #16a34a;
+      --red: #991b1b;
+      --red-bg: #fde8e8;
+      --tag-radius: 3px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --width: 680px;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+
+    /* ─── PROTOTYPE NAV ─── */
+    .proto-nav {
+      background: #1a1a2e;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 2px solid #e94560;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .proto-nav-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #9b9bb4;
+      font-family: 'Courier New', monospace;
+      padding-right: 20px;
+      border-right: 1px solid #333355;
+      margin-right: 4px;
+      white-space: nowrap;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .proto-tab {
+      padding: 12px 16px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: #9b9bb4;
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .proto-tab:hover { color: #e2e2f0; }
+    .proto-tab.active {
+      color: #e94560;
+      border-bottom-color: #e94560;
+    }
+
+    /* ─── APP HEADER ─── */
+    .app-header {
+      background: var(--panel-bg);
+      padding: 0 24px;
+    }
+    .app-header-inner {
+      max-width: calc(var(--width) + 48px);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-mark svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+    .logo-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: white;
+      letter-spacing: -0.01em;
+    }
+    .logo-name span {
+      color: #7ba7d4;
+      font-weight: 400;
+    }
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    .main {
+      max-width: calc(var(--width) + 48px);
+      margin: 0 auto;
+      padding: 32px 24px 0;
+    }
+
+    /* ─── SCREENS ─── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ─── CLAIM HEADER STRIP ─── */
+    .claim-strip {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .claim-ref {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .claim-meta {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .claim-meta strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ─── CARDS ─── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* ─── PROGRESS TRACKER ─── */
+    .progress-track {
+      position: relative;
+      padding: 8px 0 4px;
+    }
+    .progress-line-bg {
+      position: absolute;
+      top: 24px;
+      left: 20px;
+      right: 20px;
+      height: 2px;
+      background: var(--border);
+      z-index: 0;
+    }
+    .progress-line-fill {
+      position: absolute;
+      top: 24px;
+      left: 20px;
+      width: calc((2 / 4) * (100% - 40px));
+      height: 2px;
+      background: var(--accent);
+      z-index: 1;
+    }
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      text-align: center;
+    }
+    .step-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      margin-bottom: 10px;
+      transition: all 0.2s;
+    }
+    .step.done .step-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+    .step.active .step-dot {
+      background: white;
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-light);
+    }
+    .step.pending .step-dot {
+      background: var(--bg);
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .step-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      line-height: 1.3;
+      max-width: 80px;
+    }
+    .step.active .step-label {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .step.done .step-label { color: var(--text); }
+    .step.pending .step-label { color: var(--text-muted); }
+    .step-date {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      letter-spacing: 0.02em;
+    }
+    .step.active .step-date {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ─── STATUS BADGE ─── */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status-badge.in-progress {
+      background: var(--warning-bg);
+      color: #854d0e;
+      border: 1px solid #f0d98a;
+    }
+    .status-badge.complete {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid var(--green-border);
+    }
+    .status-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .status-badge.in-progress .dot { animation: pulse 2s ease-in-out infinite; }
+    .status-badge.complete .dot { animation: none; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ─── SPECIALIST BOX ─── */
+    .specialist-box {
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      color: white;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-top: 4px;
+    }
+    .specialist-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
+      color: white;
+    }
+    .specialist-text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #c8d8ec;
+    }
+    .specialist-text strong { color: white; font-weight: 600; }
+
+    /* ─── POOL BANNER ─── */
+    .pool-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .pool-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 16px;
+    }
+    .pool-text { font-size: 14px; color: var(--text-secondary); }
+    .pool-text strong { color: var(--text); font-weight: 600; }
+    .pool-count {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .pool-count-label { font-size: 11px; color: var(--text-muted); text-align: right; }
+
+    /* ─── POOL PANELS ─── */
+    .pool-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .pool-panel-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .pool-panel-icon.threat { background: #fef3c7; }
+    .pool-panel-icon.shield { background: var(--green-bg); }
+    .pool-panel-icon.queue { background: var(--accent-light); }
+    .pool-panel-body { flex: 1; }
+    .pool-panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .pool-panel-text {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .pool-panel-text strong { color: var(--text); font-weight: 600; }
+    .pool-stat {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+    .pool-stat.green { color: var(--green); }
+
+    .withdraw-notice {
+      background: #fafafa;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+    .withdraw-notice strong { color: var(--text); }
+
+    /* ─── EV REPORT ─── */
+    .ev-header {
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      padding: 24px;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .ev-header-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #7ba7d4;
+      margin-bottom: 8px;
+    }
+    .ev-header-title {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+    .ev-endorsed {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #a8c8e8;
+    }
+
+    /* ─── EV VALUE DISPLAY ─── */
+    .ev-range {
+      display: grid;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .ev-range-col {
+      background: var(--surface);
+      padding: 18px 16px;
+      text-align: center;
+    }
+    .ev-range-col.central {
+      background: var(--accent);
+    }
+    .ev-range-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .ev-range-col.central .ev-range-label { color: rgba(255,255,255,0.7); }
+    .ev-range-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .ev-range-col.central .ev-range-value { color: white; font-size: 28px; }
+    .ev-confidence {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .ev-confidence-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .ev-confidence-bar {
+      height: 100%;
+      width: 82%;
+      background: var(--green-mid);
+      border-radius: 3px;
+    }
+    .ev-confidence-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    /* ─── BULLETS / MEANING ─── */
+    .meaning-list {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+    .meaning-list li {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .meaning-list li:last-child { border-bottom: none; }
+    .meaning-list li::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%231f4fa8'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E");
+      background-size: 12px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* ─── ESCALATION TABLE ─── */
+    .esc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .esc-table th {
+      text-align: left;
+      padding: 10px 12px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 2px solid var(--border);
+      font-family: var(--font-ui);
+      font-weight: 600;
+    }
+    .esc-table td {
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .esc-table tr:last-child td { border-bottom: none; }
+    .esc-stage-label {
+      font-weight: 600;
+      color: var(--text);
+      display: block;
+    }
+    .esc-stage-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .esc-cost {
+      font-size: 12px;
+      color: var(--red);
+      background: var(--red-bg);
+      padding: 2px 7px;
+      border-radius: 3px;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+    .esc-status-done {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 500;
+    }
+    .esc-status-pending {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ─── SETTLEMENT SCREEN ─── */
+    .settlement-banner {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+    .settlement-banner-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #854d0e;
+    }
+    .settlement-banner-deadline {
+      font-size: 13px;
+      color: #854d0e;
+      white-space: nowrap;
+    }
+
+    .offer-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .offer-col {
+      background: var(--surface);
+      padding: 20px;
+      text-align: center;
+    }
+    .offer-col-label {
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+    .offer-col-value {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .offer-col-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .offer-divider { background: var(--border); }
+
+    .option-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      background: var(--surface);
+      transition: border-color 0.15s;
+    }
+    .option-block:hover { border-color: var(--border-strong); }
+    .option-block.green-option { border-color: var(--green-border); }
+    .option-block.green-option:hover { border-color: var(--green); }
+    .option-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .option-detail {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      font-family: var(--font-body);
+    }
+    .option-fee-breakdown {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--green);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-ui);
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      width: 100%;
+    }
+    .btn-green {
+      background: var(--green);
+      color: white;
+    }
+    .btn-green:hover { background: #14532d; }
+    .btn-slate {
+      background: var(--panel-bg);
+      color: white;
+    }
+    .btn-slate:hover { background: #1a3a5c; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-strong);
+    }
+    .btn-outline:hover { border-color: var(--text-secondary); color: var(--text); }
+
+    .counter-field {
+      display: none;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .counter-field.visible { display: block; }
+    .counter-input-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .counter-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .counter-input {
+      width: 100%;
+      padding: 11px 14px 11px 28px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-family: var(--font-ui);
+      color: var(--text);
+      outline: none;
+    }
+    .counter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+    .counter-note { font-size: 12px; color: var(--text-muted); }
+
+    .fee-note {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* ─── CONFIRMATION SCREEN ─── */
+    .confirm-header {
+      background: var(--green);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .confirm-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      font-size: 24px;
+    }
+    .confirm-title {
+      font-family: var(--font-body);
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .confirm-subtitle { font-size: 14px; color: rgba(255,255,255,0.8); }
+
+    /* ─── BREAKDOWN TABLE ─── */
+    .breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .breakdown-table td {
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .breakdown-table tr:last-child td { border-bottom: none; font-weight: 600; }
+    .breakdown-table td:last-child { text-align: right; font-weight: 500; }
+    .breakdown-table .total-row td {
+      font-size: 17px;
+      padding-top: 16px;
+    }
+    .breakdown-table .total-row td:last-child { color: var(--green); font-size: 20px; }
+    .breakdown-table .fee-row td:last-child { color: var(--red); }
+    .breakdown-table .timeline-row td { font-size: 13px; color: var(--text-secondary); font-weight: 400; }
+    .breakdown-table .timeline-row td:last-child { font-weight: 400; color: var(--text-secondary); }
+
+    .bank-confirm {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bank-ref { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-muted); }
+
+    /* ─── STAR RATING ─── */
+    .star-rating {
+      display: flex;
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .star {
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--border-strong);
+      transition: color 0.1s;
+      line-height: 1;
+    }
+    .star:hover, .star.active { color: #f59e0b; }
+
+    .nps-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text);
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      margin-top: 10px;
+    }
+    .nps-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-light); }
+
+    /* ─── REFERRAL SECTION ─── */
+    .referral-block {
+      background: var(--panel-bg);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      color: white;
+      margin-top: 4px;
+    }
+    .referral-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .referral-sub {
+      font-size: 13px;
+      color: #a8c8e8;
+      margin-bottom: 14px;
+    }
+    .referral-link-wrap {
+      display: flex;
+      gap: 8px;
+    }
+    .referral-link-box {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      padding: 9px 14px;
+      font-size: 13px;
+      color: #7ba7d4;
+      font-family: 'Courier New', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-copy {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 9px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-ui);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-copy:hover { background: #1a3f8a; }
+
+    /* ─── ANNOTATION STRIP ─── */
+    .annotation {
+      background: #1e1e2e;
+      border-top: 1px solid #333;
+      margin-top: 32px;
+      padding: 20px 24px;
+    }
+    .annotation-inner {
+      max-width: calc(var(--width) + 48px);
+      margin: 0 auto;
+    }
+    .annotation-label {
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #e94560;
+      margin-bottom: 10px;
+    }
+    .annotation-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+    @media (max-width: 600px) {
+      .annotation-row { grid-template-columns: 1fr; }
+    }
+    .annotation-item-label {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 3px;
+    }
+    .annotation-item-value {
+      color: #9ca3af;
+      line-height: 1.5;
+    }
+    .annotation-pass { color: #4ade80; }
+    .annotation-fail { color: #f87171; }
+    .annotation-sep { color: #4b5563; margin: 10px 0; border: none; border-top: 1px solid #333; }
+
+    /* ─── MISC UTILITIES ─── */
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      margin-top: 24px;
+    }
+    .screen > .section-title:first-child { margin-top: 0; }
+
+    .spacer { height: 20px; }
+    .spacer-sm { height: 12px; }
+
+    .page-fade {
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 560px) {
+      .progress-steps { gap: 4px; }
+      .step-label { font-size: 10px; max-width: 60px; }
+      .step-dot { width: 26px; height: 26px; font-size: 11px; }
+      .ev-range { grid-template-columns: 1fr; }
+      .offer-comparison { grid-template-columns: 1fr; }
+      .offer-divider { display: none; }
+    }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+
+  <!-- PROTOTYPE NAVIGATION -->
+  <nav class="proto-nav">
+    <span class="proto-nav-label">Prototype&nbsp;nav</span>
+    <button class="proto-tab active" onclick="showScreen('s1', this)">P2-S1 Status</button>
+    <button class="proto-tab" onclick="showScreen('s2', this)">P2-S2 Pool</button>
+    <button class="proto-tab" onclick="showScreen('s3', this)">P2-S3 EV report</button>
+    <button class="proto-tab" onclick="showScreen('s4', this)">P2-S4 Offer</button>
+    <button class="proto-tab" onclick="showScreen('s5', this)">P2-S5 Confirm</button>
+  </nav>
+
+  <!-- APP HEADER -->
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 16 16"><path d="M8 2C4.686 2 2 4.686 2 8s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 2a4 4 0 110 8A4 4 0 018 4zm0 1.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/></svg>
+        </div>
+        <span class="logo-name">Calmly <span>Resolve</span></span>
+      </div>
+      <div class="user-avatar">ST</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <div class="main">
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- P2-S1: CASE STATUS VIEW                                 -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="screen-s1" class="screen active page-fade">
+
+      <div class="claim-strip">
+        <div>
+          <div class="claim-ref">CLM-2026-0847</div>
+          <div class="claim-meta"><strong>Sarah Thompson</strong> · Deposit not returned (housing)</div>
+        </div>
+        <div class="status-badge in-progress">
+          <span class="dot"></span>
+          EV assessment in progress
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Claim progress</div>
+
+        <div class="progress-track">
+          <div class="progress-line-bg"></div>
+          <div class="progress-line-fill"></div>
+          <div class="progress-steps">
+            <div class="step done">
+              <div class="step-dot">✓</div>
+              <div class="step-label">Intake submitted</div>
+              <div class="step-date">14 May</div>
+            </div>
+            <div class="step done">
+              <div class="step-dot">✓</div>
+              <div class="step-label">Specialist review</div>
+              <div class="step-date">16 May</div>
+            </div>
+            <div class="step active">
+              <div class="step-dot">3</div>
+              <div class="step-label">EV assessment</div>
+              <div class="step-date">In progress</div>
+            </div>
+            <div class="step pending">
+              <div class="step-dot">4</div>
+              <div class="step-label">Settlement offer</div>
+              <div class="step-date">Pending</div>
+            </div>
+            <div class="step pending">
+              <div class="step-dot">5</div>
+              <div class="step-label">Resolved</div>
+              <div class="step-date">Pending</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:20px"></div>
+
+        <div class="specialist-box">
+          <div class="specialist-avatar">JR</div>
+          <div class="specialist-text">
+            Your specialist is <strong>James R.</strong> He'll email you when your EV assessment is complete —
+            <strong>expected by 22 May.</strong> You don't need to do anything right now.
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">Pool position</div>
+        <div class="pool-banner">
+          <div class="pool-icon">🏘</div>
+          <div class="pool-text">
+            You're part of the <strong>Checkatrade housing disputes pool.</strong><br>
+            Together you create stronger negotiating power.
+          </div>
+          <div style="text-align:right">
+            <div class="pool-count">142</div>
+            <div class="pool-count-label">active members</div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- P2-S2: POOL POSITION OVERVIEW                           -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="screen-s2" class="screen page-fade">
+
+      <div class="claim-strip">
+        <div>
+          <div class="claim-ref">CLM-2026-0847</div>
+          <div class="claim-meta"><strong>Sarah Thompson</strong> · Checkatrade housing disputes pool</div>
+        </div>
+      </div>
+
+      <div class="section-title">Your pool position</div>
+
+      <div class="pool-panel">
+        <div class="pool-panel-icon threat">⚡</div>
+        <div class="pool-panel-body">
+          <div class="pool-panel-title">Collective threat</div>
+          <div class="pool-panel-text">
+            Your claim contributes <strong>£3,200</strong> to a total pool value of
+            <strong>£437,000</strong> currently outstanding with 142 defendants.
+            The defendant doesn't face your claim alone — they face the entire pool.
+          </div>
+          <div class="pool-stat">£437,000</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">total outstanding across 142 claims</div>
+        </div>
+      </div>
+
+      <div class="pool-panel">
+        <div class="pool-panel-icon shield">🛡</div>
+        <div class="pool-panel-body">
+          <div class="pool-panel-title">Your position is protected</div>
+          <div class="pool-panel-text">
+            Pool loss insurance covers your costs through the assessment phase.
+            <strong>You won't be out of pocket if your claim doesn't settle.</strong>
+            There are no fees unless you receive a settlement.
+          </div>
+          <div class="pool-stat green" style="font-size:18px;margin-top:12px">£0 at risk to you</div>
+        </div>
+      </div>
+
+      <div class="pool-panel" style="margin-bottom:8px">
+        <div class="pool-panel-icon queue">📋</div>
+        <div class="pool-panel-body">
+          <div class="pool-panel-title">Assessment queue</div>
+          <div class="pool-panel-text">
+            You're claim <strong>#23</strong> in our current assessment batch.
+            We process in date order. Estimated EV assessment: <strong>by 22 May.</strong>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+                <div style="width:16%;height:100%;background:var(--accent);border-radius:3px"></div>
+              </div>
+              <span style="font-size:12px;color:var(--text-muted);white-space:nowrap">#23 of 142</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="withdraw-notice">
+        <strong>If you withdraw from the pool,</strong> you lose your protected position and would need to pursue this claim independently — without the collective leverage or cost cover.
+      </div>
+
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- P2-S3: EV REPORT PRESENTATION                           -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="screen-s3" class="screen page-fade">
+
+      <div class="ev-header">
+        <div class="ev-header-label">Independent assessment</div>
+        <div class="ev-header-title">Your independent claim assessment — completed 22 May 2026</div>
+        <div class="ev-endorsed">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 1L7.236 4.146H10.618L7.927 6.208L8.927 9.5L6 7.5L3.073 9.5L4.073 6.208L1.382 4.146H4.764L6 1Z" fill="#7ba7d4"/>
+          </svg>
+          Endorsed by the Office of Fair Trading Independent Assessors
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Claim value breakdown</div>
+
+        <div style="margin-bottom:14px;font-size:14px;color:var(--text-secondary)">
+          <span style="font-weight:600;color:var(--text)">Amount disputed:</span> £3,200
+        </div>
+
+        <div class="ev-range">
+          <div class="ev-range-col">
+            <div class="ev-range-label">Low</div>
+            <div class="ev-range-value">£1,800</div>
+          </div>
+          <div style="background:var(--border)"></div>
+          <div class="ev-range-col central">
+            <div class="ev-range-label">Central estimate</div>
+            <div class="ev-range-value">£2,850</div>
+          </div>
+          <div style="background:var(--border)"></div>
+          <div class="ev-range-col">
+            <div class="ev-range-label">High</div>
+            <div class="ev-range-value">£3,600</div>
+          </div>
+        </div>
+
+        <div class="ev-confidence">
+          <div style="font-size:13px;color:var(--green);font-weight:600;white-space:nowrap">Assessment confidence</div>
+          <div class="ev-confidence-bar-wrap">
+            <div class="ev-confidence-bar"></div>
+          </div>
+          <div class="ev-confidence-label">82%</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">What this means</div>
+        <ul class="meaning-list">
+          <li>The central figure (£2,850) is what an independent assessor expects you to recover if this goes to judgment.</li>
+          <li>The defendant has now been served with this assessment simultaneously — they have seen the same numbers you're seeing now.</li>
+          <li>This is not our estimate — it comes from an accredited independent body with no financial interest in your outcome.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">Escalation schedule — what the defendant faces</div>
+        <table class="esc-table">
+          <thead>
+            <tr>
+              <th>Stage</th>
+              <th>Action</th>
+              <th>Cost to defendant</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="esc-stage-label">D1</span>
+                <span class="esc-stage-date">20 May 2026</span>
+              </td>
+              <td style="font-size:13px;color:var(--text-secondary)">Settlement demand issued</td>
+              <td><span class="esc-cost">Legal notice + admin</span></td>
+              <td><span class="esc-status-done">✓ Issued</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="esc-stage-label">D2</span>
+                <span class="esc-stage-date">31 May 2026</span>
+              </td>
+              <td style="font-size:13px;color:var(--text-secondary)">Final demand + mediation notice</td>
+              <td><span class="esc-cost">£350–£900 mediation fee</span></td>
+              <td><span class="esc-status-pending">Pending</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="esc-stage-label">D3</span>
+                <span class="esc-stage-date">14 June 2026</span>
+              </td>
+              <td style="font-size:13px;color:var(--text-secondary)">Arbitration filing</td>
+              <td><span class="esc-cost">£1,500–£4,000 + award</span></td>
+              <td><span class="esc-status-pending">Pending</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- P2-S4: SETTLEMENT OFFER SCREEN                          -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="screen-s4" class="screen page-fade">
+
+      <div class="settlement-banner">
+        <div class="settlement-banner-text">⏱ Settlement offer received</div>
+        <div class="settlement-banner-deadline">Respond by <strong>5 June 2026</strong></div>
+      </div>
+
+      <div class="offer-comparison">
+        <div class="offer-col">
+          <div class="offer-col-label">Offer from defendant</div>
+          <div class="offer-col-value">£2,600</div>
+          <div class="offer-col-sub">HomeLet Properties Ltd</div>
+        </div>
+        <div class="offer-divider"></div>
+        <div class="offer-col">
+          <div class="offer-col-label">Independent assessment</div>
+          <div class="offer-col-value" style="color:var(--accent)">£2,850</div>
+          <div class="offer-col-sub">Central estimate (OFT)</div>
+        </div>
+      </div>
+
+      <!-- Option 1: Accept -->
+      <div class="option-block green-option">
+        <div class="option-title">Accept £2,600</div>
+        <div class="option-fee-breakdown">
+          <span>Calmly fee: £520 (20%)</span>
+          <strong>You receive: £2,080</strong>
+        </div>
+        <button class="btn btn-green" onclick="showScreen('s5', document.querySelectorAll('.proto-tab')[4])">
+          Accept this settlement
+        </button>
+      </div>
+
+      <!-- Option 2: Counter -->
+      <div class="option-block">
+        <div class="option-title">Make a counter-offer</div>
+        <div class="option-detail">We'll present your counter to the defendant within 3 working days. The offer deadline still applies.</div>
+        <button class="btn btn-slate" onclick="toggleCounter()">Make a counter-offer</button>
+        <div class="counter-field" id="counter-field">
+          <label style="font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:8px">Enter your counter-offer amount</label>
+          <div class="counter-input-wrap">
+            <span class="counter-prefix">£</span>
+            <input type="number" class="counter-input" placeholder="2,850" value="">
+          </div>
+          <div class="counter-note">We'll present your counter to the defendant within 3 working days.</div>
+          <div style="height:12px"></div>
+          <button class="btn btn-slate" style="width:auto;padding:10px 20px">Submit counter-offer</button>
+        </div>
+      </div>
+
+      <!-- Option 3: Decline -->
+      <div class="option-block" style="margin-bottom:12px">
+        <div class="option-title">Decline and proceed to mediation</div>
+        <div class="option-detail">If you decline, this moves to mediation. No extra cost to you — your pool insurance covers it. Mediation typically resolves within 3–4 weeks.</div>
+        <button class="btn btn-outline">Decline — proceed to mediation</button>
+      </div>
+
+      <div class="fee-note">
+        The 20% Calmly fee only applies if you accept a settlement. It's deducted from the settlement amount — you never pay anything upfront.
+      </div>
+
+    </section>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <!-- P2-S5: RECOVERY CONFIRMATION + FEE BREAKDOWN            -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <section id="screen-s5" class="screen page-fade">
+
+      <div class="confirm-header">
+        <div class="confirm-icon">✓</div>
+        <div class="confirm-title">Settlement accepted — £2,600</div>
+        <div class="confirm-subtitle">CLM-2026-0847 · HomeLet Properties Ltd · 29 May 2026</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recovery breakdown</div>
+        <table class="breakdown-table">
+          <tbody>
+            <tr>
+              <td>Gross settlement</td>
+              <td>£2,600.00</td>
+            </tr>
+            <tr class="fee-row">
+              <td>Calmly platform fee (20%)</td>
+              <td>−£520.00</td>
+            </tr>
+            <tr class="total-row">
+              <td><strong>Net to you</strong></td>
+              <td><strong>£2,080.00</strong></td>
+            </tr>
+            <tr class="timeline-row">
+              <td colspan="2" style="padding-top:12px;color:var(--text-secondary);font-size:13px;border-bottom:none">
+                💳 Payment to your bank account within 5 working days
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="bank-confirm">
+          <div>
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:2px">Paying to account ending</div>
+            <div style="font-weight:600;color:var(--text)">·· ·· ·· 4821</div>
+          </div>
+          <div class="bank-ref">REF: CLM-2026-0847-S</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">How was your experience?</div>
+        <div style="font-family:var(--font-body);font-size:14px;color:var(--text-secondary);margin-bottom:4px">
+          Your feedback shapes how we work for the next claimant.
+        </div>
+        <div class="star-rating" id="stars">
+          <span class="star" onclick="rateStar(1)">★</span>
+          <span class="star" onclick="rateStar(2)">★</span>
+          <span class="star" onclick="rateStar(3)">★</span>
+          <span class="star" onclick="rateStar(4)">★</span>
+          <span class="star" onclick="rateStar(5)">★</span>
+        </div>
+        <textarea class="nps-textarea" placeholder="Anything you'd like to share? (optional)"></textarea>
+        <div style="height:14px"></div>
+        <button class="btn btn-slate" style="width:auto;padding:10px 20px">Submit feedback</button>
+      </div>
+
+      <div class="referral-block">
+        <div class="referral-title">Know someone in a similar situation?</div>
+        <div class="referral-sub">Share your referral link — they get priority intake, and you're helping them access the same collective power.</div>
+        <div class="referral-link-wrap">
+          <div class="referral-link-box">calmlyresolve.co.uk/join?ref=CLM-0847-ITP</div>
+          <button class="btn-copy" onclick="copyRef(this)">Copy</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div><!-- end .main -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- ANNOTATION STRIPS (one per screen)                       -->
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+
+  <div id="anno-s1" class="annotation">
+    <div class="annotation-inner">
+      <div class="annotation-label">Prototype annotation — P2-S1 · Case status view</div>
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Flow ref</div>
+          <div class="annotation-item-value">CP1 · WP1</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">T4 metrics</div>
+          <div class="annotation-item-value">O-001 (Module capacity 40/month)</div>
+        </div>
+      </div>
+      <hr class="annotation-sep">
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Pass criterion</div>
+          <div class="annotation-pass">Claimant states current status correctly in 15 seconds</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">Fail criterion</div>
+          <div class="annotation-fail">Claimant asks "what stage am I at?" despite being on the status screen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="anno-s2" class="annotation" style="display:none">
+    <div class="annotation-inner">
+      <div class="annotation-label">Prototype annotation — P2-S2 · Pool position overview</div>
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Flow ref</div>
+          <div class="annotation-item-value">WP1 · C4 · C8-CLM</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">T4 metrics</div>
+          <div class="annotation-item-value">M-003 (Claimant persistence) · M-006 (Pool withdrawal rate)</div>
+        </div>
+      </div>
+      <hr class="annotation-sep">
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Pass criterion</div>
+          <div class="annotation-pass">Claimant expresses reluctance to withdraw when shown pool position</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">Fail criterion</div>
+          <div class="annotation-fail">Claimant says "I don't know what this means"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="anno-s3" class="annotation" style="display:none">
+    <div class="annotation-inner">
+      <div class="annotation-label">Prototype annotation — P2-S3 · EV report presentation</div>
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Flow ref</div>
+          <div class="annotation-item-value">WP2 · C5</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">T4 metrics</div>
+          <div class="annotation-item-value">M-005 (Avg settlement £3,000) · M-007 (EV accuracy)</div>
+        </div>
+      </div>
+      <hr class="annotation-sep">
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Pass criterion</div>
+          <div class="annotation-pass">Claimant says "I now understand what my claim is worth"</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">Fail criterion</div>
+          <div class="annotation-fail">Claimant says "I'd still need a solicitor" — endorsement not credible</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="anno-s4" class="annotation" style="display:none">
+    <div class="annotation-inner">
+      <div class="annotation-label">Prototype annotation — P2-S4 · Settlement offer screen</div>
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Flow ref</div>
+          <div class="annotation-item-value">CP2 · C6</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">T4 metrics</div>
+          <div class="annotation-item-value">U-002 (Fee rate 20%) · M-005 (Avg settlement)</div>
+        </div>
+      </div>
+      <hr class="annotation-sep">
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Pass criterion</div>
+          <div class="annotation-pass">Claimant understands fee and does not report surprise at net amount</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">Fail criterion</div>
+          <div class="annotation-fail">Claimant says "I didn't know you'd take 20%"</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="anno-s5" class="annotation" style="display:none">
+    <div class="annotation-inner">
+      <div class="annotation-label">Prototype annotation — P2-S5 · Recovery confirmation + fee breakdown</div>
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Flow ref</div>
+          <div class="annotation-item-value">CP3 · C6</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">T4 metrics</div>
+          <div class="annotation-item-value">U-002 (Fee rate 20%) · U-004 (FMOS 60.3%)</div>
+        </div>
+      </div>
+      <hr class="annotation-sep">
+      <div class="annotation-row">
+        <div>
+          <div class="annotation-item-label">Pass criterion</div>
+          <div class="annotation-pass">Claimant NPS ≥ 8 post-resolution</div>
+        </div>
+        <div>
+          <div class="annotation-item-label">Fail criterion</div>
+          <div class="annotation-fail">Claimant NPS &lt; 6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const screens = ['s1','s2','s3','s4','s5'];
+
+    function showScreen(id, btn) {
+      // Hide all screens
+      screens.forEach(s => {
+        const el = document.getElementById('screen-' + s);
+        const anno = document.getElementById('anno-' + s);
+        if (el) el.classList.remove('active');
+        if (anno) anno.style.display = 'none';
+      });
+      // Show target
+      const target = document.getElementById('screen-' + id);
+      const annoTarget = document.getElementById('anno-' + id);
+      if (target) {
+        target.classList.add('active');
+        // Re-trigger animation
+        target.classList.remove('page-fade');
+        void target.offsetWidth;
+        target.classList.add('page-fade');
+      }
+      if (annoTarget) annoTarget.style.display = 'block';
+      // Update tabs
+      document.querySelectorAll('.proto-tab').forEach(t => t.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function toggleCounter() {
+      const field = document.getElementById('counter-field');
+      field.classList.toggle('visible');
+    }
+
+    function rateStar(n) {
+      const stars = document.querySelectorAll('#stars .star');
+      stars.forEach((s, i) => {
+        s.classList.toggle('active', i < n);
+      });
+    }
+
+    function copyRef(btn) {
+      navigator.clipboard.writeText('https://calmlyresolve.co.uk/join?ref=CLM-0847-ITP').catch(() => {});
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    }
+  </script>
+
+</body>
+</html>

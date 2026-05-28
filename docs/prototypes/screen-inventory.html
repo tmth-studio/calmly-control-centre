@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Experience Prototype Screen Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1; --surface: #ffffff; --text: #0f1923; --text-secondary: #4a5568;
+      --text-muted: #718096; --border: #dde1e7; --accent: #1f4fa8; --accent-light: #e8eef8;
+      --panel-bg: #0f2744; --panel-text: #ffffff; --warning-bg: #fff8e6;
+      --warning-border: #d4820a; --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 15px; line-height: 1.6; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+    .panel { background: var(--panel-bg); color: var(--panel-text); padding: 28px 32px; margin-bottom: 32px; }
+    .panel h1 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+    .panel p { font-family: var(--font-body); font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.7; }
+
+    .principle-block { background: var(--accent-light); border-left: 4px solid var(--accent); padding: 16px 20px; margin-bottom: 32px; font-family: var(--font-body); font-size: 14px; line-height: 1.7; color: var(--text); }
+    .principle-block strong { font-family: var(--font-ui); font-weight: 600; }
+
+    .slice-header { margin: 36px 0 16px; }
+    .slice-header h2 { font-size: 16px; font-weight: 600; color: var(--panel-bg); border-bottom: 2px solid var(--panel-bg); padding-bottom: 6px; display: inline-block; }
+    .slice-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .product-card { background: var(--surface); border: 1px solid var(--border); margin-bottom: 24px; }
+    .product-card-header { background: var(--panel-bg); color: var(--panel-text); padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+    .product-num { font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 2px; letter-spacing: 0.04em; }
+    .product-name { font-size: 15px; font-weight: 600; flex: 1; }
+    .track-pill { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 2px; letter-spacing: 0.04em; }
+    .track-a { background: #e6f4ec; color: #166534; }
+    .track-b { background: #e8eef8; color: #1f4fa8; }
+    .track-c { background: #f0ebfb; color: #5b21b6; }
+    .track-int { background: #f1f3f5; color: #4a5568; }
+
+    .product-meta { padding: 14px 20px; border-bottom: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; background: #fafaf8; }
+    .meta-item label { font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; display: block; margin-bottom: 3px; }
+    .meta-item span { font-size: 13px; color: var(--text); font-weight: 500; }
+
+    .screens-table { width: 100%; border-collapse: collapse; }
+    .screens-table th { background: #f1f3f5; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    .screens-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .screens-table tr:last-child td { border-bottom: none; }
+    .screens-table tr:nth-child(even) td { background: #fafaf8; }
+
+    .screen-id { font-family: monospace; font-size: 12px; font-weight: 600; color: var(--accent); white-space: nowrap; }
+    .assumption-tag { display: inline-block; background: #fff8e6; color: #854d0e; border: 1px solid #f0d98a; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 2px; margin: 1px 2px 1px 0; white-space: nowrap; }
+    .flow-tag { display: inline-block; background: var(--accent-light); color: var(--accent); border: 1px solid #b8c8e8; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 2px; white-space: nowrap; }
+    .pass-fail { font-size: 12px; color: var(--text-secondary); font-style: italic; }
+
+    .warning-block { background: var(--warning-bg); border-left: 4px solid var(--warning-border); padding: 12px 16px; margin: 20px 20px; font-size: 13px; line-height: 1.6; }
+
+    .summary-table { width: 100%; border-collapse: collapse; margin-top: 32px; background: var(--surface); border: 1px solid var(--border); }
+    .summary-table th { background: var(--panel-bg); color: var(--panel-text); padding: 10px 14px; text-align: left; font-size: 12px; font-weight: 600; }
+    .summary-table td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    .summary-table tr:last-child td { border-bottom: none; }
+    .status-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 2px; }
+    .status-build { background: #e6f4ec; color: #166534; }
+    .status-pending { background: #f1f3f5; color: #4a5568; }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="panel">
+    <h1>Calmly Resolve — Experience Prototype Screen Inventory</h1>
+    <p>8 digital products across 5 build slices. Each screen annotated with: (1) CTM flow reference, (2) T4 CDM assumption under test, (3) pass/fail validation criterion. Prototypes are validation instruments — every screen either confirms or falsifies an architecture assumption. 28 May 2026.</p>
+  </div>
+
+  <div class="principle-block">
+    <strong>Architectural constraint — applies to every screen.</strong> Each prototype component must do one of two things: (a) confirm an architecture assumption (pass criterion met), or (b) surface a falsifying signal (fail criterion met). A screen that does neither is decorative and should not be built. The T4 assumption column is mandatory — if no assumption can be named, the screen needs a clearer purpose or the prototype scope is too broad.
+  </div>
+
+  <!-- SUMMARY TABLE -->
+  <div class="slice-header"><h2>Build overview</h2></div>
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product</th>
+        <th>Actor</th>
+        <th>CTM track</th>
+        <th>Screens</th>
+        <th>Slice</th>
+        <th>File</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Claimant intake / referral landing</td>
+        <td>Claimant</td>
+        <td>Track A, Phase 1</td>
+        <td>4</td>
+        <td>Slice 1</td>
+        <td><code>claimant-intake.html</code></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Claimant status portal + settlement offer</td>
+        <td>Claimant</td>
+        <td>Track A, Phases 2–3</td>
+        <td>5</td>
+        <td>Slice 2</td>
+        <td><code>claimant-status-portal.html</code></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>ITP referral submission portal</td>
+        <td>ITP</td>
+        <td>Track B, Phases 1–2</td>
+        <td>4</td>
+        <td>Slice 1</td>
+        <td><code>itp-referral-portal.html</code></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>ITP dashboard</td>
+        <td>ITP</td>
+        <td>Track B, Phases 2–4</td>
+        <td>3</td>
+        <td>Slice 1</td>
+        <td><code>itp-dashboard.html</code></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>Defendant EV report + settlement offer</td>
+        <td>Defendant</td>
+        <td>Track A Phase 3 / D-side</td>
+        <td>3</td>
+        <td>Slice 3</td>
+        <td><code>defendant-ev-report.html</code></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td>Defendant response / escalation</td>
+        <td>Defendant</td>
+        <td>Track A Phase 4–5 / D-side</td>
+        <td>3</td>
+        <td>Slice 5</td>
+        <td><code>defendant-escalation.html</code></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>Intake specialist case queue</td>
+        <td>Internal ops</td>
+        <td>Track B operations layer</td>
+        <td>4</td>
+        <td>Slice 2</td>
+        <td><code>intake-specialist-queue.html</code></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>Secondary market / pool operator portal</td>
+        <td>SMP (Track C)</td>
+        <td>Track C, Phases 1–4</td>
+        <td>4</td>
+        <td>Slice 4</td>
+        <td><code>secondary-market-portal.html</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SLICE 1 -->
+  <div class="slice-header" style="margin-top:44px;">
+    <h2>Slice 1 — MVP (First ITP signed, first referrals in)</h2>
+    <p>Products 1, 3, 4 — claimant acquisition and ITP operational tooling. Nothing in this slice requires operational history or secondary market participants.</p>
+  </div>
+
+  <!-- PRODUCT 1 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 1</span>
+      <span class="product-name">Claimant intake / referral landing</span>
+      <span class="track-pill track-a">Track A — Claimant</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Phase 1 — Becoming</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C7 (ITP acquisition) + C4 (pool framing)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>ITP-provided link / QR code</span></div>
+      <div class="meta-item"><label>Exit</label><span>Intake submitted → Product 7 queue</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P1-S1</td>
+          <td><strong>Landing / pool explainer</strong></td>
+          <td>Explains the collective pool proposition. Must resolve the Want Block (C4): individual persistence is rational because pool loss protection covers early losses. Three claims: (1) you don't need to manage this, (2) your neighbours are in the same position, (3) the fee only applies if you recover.</td>
+          <td><span class="flow-tag">CP-ITP</span> <span class="flow-tag">C7-SR4</span></td>
+          <td><span class="assumption-tag">M-003</span> Claimant segment willingness</td>
+          <td class="pass-fail"><strong>Pass:</strong> Completion rate landing → eligibility check ≥ 40%. <strong>Fail:</strong> &lt;25% proceed — pool framing is not compelling for this segment.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P1-S2</td>
+          <td><strong>Eligibility check</strong></td>
+          <td>Three questions: dispute type (housing/employment/marketplace/payment), approximate claim value, whether they are still in a relationship with the defendant. Segments to CDM S-001 through S-005. Ineligible routes (S-005, no ITP) shown a holding screen — not a dead end.</td>
+          <td><span class="flow-tag">CP1-pre</span></td>
+          <td><span class="assumption-tag">M-004</span> Segment composition</td>
+          <td class="pass-fail"><strong>Pass:</strong> Eligibility check correctly routes ≥ 90% of known test cases to correct segment. <strong>Fail:</strong> &gt;15% "ineligible" rate on warm ITP referrals — ITP is referring mismatched members.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P1-S3</td>
+          <td><strong>Intake form</strong></td>
+          <td>Collects: (1) claimant details, (2) defendant details (name, trading as), (3) dispute narrative (structured: what happened, when, amount disputed, what resolution attempted), (4) estimated claim value. Must generate structured case data sufficient for CDM EV methodology — not a free-text dump.</td>
+          <td><span class="flow-tag">CP1</span> <span class="flow-tag">C5-SR4</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement £3,000 <span class="assumption-tag">M-003</span></td>
+          <td class="pass-fail"><strong>Pass:</strong> ≥ 80% of intakes produce a structured case file usable for EV assessment without specialist follow-up. <strong>Fail:</strong> Specialist needs to call &gt;50% of claimants for missing information — form is not fit for EV methodology.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P1-S4</td>
+          <td><strong>Submission confirmation</strong></td>
+          <td>Sets expectations: timeline to first update, what happens next (specialist reviews, EV assessment), how they will be notified. Gives them a claim reference. No specific resolution date promise — bounded to "we will update you within X days." Must not generate false expectation of rapid resolution.</td>
+          <td><span class="flow-tag">CP1</span></td>
+          <td><span class="assumption-tag">O-001</span> Specialist capacity 40/month</td>
+          <td class="pass-fail"><strong>Pass:</strong> Confirmation screen matches actual processing time — claimant does not chase before first update window. <strong>Fail:</strong> &gt;30% of claimants email/call before promised first update.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRODUCT 3 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 3</span>
+      <span class="product-name">ITP referral submission portal</span>
+      <span class="track-pill track-b">Track B — ITP</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Phase 1–2 — Becoming / Consuming</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C7 (B2B embedding) + C8 (EV calibration data)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>ITP authenticated via login</span></div>
+      <div class="meta-item"><label>Exit</label><span>Referral submitted → Product 7 queue</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P3-S1</td>
+          <td><strong>ITP login / authentication</strong></td>
+          <td>Authenticated ITP access. Shows ITP name and module affiliation on login. The brand here matters — ITP must feel this is a professional B2B tool, not a consumer referral form. Authentication should be low-friction (email link or SSO where available) — high-friction auth breaks the referral workflow for advisers mid-appointment.</td>
+          <td><span class="flow-tag">PartP1</span></td>
+          <td><span class="assumption-tag">O-002</span> ITP workflow integration</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP adviser completes login and first referral in &lt;5 minutes total. <strong>Fail:</strong> Auth friction causes &gt;20% abandonment before first referral submitted.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P3-S2</td>
+          <td><strong>New referral form</strong></td>
+          <td>Collects member details (name, contact, dispute type, claim value estimate) on behalf of the ITP. This is the ITP's submission, not the claimant's self-submission — the ITP vouches for the member. Dispute type must map directly to CDM segments (S-001 through S-004). The ITP's segmentation of their members is the upstream signal for EV accuracy.</td>
+          <td><span class="flow-tag">PartP1</span> <span class="flow-tag">CP1</span></td>
+          <td><span class="assumption-tag">U-003</span> ITP referral rate <span class="assumption-tag">M-004</span> Segment composition</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP can submit a complete referral in &lt;3 minutes. Form fields map 1:1 to CDM segment criteria. <strong>Fail:</strong> ITP omits claim value in &gt;40% of referrals — value field is insufficient or ITP doesn't know it.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P3-S3</td>
+          <td><strong>Referral submitted confirmation</strong></td>
+          <td>Confirms submission and sets ITP expectation on timeline. Tells the ITP when they will receive an outcome update for this member (ties to O-001 specialist capacity). Gives ITP a referral reference number — they can share it with the member.</td>
+          <td><span class="flow-tag">PartP1</span></td>
+          <td><span class="assumption-tag">O-001</span> Specialist capacity 40/month</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP satisfaction with referral process ≥ 4/5 in post-prototype interview. <strong>Fail:</strong> ITP says "I wouldn't use this — too slow / too unclear / doesn't fit our workflow."</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P3-S4</td>
+          <td><strong>Referral history / status list</strong></td>
+          <td>List of all referrals submitted by this ITP, with current status (submitted / under assessment / EV complete / settlement offer sent / resolved). This is the primary C8 switching cost mechanism — the ITP's outcome history is visible here and nowhere else. The richer this dataset becomes over time, the less rational it is to switch to a competitor.</td>
+          <td><span class="flow-tag">PartP2</span> <span class="flow-tag">C8-SR1</span></td>
+          <td><span class="assumption-tag">U-003</span> ITP referral rate</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP can articulate what the status screen shows without prompting. <strong>Fail:</strong> ITP does not check the referral list after submitting — either because it doesn't exist in their workflow or because the information isn't useful enough to return for.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRODUCT 4 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 4</span>
+      <span class="product-name">ITP dashboard — outcomes and fees</span>
+      <span class="track-pill track-b">Track B — ITP</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Phase 2–4 — Consuming / Paying / Repeating</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C8 (switching cost accumulation)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>ITP authenticated — separate tab from referral portal</span></div>
+      <div class="meta-item"><label>Exit</label><span>No exit — this is the retention surface</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P4-S1</td>
+          <td><strong>Dashboard home</strong></td>
+          <td>At-a-glance: total referrals (all time), active referrals (in process), resolved referrals, total recovery value for members, and aggregate platform fee paid to date. The numbers must grow with tenure — the accumulating dataset is the asset the ITP cannot take with them. Design must make the tenure visible: "since [join date]" framing, not just current-period totals.</td>
+          <td><span class="flow-tag">PartP2</span> <span class="flow-tag">C8-SR2</span></td>
+          <td><span class="assumption-tag">U-002</span> Fee rate 20% <span class="assumption-tag">U-004</span> FMOS 60.3%</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP can read their total member outcome value and total fees in under 10 seconds. <strong>Fail:</strong> ITP asks "where do I see my results?" — dashboard is not self-evident.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P4-S2</td>
+          <td><strong>Member outcomes report</strong></td>
+          <td>Downloadable or viewable report: settlement rates, average recovery value, time-to-resolution, by dispute type and period. This is the board-level data the ITP CFO/director will want. Must be printable / exportable. The ITP-specific outcomes dataset is named in C8 as the primary switching cost — this screen makes it visible and legible.</td>
+          <td><span class="flow-tag">C8-SR1</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement £3,000 <span class="assumption-tag">O-001</span> Capacity</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP decision-maker says "I'd put this in my board pack." <strong>Fail:</strong> ITP says the data doesn't correspond to anything they track internally — it's not integrated into their own reporting.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P4-S3</td>
+          <td><strong>Fee statement</strong></td>
+          <td>Itemised fee statement per period: which settlements generated a platform fee, the gross settlement value, the fee deducted, and the net recovery to the member. This is the payment product for the ITP (C6 — platform fee is contingent on settlement). Must be receivable as an invoice or statement for ITP accounting purposes. Critical for ITP finance team sign-off on continued engagement.</td>
+          <td><span class="flow-tag">C6</span> <span class="flow-tag">PartP2</span></td>
+          <td><span class="assumption-tag">U-002</span> Fee rate 20%</td>
+          <td class="pass-fail"><strong>Pass:</strong> ITP finance team can reconcile fee statement against their own accounts without contacting Calmly. <strong>Fail:</strong> ITP raises a query on every statement — statement format is not self-explanatory.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warning-block">
+      <strong>⚠ C8 switching cost visibility test.</strong> Product 4 is the primary surface where C8 switching cost accumulation becomes visible to the ITP. If the dashboard does not show tenure-indexed data ("since you joined"), the lock-in is present but invisible. Invisible switching costs cannot be leveraged in renewal conversations. This is a design failure mode — not a technology failure mode.
+    </div>
+  </div>
+
+  <!-- SLICE 2 -->
+  <div class="slice-header" style="margin-top:44px;">
+    <h2>Slice 2 — Operations (First cases processed, first EV assessments complete)</h2>
+    <p>Products 2, 7 — requires at least one case in the system and one specialist operational.</p>
+  </div>
+
+  <!-- PRODUCT 2 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 2</span>
+      <span class="product-name">Claimant status portal + settlement offer</span>
+      <span class="track-pill track-a">Track A — Claimant</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Phase 2–3 — Consuming / Paying</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C5 (EV assessment — Learning Block) + C6 (contingent fee payment)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>Email link with claim reference</span></div>
+      <div class="meta-item"><label>Exit</label><span>Accept settlement → fee deducted → recovery confirmed</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P2-S1</td>
+          <td><strong>Case status view</strong></td>
+          <td>Shows current position in the CDR process: submitted → under assessment → EV complete → settlement offer sent → resolved. Queue position in pool (e.g. "37 of 142 active pool members"). Pool size is the collective threat signal — larger pool = stronger collective threat = better defendant incentive to settle. This must be legible to a non-legal claimant in under 30 seconds.</td>
+          <td><span class="flow-tag">CP1</span> <span class="flow-tag">WP1</span></td>
+          <td><span class="assumption-tag">O-001</span> Module capacity</td>
+          <td class="pass-fail"><strong>Pass:</strong> Claimant can state their current status correctly after 15 seconds on this screen. <strong>Fail:</strong> Claimant asks "what stage am I at?" despite being on the status screen.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P2-S2</td>
+          <td><strong>Pool position overview</strong></td>
+          <td>Shows the claimant's pool position: collective threat share (their contribution to the aggregated claim value that the defendant faces), insurance status (protected against loss up to X during assessment), and queue position. This is the C4 / C8 hedged long position — must make the three-dimension lock-in visible without explaining the theory. Claimant must feel "I have a position I'd lose if I walked away."</td>
+          <td><span class="flow-tag">WP1</span> <span class="flow-tag">C4</span> <span class="flow-tag">C8-CLM</span></td>
+          <td><span class="assumption-tag">M-003</span> Claimant persistence <span class="assumption-tag">M-006</span> Pool withdrawal rate</td>
+          <td class="pass-fail"><strong>Pass:</strong> Claimant expresses reluctance to withdraw when shown their pool position (qualitative interview). <strong>Fail:</strong> Claimant says "I don't know what this means" or "it doesn't change my thinking."</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P2-S3</td>
+          <td><strong>EV report presentation</strong></td>
+          <td>Presents the independently endorsed expected value assessment: EV range (low / central / high), confidence level, comparison to likely judgment value, and the escalation schedule (what the defendant faces at each stage of legal escalation). Must resolve the Key Learning Block (C5): "I have no way to know if this offer is fair." The word "independently endorsed" must be explained — claimant must understand this is not Calmly's own estimate.</td>
+          <td><span class="flow-tag">WP2</span> <span class="flow-tag">C5</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement £3,000 <span class="assumption-tag">M-007</span> EV accuracy</td>
+          <td class="pass-fail"><strong>Pass:</strong> Claimant says "I now understand what my claim is worth" after viewing the EV report. <strong>Fail:</strong> Claimant says "I'd still need a solicitor to tell me if this is right" — the independent endorsement is not credible to them.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P2-S4</td>
+          <td><strong>Settlement offer screen</strong></td>
+          <td>Presents the defendant's settlement offer (once received), the EV report as a reference point, and three options: accept / counter / proceed to escalation. Must make the fee calculation transparent: "If you accept £2,800, Calmly's fee is £560 (20%), your net recovery is £2,240." The contingent fee deduction is the C6 payment event — architecturally inseparable from value delivery. Claimant should feel the fee is fair, not extractive.</td>
+          <td><span class="flow-tag">CP2</span> <span class="flow-tag">C6</span></td>
+          <td><span class="assumption-tag">U-002</span> Fee rate 20% <span class="assumption-tag">M-005</span> Avg settlement</td>
+          <td class="pass-fail"><strong>Pass:</strong> Claimant understands fee deduction and does not report surprise at the net amount. <strong>Fail:</strong> Claimant says "I didn't know you'd take 20%" — fee was not visible or not legible at intake.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P2-S5</td>
+          <td><strong>Recovery confirmation + fee breakdown</strong></td>
+          <td>Final screen: settlement accepted, fee deducted, net recovery to be disbursed. Itemised: gross settlement, platform fee (%), net to claimant, disbursement timeline. This is the Repeating phase trigger (C8-CLM) — a claimant who successfully resolved will refer others if satisfied. The outcome screen must be designed to generate a referral or ITP endorsement, not just to confirm a number.</td>
+          <td><span class="flow-tag">CP3</span> <span class="flow-tag">C6</span></td>
+          <td><span class="assumption-tag">U-002</span> Fee rate 20% <span class="assumption-tag">U-004</span> FMOS</td>
+          <td class="pass-fail"><strong>Pass:</strong> Claimant NPS ≥ 8 post-resolution. <strong>Fail:</strong> Claimant NPS &lt; 6 — either outcome was below expectation, fee felt extractive, or process took too long.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PRODUCT 7 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 7</span>
+      <span class="product-name">Intake specialist case queue</span>
+      <span class="track-pill track-int">Internal operations</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Track B operations layer</span></div>
+      <div class="meta-item"><label>Challenge</label><span>O-001 capacity test — the most critical T4 assumption</span></div>
+      <div class="meta-item"><label>Entry point</label><span>Specialist authenticated</span></div>
+      <div class="meta-item"><label>Exit</label><span>EV assessment complete → claimant status updated</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P7-S1</td>
+          <td><strong>Case queue</strong></td>
+          <td>All active cases assigned to this specialist. Columns: case reference, ITP source, dispute type, claim value, date received, current status, days in queue. Priority ordering: days in queue (oldest first). This screen is the primary O-001 test surface — if a specialist is handling 40 cases/month, their queue at any point should show a manageable pipeline without cases ageing beyond the SLA.</td>
+          <td><span class="flow-tag">INT-Q1</span></td>
+          <td><span class="assumption-tag">O-001</span> Specialist capacity 40/month — CRITICAL</td>
+          <td class="pass-fail"><strong>Pass:</strong> Specialist says queue reflects their actual workload — no cases ageing beyond 10 working days. <strong>Fail:</strong> Cases routinely age &gt;10 days — O-001 assumption (40/month) is too aggressive for real processing time.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P7-S2</td>
+          <td><strong>Case detail view</strong></td>
+          <td>Full intake data for one case: claimant details, ITP source, dispute narrative, estimated value, segment classification (CDM S-001 through S-004). Specialist uses this to validate the intake, confirm segment, and begin EV methodology. If intake is incomplete, specialist can flag for follow-up (triggering email to claimant). Must not require specialist to leave this screen to access segment-specific EV methodology guidance.</td>
+          <td><span class="flow-tag">INT-Q2</span></td>
+          <td><span class="assumption-tag">O-001</span> Capacity <span class="assumption-tag">M-004</span> Segment composition</td>
+          <td class="pass-fail"><strong>Pass:</strong> Specialist can determine segment and begin EV methodology without navigating away. <strong>Fail:</strong> Specialist needs to consult a separate document or spreadsheet to complete assessment — the tool does not have the methodology embedded.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P7-S3</td>
+          <td><strong>EV assessment workflow</strong></td>
+          <td>Guided EV assessment: inputs the specialist provides (dispute type, claim value, evidence quality, defendant type, jurisdiction), the methodology calculates the EV range (low/central/high), and the specialist reviews and confirms (or adjusts with documented rationale). The output is submitted for independent endorsement. This is C5 in operation — the working product that produces the endorsed EV report the claimant sees in P2-S3.</td>
+          <td><span class="flow-tag">WP2</span> <span class="flow-tag">C5</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement £3,000 <span class="assumption-tag">M-007</span> EV accuracy</td>
+          <td class="pass-fail"><strong>Pass:</strong> Specialist completes EV assessment in &lt;45 minutes per case at standard complexity. <strong>Fail:</strong> Assessment takes &gt;2 hours — O-001 capacity assumption is broken before endorsement step is even reached.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P7-S4</td>
+          <td><strong>Case routing / status update</strong></td>
+          <td>After assessment complete: specialist routes case to next stage (EV sent for endorsement / defendant demand generated / flagged for review). Status update automatically flows through to claimant P2-S1 (status) and ITP P3-S4 (referral history). This is the operational integration point — the specialist's action triggers downstream screen updates across all actor-facing products.</td>
+          <td><span class="flow-tag">INT-Q3</span></td>
+          <td><span class="assumption-tag">O-001</span> Capacity</td>
+          <td class="pass-fail"><strong>Pass:</strong> Specialist status update reflects in claimant and ITP portals within 60 seconds. <strong>Fail:</strong> Status lag creates claimant or ITP queries — real-time sync is not working.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warning-block">
+      <strong>⚠ O-001 is the highest-risk T4 assumption.</strong> The 40 cases/month specialist capacity is a modelled estimate with no operational data behind it. Product 7 is the only prototype that directly tests it. If the workflow in P7-S3 (EV assessment) takes materially longer than 45 minutes per case, O-001 breaks and the unit economics model needs revision before any other assumption can be trusted. Build this first within Slice 2.
+    </div>
+  </div>
+
+  <!-- SLICE 3 -->
+  <div class="slice-header" style="margin-top:44px;">
+    <h2>Slice 3 — Defendant (EV report delivered, settlement demand issued)</h2>
+    <p>Product 5 — requires at least one completed EV assessment to test with.</p>
+  </div>
+
+  <!-- PRODUCT 5 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 5</span>
+      <span class="product-name">Defendant EV report + settlement offer</span>
+      <span class="track-pill track-a">Defendant / D-side</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Track A Phase 3 (Paying — C6 two-sided)</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C6 (buyout operator instrument) + C3 (EV credibility)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>D1 — demand letter with link</span></div>
+      <div class="meta-item"><label>Exit</label><span>Defendant accepts / negotiates / ignores</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P5-S1</td>
+          <td><strong>Demand notice + EV report</strong></td>
+          <td>Presents the pooled claim demand: total pool value, individual claim component, EV report (independently endorsed), and the escalation schedule (what the defendant faces at D2, D3, court). The pool size is the collective threat made legible to the defendant — they are not facing one claimant, they are facing N claimants. The EV report must be presented as a credible, third-party-endorsed figure, not as Calmly's negotiating position.</td>
+          <td><span class="flow-tag">CP3</span> <span class="flow-tag">D1</span> <span class="flow-tag">C3</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement £3,000 <span class="assumption-tag">M-007</span> EV credibility</td>
+          <td class="pass-fail"><strong>Pass:</strong> Defendant can articulate the EV figure, what endorses it, and what escalation means financially. <strong>Fail:</strong> Defendant dismisses EV as "Calmly's own estimate" — independence of endorsement is not credible on screen.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P5-S2</td>
+          <td><strong>Liability buyout offer</strong></td>
+          <td>The buyout operator's fixed-price instrument: defendant can extinguish their entire liability at a fixed cost, at D1, with no further action required. Must make the financial comparison legible: buyout price vs estimated litigation cost vs EV if taken to judgment. This is C6 (payment product — D-side): the payment event for the defendant is the buyout acceptance, at which point the buyout operator assumes the liability. The defendant's response data (accept / negotiate / ignore) enriches the buyout operator's pricing model (C6 flywheel).</td>
+          <td><span class="flow-tag">D1</span> <span class="flow-tag">C6</span></td>
+          <td><span class="assumption-tag">U-002</span> Fee rate <span class="assumption-tag">U-001</span> Cost floor £258</td>
+          <td class="pass-fail"><strong>Pass:</strong> Defendant can identify the buyout price and compare it to the EV figure in &lt;60 seconds. <strong>Fail:</strong> Defendant says "I don't understand what I'm agreeing to" — buyout instrument is not explained clearly enough for a lay defendant.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P5-S3</td>
+          <td><strong>Response options</strong></td>
+          <td>Three defendant paths: (1) accept buyout, (2) make a counter-offer, (3) dispute / proceed to next escalation stage. The counter-offer path generates structured negotiation data — not a free-text field. The ignore/dispute path triggers the D2 escalation clock. All three responses must be captured for the buyout operator's pricing model (C6 flywheel) — the dataset of defendant responses at D1 is itself a switching cost asset for the buyout operator (C8, Track C).</td>
+          <td><span class="flow-tag">D1</span> <span class="flow-tag">C6</span></td>
+          <td><span class="assumption-tag">M-008</span> Defendant settlement rate</td>
+          <td class="pass-fail"><strong>Pass:</strong> All three defendant response paths are captured in structured data. <strong>Fail:</strong> Defendants default to "ignore" because the response interface is too complex — D1 response rate &lt;30%.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLICE 4 -->
+  <div class="slice-header" style="margin-top:44px;">
+    <h2>Slice 4 — Secondary market (Pool insurer + buyout operator onboarded)</h2>
+    <p>Product 8 — requires sufficient claims volume to make EV portfolio credible to underwriters.</p>
+  </div>
+
+  <!-- PRODUCT 8 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 8</span>
+      <span class="product-name">Secondary market / pool operator portal</span>
+      <span class="track-pill track-c">Track C — Secondary Market Participants</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Track C, Phases 1–4</span></div>
+      <div class="meta-item"><label>Challenge</label><span>C8 (D&amp;C all four properties) + independence constraint</span></div>
+      <div class="meta-item"><label>Entry point</label><span>SMP authenticated — role-differentiated (pool insurer / buyout operator)</span></div>
+      <div class="meta-item"><label>Exit</label><span>No exit — ongoing marketplace access relationship</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P8-S1</td>
+          <td><strong>Marketplace access portal</strong></td>
+          <td>Role-differentiated login: pool insurer sees their actuarial data and live claimant pool positions; buyout operator sees their live defendant positions and EV portfolio. Both roles share access to the endorsed EV portfolio — this is the shared underwriting basis (C6 exchange table, Section E). The role separation is the independence constraint in operation: pool insurer and buyout operator must not see each other's pricing or positions.</td>
+          <td><span class="flow-tag">SMP-P1</span> <span class="flow-tag">C8-SMP</span></td>
+          <td><span class="assumption-tag">U-005</span> Marketplace access fee <span class="assumption-tag">U-004</span> FMOS</td>
+          <td class="pass-fail"><strong>Pass:</strong> Pool insurer and buyout operator each confirm their data is role-appropriate and independent. <strong>Fail:</strong> Either party can see the other's pricing or positions — independence constraint is violated.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P8-S2</td>
+          <td><strong>EV portfolio view</strong></td>
+          <td>The endorsed EV portfolio: all active cases with EV assessments, by segment, dispute type, and confidence level. This is the shared underwriting basis. Pool insurer uses it to price loss protection instruments; buyout operator uses it to price liability buyout instruments. The portfolio grows with claims volume — the D&C time compression diseconomy activates here (the calibration dataset cannot be replicated faster than real-time claims accumulation). View must show portfolio vintage and calibration accuracy trend over time.</td>
+          <td><span class="flow-tag">SMP-P2</span> <span class="flow-tag">C8-SMP</span></td>
+          <td><span class="assumption-tag">M-007</span> EV accuracy <span class="assumption-tag">U-005</span> Marketplace access fee</td>
+          <td class="pass-fail"><strong>Pass:</strong> SMP actuary can use EV portfolio data directly in their pricing model without data transformation. <strong>Fail:</strong> SMP actuary says "we'd need to reformat this before we could use it" — portfolio format does not map to underwriting models.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P8-S3</td>
+          <td><strong>Live position / underwriting view</strong></td>
+          <td>Pool insurer: live claimant pool positions under their insurance instrument — number of insured claimants, aggregate exposure, expected loss rate, premium income. Buyout operator: live defendant positions under their buyout instrument — number of active positions, aggregate liability, expected acceptance rate, premium income. Both instruments fire marketplace access fees to Calmly independently of settlement timing — this is the second revenue stream. Must show the fee accrual visibly: "£X in marketplace access fees generated this period."</td>
+          <td><span class="flow-tag">SMP-P3</span> <span class="flow-tag">C6</span></td>
+          <td><span class="assumption-tag">U-005</span> Marketplace access fee — UNTESTED</td>
+          <td class="pass-fail"><strong>Pass:</strong> SMP can confirm their live position count, aggregate exposure, and marketplace access fee for the period in &lt;30 seconds. <strong>Fail:</strong> SMP says "we'd need to download this and calculate it ourselves" — portal is not operationally useful.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P8-S4</td>
+          <td><strong>Calibration trend / switching cost visibility</strong></td>
+          <td>The D&C asset accumulation made visible: EV accuracy trend over time (how the endorsed EV model has improved as claims data has accumulated), the SMP's own position portfolio size and vintage, and the implied recalibration cost if the SMP were to start on a competitor platform. This is the causal ambiguity reversal: typically the switching cost is invisible until after the switch. This screen makes it visible before — turning a latent lock-in into a salient one. This is the C8 Track C retention mechanism.</td>
+          <td><span class="flow-tag">C8-SMP</span></td>
+          <td><span class="assumption-tag">U-005</span> Marketplace access fee <span class="assumption-tag">M-007</span> EV accuracy</td>
+          <td class="pass-fail"><strong>Pass:</strong> SMP actuary says "moving platforms would set our model back — I can see that here." <strong>Fail:</strong> SMP says "this doesn't affect our decision to stay" — causal ambiguity is not resolved by the data shown.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="warning-block">
+      <strong>⚠ U-005 (marketplace access fee rate) is the only T4 assumption not yet defined.</strong> The financial model has not yet set the fee rate for secondary market participants. Product 8 screens show the fee accruing — but the rate is currently a placeholder. This must be resolved in the financial model before Product 8 can be used in a real SMP conversation. Prototype can test the mechanic; it cannot test the pricing.
+    </div>
+  </div>
+
+  <!-- SLICE 5 -->
+  <div class="slice-header" style="margin-top:44px;">
+    <h2>Slice 5 — Defendant escalation (D3+ non-response cases)</h2>
+    <p>Product 6 — requires at least one D1 non-response case.</p>
+  </div>
+
+  <!-- PRODUCT 6 -->
+  <div class="product-card">
+    <div class="product-card-header">
+      <span class="product-num">PRODUCT 6</span>
+      <span class="product-name">Defendant response / escalation</span>
+      <span class="track-pill track-a">Defendant / D-side</span>
+    </div>
+    <div class="product-meta">
+      <div class="meta-item"><label>CTM phase</label><span>Track A Phase 4–5 / escalation</span></div>
+      <div class="meta-item"><label>Challenge</label><span>OP4 (escalation from D3 non-response)</span></div>
+      <div class="meta-item"><label>Entry point</label><span>D3 — escalation notice with reference</span></div>
+      <div class="meta-item"><label>Exit</label><span>Mediation / arbitration / judgment</span></div>
+    </div>
+    <table class="screens-table">
+      <thead>
+        <tr>
+          <th style="width:90px;">Screen ID</th>
+          <th style="width:180px;">Screen name</th>
+          <th>What it does</th>
+          <th style="width:120px;">Flow ref</th>
+          <th style="width:130px;">T4 assumption</th>
+          <th style="width:220px;">Pass / fail criterion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="screen-id">P6-S1</td>
+          <td><strong>Escalation notice</strong></td>
+          <td>D3 notice to defendant: the D1 buyout offer has expired. Explains what escalation means in terms of defendant's legal exposure and cost. Must make the cost trajectory clear — the escalation schedule shows that costs increase at each stage. The goal is to create a credible threat of litigation cost, not just assert one. Must reference the endorsed EV report as the anchoring document (it was already served at D1).</td>
+          <td><span class="flow-tag">OP4</span> <span class="flow-tag">D3</span></td>
+          <td><span class="assumption-tag">M-008</span> Defendant settlement rate <span class="assumption-tag">M-005</span> Avg settlement</td>
+          <td class="pass-fail"><strong>Pass:</strong> Defendant responds (accepts, negotiates, or formally defends) at D3 at a higher rate than D1 — escalation notice creates urgency. <strong>Fail:</strong> D3 response rate is the same as D1 — escalation notice has no marginal effect on defendant behaviour.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P6-S2</td>
+          <td><strong>Escalation stage tracker</strong></td>
+          <td>For defendant who engages at D3 or later: shows current stage of escalation process (mediation / arbitration / court filing), what the defendant must do at each stage, and the cost schedule at each stage. This is also visible to the claimant in P2-S1 — the escalation progress feeds back into the claimant's case status screen. Both sides must see a consistent process.</td>
+          <td><span class="flow-tag">OP4</span> <span class="flow-tag">CP-ESC</span></td>
+          <td><span class="assumption-tag">U-001</span> Cost floor £258</td>
+          <td class="pass-fail"><strong>Pass:</strong> Both claimant and defendant can articulate current escalation stage without contacting Calmly. <strong>Fail:</strong> Either party calls Calmly to ask "what's happening?" — the tracker is not self-explanatory.</td>
+        </tr>
+        <tr>
+          <td class="screen-id">P6-S3</td>
+          <td><strong>Final outcome / judgment screen</strong></td>
+          <td>Post-resolution: the outcome of escalation — whether by late settlement, mediation agreement, arbitration award, or court judgment. For the defendant who settles late: shows the final amount vs the D1 buyout offer (making the cost of non-response visible in retrospect). For the claimant: ties back to P2-S5 recovery confirmation. This screen exists primarily to close the data loop — every escalation outcome enriches the EV calibration dataset and the buyout operator's pricing model.</td>
+          <td><span class="flow-tag">OP4-RES</span></td>
+          <td><span class="assumption-tag">M-005</span> Avg settlement <span class="assumption-tag">M-007</span> EV accuracy</td>
+          <td class="pass-fail"><strong>Pass:</strong> Outcome data is captured in structured form and flows to the EV calibration model. <strong>Fail:</strong> Outcome requires manual data entry by specialist — structured capture is not working end-to-end.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div style="margin-top:48px;padding-top:20px;border-top:1px solid var(--border);">
+    <p style="font-size:12px;color:var(--text-muted);">Screen inventory v1.0 — 28 May 2026. Source architecture: CTM v5, CDM v1, CDR-complete package 22 May 2026. T4 assumptions from CDM risk register. Build prototype files in <code>docs/prototypes/</code>. Update control centre index with prototype suite card after build.</p>
+  </div>
+
+</div>
+</body>
+</html>
