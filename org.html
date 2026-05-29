@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #1d4ed8;
+      --accent-light: #eff6ff;
+      --accent-mid: #bfdbfe;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --grey: #94a3b8;
+      --grey-bg: #f1f5f9;
+      --navy: #0f172a;
+      --nav-height: 60px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 64px 24px 56px;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #93c5fd;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-ui);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 17px;
+      color: #cbd5e1;
+      max-width: 620px;
+      line-height: 1.55;
+      margin-bottom: 36px;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stat-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── MAIN ─── */
+    .main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    /* ─── ORG CHART WRAPPER ─── */
+    .org-section {
+      margin-bottom: 56px;
+    }
+
+    .section-heading {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 32px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ─── ORG CHART ─── */
+    .org-chart {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      position: relative;
+      margin-bottom: 48px;
+    }
+
+    .org-ceo-row {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 0;
+    }
+
+    .org-connector-area {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .org-dept-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── ORG NODE CARDS ─── */
+    .org-node {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 22px;
+      cursor: pointer;
+      transition: box-shadow 0.18s, border-color 0.18s, transform 0.12s;
+      position: relative;
+      user-select: none;
+    }
+
+    .org-node:hover {
+      box-shadow: 0 6px 24px rgba(29,78,216,0.1);
+      border-color: var(--accent-mid);
+      transform: translateY(-1px);
+    }
+
+    .org-node.active {
+      border-color: var(--accent);
+      box-shadow: 0 6px 24px rgba(29,78,216,0.15);
+    }
+
+    .org-node-ceo {
+      max-width: 340px;
+      border-color: var(--navy);
+      border-width: 2px;
+    }
+
+    .org-node-ceo:hover {
+      border-color: var(--accent);
+    }
+
+    .org-node-ceo.active {
+      border-color: var(--accent);
+    }
+
+    .org-node-role {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .org-node-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .org-node-ceo .org-node-title {
+      font-size: 18px;
+    }
+
+    .org-node-summary {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .org-node-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .org-node-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .badge-active {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .badge-monitoring {
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    .badge-ready {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .org-node-expand {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .expand-arrow {
+      display: inline-block;
+      transition: transform 0.2s;
+      font-style: normal;
+    }
+
+    .org-node.active .expand-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* ─── SVG CONNECTOR ─── */
+    .org-svg {
+      width: 100%;
+      overflow: visible;
+      display: block;
+    }
+
+    /* ─── DEPARTMENT DETAIL PANEL ─── */
+    .dept-panel {
+      display: none;
+      background: var(--surface);
+      border: 1.5px solid var(--accent-mid);
+      border-radius: 12px;
+      padding: 40px 44px;
+      margin-top: 4px;
+      margin-bottom: 40px;
+      animation: slideIn 0.2s ease-out;
+    }
+
+    .dept-panel.visible {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dept-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 24px;
+    }
+
+    .dept-header-left {
+      flex: 1;
+    }
+
+    .dept-header-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .dept-header-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .dept-header-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .dept-close {
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .dept-close:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .dept-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 36px;
+    }
+
+    .dept-col {}
+
+    .dept-col-full {
+      grid-column: 1 / -1;
+    }
+
+    .dept-col-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dept-mission {
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .dept-actions {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .dept-actions li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .action-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .dept-docs {
+      grid-column: 1 / -1;
+    }
+
+    .dept-doc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    /* doc cards (same pattern as calmly.html) */
+    .doc-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.15s, border-left-color 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .doc-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      border-left-color: var(--accent);
+    }
+
+    .doc-card-cat {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .doc-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .doc-card-desc {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .doc-card-open {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    /* ─── SPEAK TO ROLE ─── */
+    .speak-panel {
+      background: var(--accent-light);
+      border: 1.5px solid var(--accent-mid);
+      border-radius: 10px;
+      padding: 28px 32px;
+    }
+
+    .speak-panel-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .speak-panel-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .speak-panel-note {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .speak-command-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .speak-command {
+      background: var(--navy);
+      color: #93c5fd;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 18px;
+      border-radius: 6px;
+      letter-spacing: 0.02em;
+      flex-shrink: 0;
+    }
+
+    .speak-no-skill {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .copy-btn {
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-ui);
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: #1e40af;
+    }
+
+    .copy-btn.copied {
+      background: var(--green);
+    }
+
+    .speak-panel-via {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 860px) {
+      .org-dept-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .dept-body {
+        grid-template-columns: 1fr;
+      }
+      .dept-col-full {
+        grid-column: 1;
+      }
+      .dept-docs {
+        grid-column: 1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .org-dept-row {
+        grid-template-columns: 1fr;
+      }
+      .hero h1 { font-size: 30px; }
+      .dept-panel { padding: 24px 20px; }
+      .speak-panel { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="nav-logo">TMTH</span>
+        <span class="nav-label">Tough Minds Tender Hearts</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/">Portfolio</a></li>
+        <li><a href="/calmly">Calmly Resolve</a></li>
+        <li><a href="/calmly/org" class="active">Org</a></li>
+        <li><a href="/ive">Forge</a></li>
+        <li><a href="/studio-director">Studio Director</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">Calmly Resolve — Department Navigation</div>
+      <h1>Org</h1>
+      <p class="hero-subtitle">AI-powered departments. Click any role to see its mandate, open actions, and documents. Use "Speak to this role" to open a session.</p>
+      <div class="hero-stats">
+        <span class="stat-pill">7 departments</span>
+        <span class="stat-pill">AI-operated</span>
+        <span class="stat-pill">30 min/day Tom input</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MAIN ─── -->
+  <div class="main">
+    <div class="org-section">
+      <div class="section-heading">Reporting structure</div>
+
+      <!-- ─── ORG CHART ─── -->
+      <div class="org-chart" id="orgChart">
+
+        <!-- CEO node -->
+        <div class="org-ceo-row" style="margin-bottom: 0;">
+          <div class="org-node org-node-ceo" id="node-ceo" onclick="toggleDept('ceo')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Chief Executive</div>
+            <div class="org-node-title">CEO — Calmly Resolve</div>
+            <div class="org-node-summary">Orchestrates all departments. Sunday investor update. Dispatches agents. Tom's strategic interface.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SVG connector lines -->
+        <svg class="org-svg" id="orgSvg" height="60" viewBox="0 0 1100 60" preserveAspectRatio="none" aria-hidden="true">
+          <!-- vertical from CEO down -->
+          <line id="svgVert" x1="550" y1="0" x2="550" y2="30" stroke="#dde1e7" stroke-width="1.5"/>
+          <!-- horizontal bar -->
+          <line id="svgHoriz" x1="183" y1="30" x2="917" y2="30" stroke="#dde1e7" stroke-width="1.5"/>
+          <!-- verticals down to depts: 6 nodes across 3 cols -->
+          <!-- col positions approx: 183, 550, 917 for row 1; and 183, 550, 917 for row 2 — handled by CSS grid so we just draw 6 drops -->
+          <line x1="183" y1="30" x2="183" y2="60" stroke="#dde1e7" stroke-width="1.5"/>
+          <line x1="550" y1="30" x2="550" y2="60" stroke="#dde1e7" stroke-width="1.5"/>
+          <line x1="917" y1="30" x2="917" y2="60" stroke="#dde1e7" stroke-width="1.5"/>
+        </svg>
+
+        <!-- 6 department nodes -->
+        <div class="org-dept-row">
+          <div class="org-node" id="node-itp" onclick="toggleDept('itp')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Commercial</div>
+            <div class="org-node-title">Head of ITP Acquisition</div>
+            <div class="org-node-summary">Sign 3 ITP partnerships. 20 referrals/month each. Checkatrade, Citizens Advice, Rated People.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+
+          <div class="org-node" id="node-legal" onclick="toggleDept('legal')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Legal &amp; Regulatory</div>
+            <div class="org-node-title">Head of Legal &amp; Regulatory</div>
+            <div class="org-node-summary">Regulatory compliance, PP-C perimeter, ITP agreement drafting. Stage 1 cleared.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-monitoring">◐ Monitoring</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+
+          <div class="org-node" id="node-finance" onclick="toggleDept('finance')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Finance</div>
+            <div class="org-node-title">Head of Finance</div>
+            <div class="org-node-summary">CDM maintenance, unit economics, cash flow. £259k/year at 3 ITPs (current model).</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+
+          <div class="org-node" id="node-product" onclick="toggleDept('product')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Product</div>
+            <div class="org-node-title">Head of Product</div>
+            <div class="org-node-summary">All 8 digital products prototyped. Convert to live as ITP relationships are confirmed.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-ready">▷ Ready</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+
+          <div class="org-node" id="node-ir" onclick="toggleDept('ir')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Investor Relations</div>
+            <div class="org-node-title">Head of IR</div>
+            <div class="org-node-summary">Weekly investor update, Sundays. AM and PM daily briefs from 2 June. 30 min/day cadence.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+
+          <div class="org-node" id="node-verification" onclick="toggleDept('verification')" role="button" tabindex="0" aria-expanded="false">
+            <div class="org-node-role">Verification</div>
+            <div class="org-node-title">Head of Verification</div>
+            <div class="org-node-summary">Independent BALM/FIT gate checking. NCR tracking. 10 FIT reports complete. Reports to CEO.</div>
+            <div class="org-node-footer">
+              <span class="org-node-badge badge-monitoring">◐ Monitoring</span>
+              <span class="org-node-expand">View role <i class="expand-arrow">↓</i></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── DEPARTMENT DETAIL PANELS ─── -->
+
+      <!-- CEO -->
+      <div class="dept-panel" id="panel-ceo">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Chief Executive · AI agent</div>
+            <div class="dept-header-title">CEO — Calmly Resolve</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span style="font-size:13px;color:var(--text-muted);">Orchestration layer · all departments report here</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('ceo')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Orchestrate all Calmly departments. Produce the Sunday investor update. Dispatch agents. Surface investor-level decisions to Tom with recommendations attached.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Send ITP outreach — 4 messages drafted, Tom sends Monday</li>
+              <li><span class="action-dot"></span>Commission CEDR endorsement — Tom calls</li>
+              <li><span class="action-dot"></span>Commission pool insurer — Tom calls Temple</li>
+              <li><span class="action-dot"></span>Build ITP agreement template — CEO coordinates with Legal</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/launch-memo.html">
+                <span class="doc-card-cat">Strategy</span>
+                <span class="doc-card-title">Launch memo v3</span>
+                <span class="doc-card-desc">Governing memo. Stages, economics, regulatory position, and investor case.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/cashflow.html">
+                <span class="doc-card-cat">Finance</span>
+                <span class="doc-card-title">Cash flow forecast</span>
+                <span class="doc-card-desc">18-month cash model. Stage 1 burn, ITP ramp, and break-even timeline.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/external-contacts.html">
+                <span class="doc-card-cat">Commercial</span>
+                <span class="doc-card-title">External contacts brief</span>
+                <span class="doc-card-desc">ITP targets, pool insurer, CEDR contact, and outreach status.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/conductor.html">
+                <span class="doc-card-cat">Process</span>
+                <span class="doc-card-title">Conductor report</span>
+                <span class="doc-card-desc">Gate position, blockers, and next actions. Updated each session.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a CEO session</div>
+          <p class="speak-panel-note">Open Claude Code and run this command to start a session with the Calmly CEO.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ITP Acquisition -->
+      <div class="dept-panel" id="panel-itp">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Commercial · AI agent</div>
+            <div class="dept-header-title">Head of ITP Acquisition</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('itp')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Sign 3 ITP partnerships generating 20 referrals/month each. Target: Checkatrade, Citizens Advice, Rated People. Housing deposits and marketplace disputes (S-001/S-003) only at Stage 1.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Tom sends 4 outreach messages Monday</li>
+              <li><span class="action-dot"></span>Tom takes call with first ITP to respond</li>
+              <li><span class="action-dot"></span>Draft ITP agreement template — one-page commercial arrangement</li>
+              <li><span class="action-dot"></span>Prepare call guides for follow-up conversations</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/outreach/checkatrade.html">
+                <span class="doc-card-cat">Outreach</span>
+                <span class="doc-card-title">ITP outreach — Checkatrade</span>
+                <span class="doc-card-desc">Tailored first-contact message. Ready to send.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/outreach/citizensadvice.html">
+                <span class="doc-card-cat">Outreach</span>
+                <span class="doc-card-title">ITP outreach — Citizens Advice</span>
+                <span class="doc-card-desc">Tailored first-contact message. Ready to send.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/outreach/ratedpeople.html">
+                <span class="doc-card-cat">Outreach</span>
+                <span class="doc-card-title">ITP outreach — Rated People</span>
+                <span class="doc-card-desc">Tailored first-contact message. Ready to send.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/external-contacts.html">
+                <span class="doc-card-cat">Commercial</span>
+                <span class="doc-card-title">External contacts brief</span>
+                <span class="doc-card-desc">ITP targets, contacts, and outreach status tracker.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a session</div>
+          <p class="speak-panel-note">This role does not have a dedicated skill yet. Route via the CEO.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+          <p class="speak-panel-via">Ask the CEO: "I want to work with the Head of ITP Acquisition."</p>
+        </div>
+      </div>
+
+      <!-- Legal & Regulatory -->
+      <div class="dept-panel" id="panel-legal">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Legal &amp; Regulatory · AI agent</div>
+            <div class="dept-header-title">Head of Legal &amp; Regulatory</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-monitoring">◐ Monitoring</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO · Stage 1 cleared</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('legal')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Maintain regulatory compliance across all three legal questions. Stage 1 cleared at zero cash cost. Monitor the CMC perimeter for employment claims (Stage 2). Draft ITP agreement with pool insurer hold-up clauses incorporated.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Populate 3 monetary amounts in NCR-002 resolution clauses [£X, £Y, £Z]</li>
+              <li><span class="action-dot"></span>Draft ITP agreement template incorporating NCR-002 clauses</li>
+              <li><span class="action-dot"></span>Monitor: employment claim CMC question before Stage 2 launch</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/legal-research.html">
+                <span class="doc-card-cat">Legal</span>
+                <span class="doc-card-title">Legal desk research</span>
+                <span class="doc-card-desc">29 May 2026. All three legal questions resolved. Stage 1 cleared.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/se-process.html">
+                <span class="doc-card-cat">Process</span>
+                <span class="doc-card-title">NCR-002 resolution clauses</span>
+                <span class="doc-card-desc">Pool insurer hold-up clauses. Three monetary amounts to populate.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/cdr-package.html">
+                <span class="doc-card-cat">Gate</span>
+                <span class="doc-card-title">O4 legal scope</span>
+                <span class="doc-card-desc">Legal scope as defined in CDR Package. 28 May 2026.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/validation-plan.html">
+                <span class="doc-card-cat">Risk</span>
+                <span class="doc-card-title">Risk bounds</span>
+                <span class="doc-card-desc">Tracked risk boundaries. Updated when Stage 2 architecture changes.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a session</div>
+          <p class="speak-panel-note">This role does not have a dedicated skill yet. Route via the CEO.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+          <p class="speak-panel-via">Ask the CEO: "I want to work with the Head of Legal &amp; Regulatory."</p>
+        </div>
+      </div>
+
+      <!-- Finance -->
+      <div class="dept-panel" id="panel-finance">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Finance · AI agent</div>
+            <div class="dept-header-title">Head of Finance</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO · CDM v1.0 live</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('finance')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Maintain CDM, model unit economics, track cash flow. Produce financial exhibits for the Sunday investor update. Current model: £3k avg settlement (T4), 20% fee, 60% settlement rate, £259k/year at 3 ITPs.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Add marketplace access fee (U-005) to CDM when pool insurer is engaged</li>
+              <li><span class="action-dot"></span>Update ARPU assumption once first 20 claims resolve (T4 → T3 movement)</li>
+              <li><span class="action-dot"></span>Populate [£X, £Y, £Z] tranche amounts in NCR-002 — coordinate with Tom</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/cashflow.html">
+                <span class="doc-card-cat">Finance</span>
+                <span class="doc-card-title">Cash flow forecast</span>
+                <span class="doc-card-desc">18-month cash model. Stage 1 burn, ITP ramp, and break-even timeline.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/fin-sim.html">
+                <span class="doc-card-cat">Finance</span>
+                <span class="doc-card-title">Financial simulation v4</span>
+                <span class="doc-card-desc">CDR-complete v5 economics. £261 cost floor, £650 ceiling, 59.8% FMOS/EBIT.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/aom.html">
+                <span class="doc-card-cat">Operations</span>
+                <span class="doc-card-title">AOM — operational model</span>
+                <span class="doc-card-desc">Activity-based operational model. Unit cost and throughput assumptions.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/se-process.html">
+                <span class="doc-card-cat">Verification</span>
+                <span class="doc-card-title">NCR-002 resolution</span>
+                <span class="doc-card-desc">Pool insurer hold-up clauses. Financial tranches to confirm.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a session</div>
+          <p class="speak-panel-note">This role does not have a dedicated Calmly skill. Route via the CEO for Calmly finance questions.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+          <p class="speak-panel-via">Ask the CEO: "I want to work with the Head of Finance." Note: <code>/cfo</code> covers household finances — not Calmly.</p>
+        </div>
+      </div>
+
+      <!-- Product -->
+      <div class="dept-panel" id="panel-product">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Product · AI agent</div>
+            <div class="dept-header-title">Head of Product</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-ready">▷ Ready</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO · 8 prototypes complete</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('product')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Build and iterate all 8 digital products. Convert prototypes to live product as ITP relationships are confirmed. Maintain the control centre.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Convert P3 (ITP referral portal) to live once first ITP engagement confirmed</li>
+              <li><span class="action-dot"></span>Build live operational model dashboard (Layer 1 — AOM-based)</li>
+              <li><span class="action-dot"></span>Maintain control centre — org view and process view</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/prototypes/screen-inventory.html">
+                <span class="doc-card-cat">Product</span>
+                <span class="doc-card-title">Screen inventory</span>
+                <span class="doc-card-desc">All 8 products listed with prototype links and build status.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/prototype.html">
+                <span class="doc-card-cat">Product</span>
+                <span class="doc-card-title">Experience prototypes</span>
+                <span class="doc-card-desc">All 8 prototyped products. ITP portal, claimant intake, status portal, and more.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/service-blueprint.html">
+                <span class="doc-card-cat">Design</span>
+                <span class="doc-card-title">Service blueprint</span>
+                <span class="doc-card-desc">End-to-end service across all three actor tracks.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/cs-001.html">
+                <span class="doc-card-cat">Architecture</span>
+                <span class="doc-card-title">CS-001</span>
+                <span class="doc-card-desc">Core system specification. Feeds product build and verification.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a session</div>
+          <p class="speak-panel-note">This role does not have a dedicated skill yet. Route via the CEO.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+          <p class="speak-panel-via">Ask the CEO: "I want to work with the Head of Product."</p>
+        </div>
+      </div>
+
+      <!-- IR -->
+      <div class="dept-panel" id="panel-ir">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Investor Relations · AI agent</div>
+            <div class="dept-header-title">Head of IR</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-active">● Active</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO · Update #1 delivered</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('ir')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Produce weekly investor update every Sunday from 1 June 2026. AM and PM daily briefs. Tom reads, actions, and makes named decisions. 30 minutes/day.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Produce investor update #2 — Sunday 7 June 2026</li>
+              <li><span class="action-dot"></span>Set up AM/PM daily brief schedule from 2 June</li>
+              <li><span class="action-dot"></span>Draft risk bounds update once pool insurer is engaged</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/conductor.html">
+                <span class="doc-card-cat">Investor relations</span>
+                <span class="doc-card-title">Investor update #1</span>
+                <span class="doc-card-desc">1 June 2026. First weekly update. Gate position, open actions, and decisions needed.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/validation-plan.html">
+                <span class="doc-card-cat">Risk</span>
+                <span class="doc-card-title">Risk bounds v1.1</span>
+                <span class="doc-card-desc">Risk boundary definitions. Updated as architecture changes.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/resourcing.html">
+                <span class="doc-card-cat">Operations</span>
+                <span class="doc-card-title">CEO scorecard</span>
+                <span class="doc-card-desc">Department scorecard draft. Feeds investor update exhibits.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a session</div>
+          <p class="speak-panel-note">This role does not have a dedicated skill yet. Route via the CEO.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/ceo-calmly-resolve</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/ceo-calmly-resolve')">Copy command</button>
+          </div>
+          <p class="speak-panel-via">Ask the CEO: "I want to work with the Head of IR."</p>
+        </div>
+      </div>
+
+      <!-- Verification -->
+      <div class="dept-panel" id="panel-verification">
+        <div class="dept-header">
+          <div class="dept-header-left">
+            <div class="dept-header-label">Verification · AI agent</div>
+            <div class="dept-header-title">Head of Verification</div>
+            <div class="dept-header-meta">
+              <span class="org-node-badge badge-monitoring">◐ Monitoring</span>
+              <span style="font-size:13px;color:var(--text-muted);">Reports to CEO · does not interface with Tom directly</span>
+            </div>
+          </div>
+          <button class="dept-close" onclick="closeDept('verification')">Close ✕</button>
+        </div>
+
+        <div class="dept-body">
+          <div class="dept-col">
+            <div class="dept-col-label">Mission</div>
+            <p class="dept-mission">Independent architecture verification. BALM/FIT gate checking. NCR tracking and resolution. Does not interface with Tom directly — reports to CEO. 10 FIT reports complete. NCR-001 and NCR-002 resolved.</p>
+          </div>
+          <div class="dept-col">
+            <div class="dept-col-label">Open actions</div>
+            <ul class="dept-actions">
+              <li><span class="action-dot"></span>Monitor U-001 (avg settlement £3k) — track from first 20 claims</li>
+              <li><span class="action-dot"></span>Monitor R6×R2 (defendant buyout acceptance) — trigger NCR if &lt;20% in first 50 interactions</li>
+              <li><span class="action-dot"></span>Update FIT reports after Stage 2 architecture changes</li>
+            </ul>
+          </div>
+          <div class="dept-docs dept-col-full">
+            <div class="dept-col-label">Key documents</div>
+            <div class="dept-doc-grid">
+              <a class="doc-card" href="docs/cdr-package.html">
+                <span class="doc-card-cat">Verification</span>
+                <span class="doc-card-title">Verification master report</span>
+                <span class="doc-card-desc">28 May 2026. 10 FIT reports. NCR-001 and NCR-002 resolved.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/validation-plan.html">
+                <span class="doc-card-cat">Verification</span>
+                <span class="doc-card-title">FIT reports — C1 to C10</span>
+                <span class="doc-card-desc">All 10 functional interface tests. Gate: passed.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/se-process.html">
+                <span class="doc-card-cat">NCR</span>
+                <span class="doc-card-title">NCR-001 resolution</span>
+                <span class="doc-card-desc">FMOS formula notation. Resolved.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+              <a class="doc-card" href="docs/se-process.html">
+                <span class="doc-card-cat">NCR</span>
+                <span class="doc-card-title">NCR-002 resolution</span>
+                <span class="doc-card-desc">Pool insurer hold-up clauses drafted. £X, £Y, £Z to populate.</span>
+                <span class="doc-card-open">Open →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-panel">
+          <div class="speak-panel-label">Speak to this role</div>
+          <div class="speak-panel-title">Open a Verification session</div>
+          <p class="speak-panel-note">Open Claude Code and run this command to start a session with the Head of Verification.</p>
+          <div class="speak-command-row">
+            <span class="speak-command">/head-of-verification-calmly-custom</span>
+            <button class="copy-btn" onclick="copyCommand(this, '/head-of-verification-calmly-custom')">Copy command</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /org-section -->
+  </div><!-- /main -->
+
+  <script>
+    // ─── STATE ───
+    let activePanel = null;
+
+    // ─── TOGGLE ───
+    function toggleDept(id) {
+      if (activePanel === id) {
+        closeDept(id);
+      } else {
+        if (activePanel) closeDept(activePanel);
+        openDept(id);
+      }
+    }
+
+    function openDept(id) {
+      const panel = document.getElementById('panel-' + id);
+      const node = document.getElementById('node-' + id);
+      if (!panel || !node) return;
+
+      panel.classList.add('visible');
+      node.classList.add('active');
+      node.setAttribute('aria-expanded', 'true');
+      activePanel = id;
+
+      // Scroll panel into view after a short delay to allow render
+      requestAnimationFrame(() => {
+        const rect = node.getBoundingClientRect();
+        const scrollTarget = window.scrollY + rect.bottom + 16;
+        window.scrollTo({ top: scrollTarget - 80, behavior: 'smooth' });
+      });
+    }
+
+    function closeDept(id) {
+      const panel = document.getElementById('panel-' + id);
+      const node = document.getElementById('node-' + id);
+      if (panel) panel.classList.remove('visible');
+      if (node) {
+        node.classList.remove('active');
+        node.setAttribute('aria-expanded', 'false');
+      }
+      if (activePanel === id) activePanel = null;
+    }
+
+    // ─── KEYBOARD SUPPORT ───
+    document.querySelectorAll('.org-node').forEach(node => {
+      node.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          node.click();
+        }
+      });
+    });
+
+    // ─── COPY COMMAND ───
+    function copyCommand(btn, command) {
+      navigator.clipboard.writeText(command).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        // Fallback for non-HTTPS contexts
+        const el = document.createElement('textarea');
+        el.value = command;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy command';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
