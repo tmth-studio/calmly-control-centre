@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — Claimant Journey (Prototype)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --accent-mid: #b8c8e8;
+      --panel-bg: #0f2744;
+      --panel-text: #ffffff;
+      --warning-bg: #fff8e6;
+      --warning-border: #d4820a;
+      --green: #166534;
+      --green-bg: #e6f4ec;
+      --green-border: #a7d4b8;
+      --green-mid: #16a34a;
+      --red: #991b1b;
+      --red-bg: #fde8e8;
+      --red-border: #f0b4b4;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+      --radius: 6px;
+      --tag-radius: 3px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ─── PROTOTYPE CHROME ─── */
+    .proto-chrome {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      height: 44px;
+    }
+
+    .proto-back {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      font-family: var(--font-ui);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .proto-back:hover { color: var(--accent); }
+
+    .proto-progress {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      letter-spacing: 0.01em;
+    }
+
+    .proto-jump {
+      flex-shrink: 0;
+    }
+    .proto-jump select {
+      font-size: 11px;
+      font-family: var(--font-ui);
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--tag-radius);
+      padding: 4px 8px;
+      cursor: pointer;
+      outline: none;
+    }
+    .proto-jump select:focus { border-color: var(--accent); }
+
+    /* ─── SCREEN CONTAINER ─── */
+    .screen {
+      display: none;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 20px 100px;
+    }
+    .screen.active { display: block; }
+
+    /* ─── APP HEADER (unauthenticated) ─── */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .app-logo {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .app-logo span { color: var(--accent); }
+
+    /* ─── APP HEADER (authenticated) ─── */
+    .app-header-auth {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+    }
+    .auth-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .auth-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--panel-bg);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-name { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+
+    /* ─── REFERRAL BADGE ─── */
+    .referral-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .referral-badge::before { content: '✓'; font-size: 11px; }
+
+    /* ─── HERO ─── */
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .hero-h1 {
+      font-family: var(--font-body);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .hero-body {
+      font-family: var(--font-body);
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 32px;
+    }
+
+    /* ─── BENEFIT CARDS ─── */
+    .benefit-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+    .benefit-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .benefit-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .benefit-text h3 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .benefit-text p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      display: inline-block;
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      transition: opacity 0.15s, background 0.15s;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+    .btn-secondary:hover { background: #d1d9e4; }
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+      width: 100%;
+    }
+    .btn-green:hover { opacity: 0.9; }
+    .btn-slate {
+      background: #4a5568;
+      color: #fff;
+      width: 100%;
+    }
+    .btn-slate:hover { opacity: 0.9; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-strong);
+      width: 100%;
+    }
+    .btn-outline:hover { border-color: var(--text-secondary); }
+    .btn-disabled {
+      background: #e2e8f0;
+      color: var(--text-muted);
+      cursor: not-allowed;
+      width: 100%;
+      position: relative;
+    }
+    .btn[disabled] {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* ─── ELIGIBILITY Q ─── */
+    .q-label {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      line-height: 1.35;
+    }
+    .radio-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+    .radio-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .radio-item:hover { border-color: var(--accent-mid); }
+    .radio-item.selected { border-color: var(--accent); background: var(--accent-light); }
+    .radio-item input[type="radio"] { accent-color: var(--accent); width: 18px; height: 18px; cursor: pointer; }
+    .radio-item label { font-size: 15px; font-weight: 500; cursor: pointer; flex: 1; }
+
+    /* ─── FORM ─── */
+    .form-progress-bar {
+      background: var(--border);
+      height: 4px;
+      border-radius: 2px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .form-progress-fill {
+      background: var(--accent);
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .form-step-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      letter-spacing: 0.02em;
+    }
+    .field-group { margin-bottom: 20px; }
+    .field-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: 0.01em;
+    }
+    .field-input {
+      width: 100%;
+      font-family: var(--font-ui);
+      font-size: 15px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    .field-input:focus { border-color: var(--accent); }
+    .field-input::placeholder { color: var(--text-muted); }
+    textarea.field-input { resize: vertical; min-height: 120px; }
+    .word-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+      margin-top: 5px;
+    }
+    .word-count.near-limit { color: var(--warning-border); }
+    .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    .checkbox-item:hover { border-color: var(--accent-mid); }
+    .checkbox-item.checked { border-color: var(--accent); background: var(--accent-light); }
+    .checkbox-item input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+    .checkbox-item label { font-size: 15px; cursor: pointer; flex: 1; }
+
+    /* ─── REVIEW SUMMARY ─── */
+    .review-section { margin-bottom: 20px; }
+    .review-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+    .review-section-header h4 { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .edit-link { font-size: 13px; color: var(--accent); cursor: pointer; text-decoration: underline; }
+    .review-row { font-size: 14px; color: var(--text-secondary); padding: 4px 0; line-height: 1.5; }
+    .review-row strong { color: var(--text); font-weight: 500; }
+
+    /* ─── NAVY PANEL ─── */
+    .navy-panel {
+      background: var(--panel-bg);
+      color: var(--panel-text);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .navy-panel h2 { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .navy-panel p { font-size: 14px; opacity: 0.8; line-height: 1.55; }
+    .claim-ref {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 10px;
+    }
+
+    /* ─── NEXT STEPS ─── */
+    .next-steps { display: flex; flex-direction: column; gap: 0; margin-bottom: 28px; }
+    .next-step {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .next-step:last-child { border-bottom: none; }
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content h4 { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+    .step-content p { font-size: 14px; color: var(--text-secondary); }
+
+    /* ─── STATUS TRACKER ─── */
+    .status-header { margin-bottom: 20px; }
+    .status-header h2 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+    .status-header p { font-size: 14px; color: var(--text-muted); }
+
+    .progress-tracker { display: flex; flex-direction: column; gap: 0; margin-bottom: 28px; }
+    .tracker-step {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      position: relative;
+    }
+    .tracker-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 42px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .tracker-step.done::after { background: var(--green); }
+    .tracker-step.active::after { background: var(--border); }
+    .tracker-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      z-index: 1;
+    }
+    .tracker-step.done .tracker-dot {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+    .tracker-step.active .tracker-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .tracker-label { padding-top: 6px; }
+    .tracker-label strong { font-size: 14px; font-weight: 600; display: block; }
+    .tracker-label span { font-size: 13px; color: var(--text-muted); }
+    .tracker-step.active .tracker-label strong { color: var(--accent); }
+
+    /* ─── POOL BANNER ─── */
+    .pool-banner {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--accent);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .pool-banner-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* ─── SPECIALIST BOX ─── */
+    .specialist-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .specialist-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--panel-bg);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .specialist-info strong { font-size: 15px; font-weight: 600; display: block; }
+    .specialist-info span { font-size: 13px; color: var(--text-muted); }
+
+    /* ─── POOL POSITION CARDS ─── */
+    .pool-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .pool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .pool-card-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); margin-bottom: 6px; }
+    .pool-card-value { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1.2; }
+    .pool-card-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+    .pool-card.green-card { border-color: var(--green-border); background: var(--green-bg); }
+    .pool-card.green-card .pool-card-value { color: var(--green); }
+    .pool-card.green-card .pool-card-label { color: var(--green); }
+
+    /* ─── WITHDRAWAL NOTICE ─── */
+    .withdrawal-notice {
+      border-left: 4px solid var(--warning-border);
+      background: var(--warning-bg);
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .withdrawal-notice strong { color: var(--text); }
+
+    /* ─── EV REPORT ─── */
+    .ev-header {
+      background: var(--panel-bg);
+      color: #fff;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .ev-header .endorsement { font-size: 12px; opacity: 0.6; margin-bottom: 14px; letter-spacing: 0.04em; }
+    .ev-header h2 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .ev-header p { font-size: 14px; opacity: 0.75; }
+
+    .ev-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .ev-range-cell {
+      background: var(--surface);
+      padding: 14px;
+      text-align: center;
+    }
+    .ev-range-cell .cell-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 6px; }
+    .ev-range-cell .cell-value { font-size: 20px; font-weight: 600; color: var(--text); }
+    .ev-range-cell.central .cell-value { color: var(--accent); font-size: 24px; }
+
+    .confidence-bar { margin-bottom: 24px; }
+    .confidence-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .confidence-label span:first-child { font-size: 13px; font-weight: 600; }
+    .confidence-label span:last-child { font-size: 13px; font-weight: 700; color: var(--green); }
+    .confidence-track { background: var(--border); height: 8px; border-radius: 4px; overflow: hidden; }
+    .confidence-fill { background: var(--green); height: 100%; border-radius: 4px; width: 82%; }
+
+    .ev-bullets { list-style: none; margin-bottom: 24px; display: flex; flex-direction: column; gap: 10px; }
+    .ev-bullets li {
+      padding: 12px 14px;
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-family: var(--font-body);
+      line-height: 1.55;
+    }
+
+    /* ─── TABLE ─── */
+    .table-wrap { overflow-x: auto; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead tr { border-bottom: 2px solid var(--border); }
+    th { text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); white-space: nowrap; }
+    td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    tr:last-child td { border-bottom: none; }
+    td.amount { font-weight: 600; color: var(--text); }
+    td.status-tag { }
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: var(--tag-radius);
+    }
+    .tag-blue { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); }
+    .tag-grey { background: #f1f3f5; color: #4a5568; border: 1px solid #d0d5dd; }
+    .tag-green { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+    .tag-yellow { background: #fef9e6; color: #854d0e; border: 1px solid #f0d98a; }
+
+    /* ─── SETTLEMENT ─── */
+    .settlement-banner {
+      border-left: 4px solid var(--warning-border);
+      background: var(--warning-bg);
+      padding: 16px 18px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .settlement-banner-icon { font-size: 18px; }
+    .settlement-banner-text strong { font-size: 15px; font-weight: 600; display: block; margin-bottom: 2px; }
+    .settlement-banner-text span { font-size: 14px; color: var(--text-secondary); }
+
+    .settlement-amount {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .settlement-amount .from { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+    .settlement-amount .value { font-size: 36px; font-weight: 600; color: var(--text); }
+    .settlement-amount .party { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+    .option-blocks { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .option-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .option-block h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .option-block p { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+
+    .inline-confirm {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    .inline-confirm p { font-size: 14px; color: var(--text); margin-bottom: 12px; line-height: 1.55; }
+    .inline-confirm-actions { display: flex; gap: 10px; }
+    .inline-confirm-actions .btn { width: auto; }
+
+    .counter-input-wrap { margin-top: 12px; display: none; }
+    .counter-input-wrap.shown { display: block; }
+    .counter-input-wrap input { margin-bottom: 10px; }
+    .counter-tooltip {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 6px;
+      padding: 8px 10px;
+      background: #f1f3f5;
+      border-radius: var(--tag-radius);
+    }
+
+    /* ─── RECOVERY CONFIRMATION ─── */
+    .recovery-header {
+      background: var(--green-bg);
+      border: 2px solid var(--green-border);
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .recovery-header .check { font-size: 36px; margin-bottom: 10px; }
+    .recovery-header h2 { font-size: 20px; font-weight: 600; color: var(--green); margin-bottom: 4px; }
+    .recovery-header p { font-size: 14px; color: var(--text-secondary); }
+
+    .breakdown-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; font-size: 15px; }
+    .breakdown-table td { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .breakdown-table td:last-child { text-align: right; font-weight: 500; }
+    .breakdown-table tr.total td { font-weight: 700; font-size: 17px; color: var(--green); border-bottom: none; padding-top: 16px; }
+
+    .disbursement-note {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-family: var(--font-body);
+      line-height: 1.55;
+    }
+
+    /* ─── NPS ─── */
+    .nps-block { margin-bottom: 28px; }
+    .nps-block h4 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+    .star-row { display: flex; gap: 6px; }
+    .star {
+      width: 44px;
+      height: 44px;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--border-strong);
+      transition: color 0.1s, transform 0.1s;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+    .star:hover { transform: scale(1.1); }
+    .star.filled { color: #f5a623; }
+
+    /* ─── REFERRAL ─── */
+    .referral-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+    .referral-block h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .referral-block p { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+    .share-stub {
+      display: flex;
+      gap: 8px;
+    }
+    .share-stub input {
+      flex: 1;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--tag-radius);
+      padding: 9px 12px;
+      outline: none;
+    }
+    .share-copy {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--accent-light);
+      color: var(--accent);
+      border: 1px solid var(--accent-mid);
+      border-radius: var(--tag-radius);
+      padding: 9px 14px;
+      cursor: pointer;
+    }
+    .share-copy:hover { background: var(--accent); color: #fff; }
+
+    /* ─── SECTION HEADER ─── */
+    .section-h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+    .section-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ─── OTHER ─── */
+    .other-message {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-family: var(--font-body);
+      line-height: 1.6;
+    }
+    .text-link {
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 14px;
+      background: none;
+      border: none;
+      font-family: var(--font-ui);
+      padding: 0;
+    }
+    .text-link:hover { opacity: 0.75; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+
+    .btn-row { display: flex; flex-direction: column; gap: 10px; }
+    .btn-row-h { display: flex; gap: 10px; }
+
+    /* ─── ANNOTATION STRIP ─── */
+    .annotation {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      background: #1a1a2e;
+      color: #aaa;
+      font-family: monospace;
+      font-size: 11px;
+    }
+    .annotation-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      cursor: pointer;
+      border-top: 1px solid #333;
+      user-select: none;
+    }
+    .annotation-toggle:hover { background: #222; }
+    .annotation-toggle span { letter-spacing: 0.05em; }
+    .annotation-body {
+      display: none;
+      padding: 12px 16px;
+      background: #111;
+      border-top: 1px solid #333;
+    }
+    .annotation-body.open { display: block; }
+    .annotation-body table { width: 100%; border-collapse: collapse; }
+    .annotation-body td { padding: 5px 10px; vertical-align: top; border-bottom: 1px solid #2a2a3a; font-size: 11px; }
+    .annotation-body td:first-child { color: #666; width: 130px; white-space: nowrap; }
+    .annotation-body td:last-child { color: #ccc; }
+    .annotation-body tr:last-child td { border-bottom: none; }
+  </style>
+</head>
+<body>
+
+<!-- ─── PROTOTYPE CHROME ─── -->
+<div class="proto-chrome">
+  <button class="proto-back" onclick="goBack()" id="back-btn">← Back</button>
+  <div class="proto-progress" id="progress-label">Step 1 of 9 — Landing</div>
+  <div class="proto-jump">
+    <select onchange="jumpToScreen(this.value)" id="jump-select">
+      <option value="">Jump to screen</option>
+      <option value="1">1 — Landing</option>
+      <option value="2">2 — Eligibility check</option>
+      <option value="3">3 — Intake form</option>
+      <option value="4">4 — Confirmation</option>
+      <option value="5">5 — Case status</option>
+      <option value="6">6 — Pool position</option>
+      <option value="7">7 — EV report</option>
+      <option value="8">8 — Settlement offer</option>
+      <option value="9">9 — Recovery confirmation</option>
+    </select>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1 — LANDING
+═══════════════════════════════════════ -->
+<div class="screen active" id="screen-1">
+  <div class="app-header">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+  </div>
+
+  <div class="referral-badge">Referred by Checkatrade</div>
+
+  <div class="hero-eyebrow">Consumer dispute resolution</div>
+  <h1 class="hero-h1">Get what you're owed — without the stress</h1>
+  <p class="hero-body">We handle your dispute from start to resolution. You don't need a solicitor, and you only pay if we recover.</p>
+
+  <div class="benefit-grid">
+    <div class="benefit-card">
+      <div class="benefit-icon">⚖️</div>
+      <div class="benefit-text">
+        <h3>We handle it</h3>
+        <p>Our specialists manage the legal process, correspondence, and escalation on your behalf.</p>
+      </div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">🤝</div>
+      <div class="benefit-text">
+        <h3>You're not alone</h3>
+        <p>140+ members currently in collective housing disputes. Shared leverage gets better outcomes.</p>
+      </div>
+    </div>
+    <div class="benefit-card">
+      <div class="benefit-icon">💸</div>
+      <div class="benefit-text">
+        <h3>No fee unless you recover</h3>
+        <p>We charge 20% only when you win. If you don't recover, you pay nothing.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="showScreen(2)">Check if I'm eligible</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2 — ELIGIBILITY CHECK
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-2">
+  <div class="app-header">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+  </div>
+
+  <!-- Q1 -->
+  <div id="elg-q1">
+    <p class="section-sub" style="margin-bottom: 16px;">A few quick questions to confirm we can help.</p>
+    <p class="q-label">What type of dispute is this?</p>
+    <div class="radio-group" id="q1-options">
+      <div class="radio-item" onclick="selectQ1('housing')">
+        <input type="radio" name="q1" id="q1-housing" value="housing"><label for="q1-housing">Housing (deposit or repairs)</label>
+      </div>
+      <div class="radio-item" onclick="selectQ1('marketplace')">
+        <input type="radio" name="q1" id="q1-marketplace" value="marketplace"><label for="q1-marketplace">Online marketplace</label>
+      </div>
+      <div class="radio-item" onclick="selectQ1('employment')">
+        <input type="radio" name="q1" id="q1-employment" value="employment"><label for="q1-employment">Employment / unpaid wages</label>
+      </div>
+      <div class="radio-item" onclick="selectQ1('payment')">
+        <input type="radio" name="q1" id="q1-payment" value="payment"><label for="q1-payment">Payment transaction</label>
+      </div>
+      <div class="radio-item" onclick="selectQ1('other')">
+        <input type="radio" name="q1" id="q1-other" value="other"><label for="q1-other">Other</label>
+      </div>
+    </div>
+
+    <div id="other-message" style="display:none;">
+      <div class="other-message">We're not set up for this type of dispute yet — we'll let you know when we are. Thank you for your interest.</div>
+      <button class="text-link" onclick="resetQ1()">← Go back</button>
+    </div>
+
+    <button class="btn btn-primary" id="q1-continue" style="display:none;" onclick="showElgQ2()">Continue</button>
+  </div>
+
+  <!-- Q2 -->
+  <div id="elg-q2" style="display:none;">
+    <p class="q-label">Approximately how much are you claiming?</p>
+    <div class="radio-group" id="q2-options">
+      <div class="radio-item" onclick="selectQ2(this)">
+        <input type="radio" name="q2" value="under500"><label>Under £500</label>
+      </div>
+      <div class="radio-item" onclick="selectQ2(this)">
+        <input type="radio" name="q2" value="500-2000"><label>£500 – £2,000</label>
+      </div>
+      <div class="radio-item" onclick="selectQ2(this)">
+        <input type="radio" name="q2" value="2000-10000"><label>£2,000 – £10,000</label>
+      </div>
+      <div class="radio-item" onclick="selectQ2(this)">
+        <input type="radio" name="q2" value="over10000"><label>Over £10,000</label>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="q2-continue" style="display:none;" onclick="showElgQ3()">Continue</button>
+  </div>
+
+  <!-- Q3 -->
+  <div id="elg-q3" style="display:none;">
+    <p class="q-label">Are you still in a relationship with the other party?</p>
+    <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">For example: still a tenant, still a customer, or still employed by them.</p>
+    <div class="radio-group" id="q3-options">
+      <div class="radio-item" onclick="selectQ3(this)">
+        <input type="radio" name="q3" value="yes"><label>Yes</label>
+      </div>
+      <div class="radio-item" onclick="selectQ3(this)">
+        <input type="radio" name="q3" value="no"><label>No</label>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="q3-continue" style="display:none;" onclick="showScreen(3)">Continue</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 3 — INTAKE FORM
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-3">
+  <div class="app-header">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+  </div>
+
+  <h2 class="section-h2">Tell us about your claim</h2>
+  <p class="section-sub">We'll review your details and confirm your place within 24 hours.</p>
+
+  <div class="form-progress-bar">
+    <div class="form-progress-fill" id="form-progress-fill" style="width: 25%;"></div>
+  </div>
+  <p class="form-step-label" id="form-step-label">Step 1 of 4 — Your details</p>
+
+  <!-- FORM STEP 1 -->
+  <div id="form-step-1">
+    <div class="field-group">
+      <label class="field-label" for="f-name">Full name</label>
+      <input type="text" class="field-input" id="f-name" placeholder="Sarah Thompson">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-email">Email address</label>
+      <input type="email" class="field-input" id="f-email" placeholder="sarah@example.com">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-phone">Phone number</label>
+      <input type="tel" class="field-input" id="f-phone" placeholder="+44 7700 000000">
+    </div>
+    <button class="btn btn-primary" onclick="formNext(2)">Continue</button>
+  </div>
+
+  <!-- FORM STEP 2 -->
+  <div id="form-step-2" style="display:none;">
+    <div class="field-group">
+      <label class="field-label" for="f-company">Company name</label>
+      <input type="text" class="field-input" id="f-company" placeholder="HomeLet Properties Ltd">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-trading">Trading as (if different)</label>
+      <input type="text" class="field-input" id="f-trading" placeholder="HomeLet">
+    </div>
+    <div class="btn-row-h">
+      <button class="btn btn-secondary" onclick="formBack(1)" style="flex:1;">← Back</button>
+      <button class="btn btn-primary" onclick="formNext(3)" style="flex:2;">Continue</button>
+    </div>
+  </div>
+
+  <!-- FORM STEP 3 -->
+  <div id="form-step-3" style="display:none;">
+    <p class="field-label" style="margin-bottom:12px;">What happened? Select all that apply.</p>
+    <div class="checkbox-group">
+      <div class="checkbox-item" onclick="toggleCheck(this)">
+        <input type="checkbox"><label>Goods not delivered</label>
+      </div>
+      <div class="checkbox-item" onclick="toggleCheck(this)">
+        <input type="checkbox" checked><label>Deposit not returned</label>
+      </div>
+      <div class="checkbox-item" onclick="toggleCheck(this)">
+        <input type="checkbox"><label>Service not as described</label>
+      </div>
+      <div class="checkbox-item" onclick="toggleCheck(this)">
+        <input type="checkbox"><label>Wages unpaid</label>
+      </div>
+      <div class="checkbox-item" onclick="toggleCheck(this)">
+        <input type="checkbox"><label>Other</label>
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-narrative">Describe what happened</label>
+      <textarea class="field-input" id="f-narrative" rows="6" placeholder="In May 2025 I vacated my rented flat at 12 Elm Street, London. My landlord, trading as HomeLet Properties, retained my £2,600 deposit without providing any breakdown or evidence of damages within the required 10 working days..." oninput="updateWordCount()"></textarea>
+      <div class="word-count" id="word-count">0 / 300 words</div>
+    </div>
+    <div class="btn-row-h">
+      <button class="btn btn-secondary" onclick="formBack(2)" style="flex:1;">← Back</button>
+      <button class="btn btn-primary" onclick="formNext(4)" style="flex:2;">Continue</button>
+    </div>
+  </div>
+
+  <!-- FORM STEP 4 — REVIEW -->
+  <div id="form-step-4" style="display:none;">
+    <div class="review-section">
+      <div class="review-section-header">
+        <h4>Your details</h4>
+        <button class="edit-link" onclick="formBack(1)">Edit</button>
+      </div>
+      <div class="review-row"><strong>Name</strong> Sarah Thompson</div>
+      <div class="review-row"><strong>Email</strong> sarah@example.com</div>
+      <div class="review-row"><strong>Phone</strong> +44 7700 000000</div>
+    </div>
+    <div class="review-section">
+      <div class="review-section-header">
+        <h4>Dispute party</h4>
+        <button class="edit-link" onclick="formBack(2)">Edit</button>
+      </div>
+      <div class="review-row"><strong>Company</strong> HomeLet Properties Ltd</div>
+      <div class="review-row"><strong>Trading as</strong> HomeLet</div>
+    </div>
+    <div class="review-section">
+      <div class="review-section-header">
+        <h4>What happened</h4>
+        <button class="edit-link" onclick="formBack(3)">Edit</button>
+      </div>
+      <div class="review-row"><strong>Category</strong> Deposit not returned</div>
+      <div class="review-row"><strong>Summary</strong> Landlord retained £2,600 deposit without providing a breakdown within the required 10 working days of vacating.</div>
+    </div>
+    <div class="btn-row-h" style="margin-top:24px;">
+      <button class="btn btn-secondary" onclick="formBack(3)" style="flex:1;">← Back</button>
+      <button class="btn btn-primary" onclick="showScreen(4)" style="flex:2;">Submit my claim</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 4 — CONFIRMATION
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-4">
+  <div class="app-header">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+  </div>
+
+  <div class="navy-panel">
+    <div class="claim-ref">CLM-2026-0847</div>
+    <h2>Your claim has been received.</h2>
+    <p>We'll review your details and contact you within 24 hours to confirm your place and introduce your specialist.</p>
+  </div>
+
+  <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 16px;">What happens next</h3>
+  <div class="next-steps">
+    <div class="next-step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Claim review</h4>
+        <p>Our intake team reviews your details and confirms eligibility. This takes up to 24 hours.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Specialist assigned</h4>
+        <p>A dispute specialist is assigned to your case. They'll contact you to discuss strategy.</p>
+      </div>
+    </div>
+    <div class="next-step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Pool placement</h4>
+        <p>Your claim joins the relevant dispute pool, strengthening the collective position against the defendant.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="showScreen(5)" style="margin-bottom: 16px;">Check my claim status</button>
+  <p style="text-align: center;"><button class="text-link" onclick="showScreen(1)">Return to start</button></p>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 5 — CASE STATUS
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-5">
+  <div class="app-header-auth">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+    <div class="auth-user">
+      <div class="auth-name">Sarah Thompson</div>
+      <div class="auth-avatar">ST</div>
+    </div>
+  </div>
+
+  <div class="status-header">
+    <h2>CLM-2026-0847</h2>
+    <p>Housing dispute — HomeLet Properties Ltd</p>
+  </div>
+
+  <div class="pool-banner">
+    <div class="pool-banner-icon">🏘️</div>
+    <div>You're part of the <strong>Checkatrade housing disputes pool</strong> — 142 active members working toward the same defendant.</div>
+  </div>
+
+  <div class="progress-tracker">
+    <div class="tracker-step done">
+      <div class="tracker-dot">✓</div>
+      <div class="tracker-label"><strong>Claim received</strong><span>28 Apr 2026</span></div>
+    </div>
+    <div class="tracker-step done">
+      <div class="tracker-dot">✓</div>
+      <div class="tracker-label"><strong>Eligibility confirmed</strong><span>29 Apr 2026</span></div>
+    </div>
+    <div class="tracker-step active">
+      <div class="tracker-dot">→</div>
+      <div class="tracker-label"><strong>Independent EV assessment</strong><span>In progress</span></div>
+    </div>
+    <div class="tracker-step">
+      <div class="tracker-dot">4</div>
+      <div class="tracker-label"><strong>Escalation to defendant</strong><span>Pending</span></div>
+    </div>
+    <div class="tracker-step">
+      <div class="tracker-dot">5</div>
+      <div class="tracker-label"><strong>Resolution</strong><span>Pending</span></div>
+    </div>
+  </div>
+
+  <div class="specialist-box">
+    <div class="specialist-avatar">JR</div>
+    <div class="specialist-info">
+      <strong>James R.</strong>
+      <span>Your assigned specialist · Dispute resolution</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-primary" onclick="showScreen(6)">View your pool position</button>
+    <button class="btn btn-disabled" disabled title="Available once your EV assessment is complete">View EV report — pending</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 6 — POOL POSITION
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-6">
+  <div class="app-header-auth">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+    <div class="auth-user">
+      <div class="auth-name">Sarah Thompson</div>
+      <div class="auth-avatar">ST</div>
+    </div>
+  </div>
+
+  <h2 class="section-h2">Your pool position</h2>
+  <p class="section-sub">Checkatrade housing disputes — HomeLet Properties Ltd</p>
+
+  <div class="pool-cards">
+    <div class="pool-card">
+      <div class="pool-card-label">Your collective threat share</div>
+      <div class="pool-card-value">£3,200</div>
+      <div class="pool-card-sub">Your claim's share of £437,000 total pool value</div>
+    </div>
+    <div class="pool-card green-card">
+      <div class="pool-card-label">Insurance protection</div>
+      <div class="pool-card-value">Active</div>
+      <div class="pool-card-sub">ATE policy covers adverse costs if the case goes to mediation</div>
+    </div>
+    <div class="pool-card">
+      <div class="pool-card-label">Queue position</div>
+      <div class="pool-card-value">#23 of 142</div>
+      <div class="pool-card-sub">Ordered by claim value and intake date</div>
+    </div>
+  </div>
+
+  <div class="withdrawal-notice">
+    <strong>Withdrawal notice:</strong> You may withdraw your claim at any time before an EV assessment is issued. After that point, withdrawal requires 7 days' written notice. No fees apply on withdrawal unless a settlement offer has been formally accepted.
+  </div>
+
+  <button class="btn btn-primary" onclick="showScreen(7)">View your EV report</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 7 — EV REPORT
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-7">
+  <div class="app-header-auth">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+    <div class="auth-user">
+      <div class="auth-name">Sarah Thompson</div>
+      <div class="auth-avatar">ST</div>
+    </div>
+  </div>
+
+  <div class="ev-header">
+    <div class="endorsement">OFT INDEPENDENT ASSESSORS · ACCREDITED PROVIDER</div>
+    <h2>Your independent claim assessment</h2>
+    <p>Based on your submitted evidence and comparable outcomes in housing deposit disputes.</p>
+  </div>
+
+  <div class="ev-range">
+    <div class="ev-range-cell">
+      <div class="cell-label">Low</div>
+      <div class="cell-value">£1,800</div>
+    </div>
+    <div class="ev-range-cell central">
+      <div class="cell-label">Central</div>
+      <div class="cell-value">£2,850</div>
+    </div>
+    <div class="ev-range-cell">
+      <div class="cell-label">High</div>
+      <div class="cell-value">£3,600</div>
+    </div>
+  </div>
+
+  <div class="confidence-bar">
+    <div class="confidence-label">
+      <span>Assessment confidence</span>
+      <span>82%</span>
+    </div>
+    <div class="confidence-track"><div class="confidence-fill"></div></div>
+  </div>
+
+  <ul class="ev-bullets">
+    <li>The deposit was not returned within the statutory 10-day window, establishing a clear breach of the Tenancy Deposit Protection regulations.</li>
+    <li>Comparable tribunal outcomes in housing deposit disputes with this defendant range from £1,800 to £3,600, with a median settlement at 90% of deposit value.</li>
+    <li>Your claim's collective pool position strengthens the recovery probability — pooled cases with HomeLet Properties have a 94% resolution rate.</li>
+  </ul>
+
+  <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">Escalation schedule</h4>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Date</th>
+          <th>Demand</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Initial letter</td>
+          <td>5 May 2026</td>
+          <td class="amount">£2,850</td>
+          <td class="status-tag"><span class="tag tag-green">Sent</span></td>
+        </tr>
+        <tr>
+          <td>Second notice</td>
+          <td>19 May 2026</td>
+          <td class="amount">£2,850</td>
+          <td class="status-tag"><span class="tag tag-green">Sent</span></td>
+        </tr>
+        <tr>
+          <td>Pre-action letter</td>
+          <td>2 Jun 2026</td>
+          <td class="amount">£3,200</td>
+          <td class="status-tag"><span class="tag tag-yellow">Pending</span></td>
+        </tr>
+        <tr>
+          <td>Mediation referral</td>
+          <td>16 Jun 2026</td>
+          <td class="amount">£3,600</td>
+          <td class="status-tag"><span class="tag tag-grey">Scheduled</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn btn-primary" onclick="showScreen(8)">I understand — what happens next?</button>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 8 — SETTLEMENT OFFER
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-8">
+  <div class="app-header-auth">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+    <div class="auth-user">
+      <div class="auth-name">Sarah Thompson</div>
+      <div class="auth-avatar">ST</div>
+    </div>
+  </div>
+
+  <div class="settlement-banner">
+    <div class="settlement-banner-icon">⏰</div>
+    <div class="settlement-banner-text">
+      <strong>Settlement offer received</strong>
+      <span>Respond by 5 June 2026 — offer expires if not actioned</span>
+    </div>
+  </div>
+
+  <div class="settlement-amount">
+    <div class="from">HomeLet Properties Ltd offers</div>
+    <div class="value">£2,600</div>
+    <div class="party">Your EV central estimate is £2,850</div>
+  </div>
+
+  <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 14px;">How would you like to respond?</h4>
+
+  <div class="option-blocks">
+    <!-- ACCEPT -->
+    <div class="option-block" id="accept-block">
+      <h4>Accept £2,600</h4>
+      <p>You'll receive £2,080 after Calmly's 20% fee. Funds typically arrive within 5–7 working days.</p>
+      <button class="btn btn-green" onclick="showAcceptConfirm()">Accept £2,600</button>
+      <div class="inline-confirm" id="accept-confirm" style="display:none;">
+        <p>Are you sure you want to accept <strong>£2,600</strong>? Calmly will deduct a <strong>£520 fee (20%)</strong>. You will receive <strong>£2,080</strong>.</p>
+        <div class="inline-confirm-actions">
+          <button class="btn btn-green" onclick="showScreen(9)">Yes, accept</button>
+          <button class="btn btn-secondary" onclick="hideAcceptConfirm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COUNTER -->
+    <div class="option-block" id="counter-block">
+      <h4>Submit a counter-offer</h4>
+      <p>Propose a different amount. Our specialist will review and advise before submission.</p>
+      <button class="btn btn-slate" onclick="toggleCounter()">Counter-offer</button>
+      <div class="counter-input-wrap" id="counter-input-wrap">
+        <label class="field-label" for="counter-amount" style="margin-top: 14px; display: block;">Your counter amount (£)</label>
+        <input type="number" class="field-input" id="counter-amount" placeholder="e.g. 2850">
+        <button class="btn btn-slate" onclick="showCounterTooltip()" style="margin-top: 10px;">Submit counter</button>
+        <div class="counter-tooltip" id="counter-tooltip" style="display:none;">In the live product this submits your counter-offer to HomeLet Properties Ltd via the Calmly platform.</div>
+      </div>
+    </div>
+
+    <!-- DECLINE -->
+    <div class="option-block">
+      <h4>Decline and proceed to mediation</h4>
+      <p>Reject this offer and escalate to formal mediation. Mediation typically resolves within 30 days.</p>
+      <button class="btn btn-outline" onclick="showDeclineTooltip()">Decline offer</button>
+      <div class="counter-tooltip" id="decline-tooltip" style="display:none; margin-top: 10px;">In the live product declining triggers the formal mediation referral process.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 9 — RECOVERY CONFIRMATION
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-9">
+  <div class="app-header-auth">
+    <div class="app-logo">Calmly<span>Resolve</span></div>
+    <div class="auth-user">
+      <div class="auth-name">Sarah Thompson</div>
+      <div class="auth-avatar">ST</div>
+    </div>
+  </div>
+
+  <div class="recovery-header">
+    <div class="check">✓</div>
+    <h2>Recovery confirmed</h2>
+    <p>Your settlement has been accepted and funds are being processed.</p>
+  </div>
+
+  <table class="breakdown-table">
+    <tr>
+      <td>Gross settlement</td>
+      <td>£2,600.00</td>
+    </tr>
+    <tr>
+      <td>Calmly fee (20%)</td>
+      <td>−£520.00</td>
+    </tr>
+    <tr class="total">
+      <td>You receive</td>
+      <td>£2,080.00</td>
+    </tr>
+  </table>
+
+  <div class="disbursement-note">
+    Funds will be transferred to your registered bank account within 5–7 working days. You'll receive an email confirmation once the payment is dispatched.
+  </div>
+
+  <div class="nps-block">
+    <h4>How would you rate your experience?</h4>
+    <div class="star-row" id="star-row">
+      <button class="star" onclick="rateStar(1)">★</button>
+      <button class="star" onclick="rateStar(2)">★</button>
+      <button class="star" onclick="rateStar(3)">★</button>
+      <button class="star" onclick="rateStar(4)">★</button>
+      <button class="star" onclick="rateStar(5)">★</button>
+    </div>
+  </div>
+
+  <div class="referral-block">
+    <h4>Know someone in a similar situation?</h4>
+    <p>Share your referral link — if they recover, you both benefit.</p>
+    <div class="share-stub">
+      <input type="text" value="calmlyresolve.co.uk/r/CLM0847" readonly>
+      <button class="share-copy" onclick="copyShareLink(this)">Copy</button>
+    </div>
+  </div>
+
+  <p style="text-align: center; margin-top: 8px;"><button class="text-link" onclick="showScreen(1)">Return to start</button></p>
+</div>
+
+<!-- ─── ANNOTATION STRIP ─── -->
+<div class="annotation">
+  <div class="annotation-toggle" onclick="toggleAnnotation()">
+    <span>⚙ Prototype annotation</span>
+    <span id="annotation-toggle-icon">▲ expand</span>
+  </div>
+  <div class="annotation-body" id="annotation-body">
+    <table id="annotation-table">
+      <tr><td>Flow ref</td><td id="ann-ref">—</td></tr>
+      <tr><td>T4 assumption</td><td id="ann-t4">—</td></tr>
+      <tr><td>Pass criterion</td><td id="ann-pass">—</td></tr>
+      <tr><td>Fail criterion</td><td id="ann-fail">—</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+  // ─── STATE ───
+  var currentScreen = 1;
+  var formStep = 1;
+  var history = [];
+
+  var SCREEN_META = {
+    1: {
+      label: 'Step 1 of 9 — Landing',
+      ref: 'P1-S1',
+      t4: 'Referred claimants understand the value proposition before committing to eligibility check',
+      pass: 'User clicks "Check if I'm eligible" within 30 seconds of landing',
+      fail: 'User bounces or clicks back without engaging benefit cards'
+    },
+    2: {
+      label: 'Step 2 of 9 — Eligibility check',
+      ref: 'P1-S2',
+      t4: 'One-question-at-a-time format reduces abandonment vs. all-at-once form',
+      pass: 'User completes all 3 questions and advances to intake',
+      fail: 'User selects "Other" or abandons mid-flow'
+    },
+    3: {
+      label: 'Step 3 of 9 — Intake form',
+      ref: 'P1-S3',
+      t4: 'Stepped form (4 sub-screens) with progress bar reduces perceived effort',
+      pass: 'User submits claim with narrative >50 words',
+      fail: 'User abandons on step 2 or 3, or submits with empty narrative'
+    },
+    4: {
+      label: 'Step 4 of 9 — Confirmation',
+      ref: 'P1-S4',
+      t4: 'Explicit claim reference + 3-step roadmap reduces post-submission anxiety',
+      pass: 'User clicks "Check my claim status" rather than disengaging',
+      fail: 'User closes session without clicking onward CTA'
+    },
+    5: {
+      label: 'Step 5 of 9 — Case status',
+      ref: 'P2-S1',
+      t4: 'Pool membership banner increases perceived collective power and reduces solo-claimant anxiety',
+      pass: 'User reads specialist box and clicks "View your pool position"',
+      fail: 'User distressed by "In progress" status with no timeframe signal'
+    },
+    6: {
+      label: 'Step 6 of 9 — Pool position',
+      ref: 'P2-S2',
+      t4: 'Three-card layout communicates financial, legal, and queue context without overwhelming',
+      pass: 'User understands their queue position and reads withdrawal notice',
+      fail: 'User confused by "collective threat share" terminology; requests explanation'
+    },
+    7: {
+      label: 'Step 7 of 9 — EV report',
+      ref: 'P2-S3',
+      t4: 'Central EV figure anchors user expectations before a defendant offer arrives',
+      pass: 'User reads all three bullets and the escalation table before advancing',
+      fail: 'User distressed that Central EV (£2,850) is below their deposit (£2,600 retained); needs framing'
+    },
+    8: {
+      label: 'Step 8 of 9 — Settlement offer',
+      ref: 'P2-S4',
+      t4: 'Inline confirmation on Accept prevents accidental acceptance; counter-offer expand prevents page jump',
+      pass: 'User selects Accept and completes inline confirmation in one flow',
+      fail: 'User confused about fee deduction; asks "why isn\'t it £2,600?"'
+    },
+    9: {
+      label: 'Step 9 of 9 — Recovery confirmation',
+      ref: 'P2-S5',
+      t4: 'NPS and referral on confirmation screen captures advocacy at peak satisfaction',
+      pass: 'User rates ≥4 stars and copies referral link',
+      fail: 'User closes immediately after seeing net amount without engaging NPS'
+    }
+  };
+
+  // ─── NAVIGATION ───
+  function showScreen(n) {
+    if (n < 1 || n > 9) return;
+    history.push(currentScreen);
+    _doShowScreen(n);
+  }
+
+  function goBack() {
+    if (history.length === 0) return;
+    var prev = history.pop();
+    _doShowScreen(prev);
+  }
+
+  function jumpToScreen(val) {
+    if (!val) return;
+    var n = parseInt(val, 10);
+    if (isNaN(n)) return;
+    history = [];
+    _doShowScreen(n);
+    document.getElementById('jump-select').value = '';
+  }
+
+  function _doShowScreen(n) {
+    // Hide all screens
+    var screens = document.querySelectorAll('.screen');
+    screens.forEach(function(s) { s.classList.remove('active'); });
+    // Show target
+    document.getElementById('screen-' + n).classList.add('active');
+    currentScreen = n;
+    // Scroll to top
+    window.scrollTo(0, 0);
+    // Update chrome
+    var meta = SCREEN_META[n];
+    document.getElementById('progress-label').textContent = meta.label;
+    document.getElementById('ann-ref').textContent = meta.ref;
+    document.getElementById('ann-t4').textContent = meta.t4;
+    document.getElementById('ann-pass').textContent = meta.pass;
+    document.getElementById('ann-fail').textContent = meta.fail;
+    // Back button visibility
+    document.getElementById('back-btn').style.visibility = (history.length > 0) ? 'visible' : 'hidden';
+  }
+
+  // Hide back on first load
+  document.getElementById('back-btn').style.visibility = 'hidden';
+
+  // ─── SCREEN 2 — ELIGIBILITY ───
+  function selectQ1(val) {
+    var items = document.querySelectorAll('#q1-options .radio-item');
+    items.forEach(function(item) { item.classList.remove('selected'); });
+    var radio = document.getElementById('q1-' + val);
+    if (radio) {
+      radio.checked = true;
+      radio.parentElement.classList.add('selected');
+    }
+    if (val === 'other') {
+      document.getElementById('other-message').style.display = 'block';
+      document.getElementById('q1-continue').style.display = 'none';
+    } else {
+      document.getElementById('other-message').style.display = 'none';
+      document.getElementById('q1-continue').style.display = 'block';
+    }
+  }
+
+  function resetQ1() {
+    var items = document.querySelectorAll('#q1-options .radio-item');
+    items.forEach(function(item) { item.classList.remove('selected'); });
+    var radios = document.querySelectorAll('#q1-options input[type="radio"]');
+    radios.forEach(function(r) { r.checked = false; });
+    document.getElementById('other-message').style.display = 'none';
+    document.getElementById('q1-continue').style.display = 'none';
+  }
+
+  function showElgQ2() {
+    document.getElementById('elg-q1').style.display = 'none';
+    document.getElementById('elg-q2').style.display = 'block';
+    document.getElementById('elg-q3').style.display = 'none';
+  }
+
+  function selectQ2(item) {
+    var items = document.querySelectorAll('#q2-options .radio-item');
+    items.forEach(function(i) { i.classList.remove('selected'); });
+    item.classList.add('selected');
+    item.querySelector('input').checked = true;
+    document.getElementById('q2-continue').style.display = 'block';
+  }
+
+  function showElgQ3() {
+    document.getElementById('elg-q1').style.display = 'none';
+    document.getElementById('elg-q2').style.display = 'none';
+    document.getElementById('elg-q3').style.display = 'block';
+  }
+
+  function selectQ3(item) {
+    var items = document.querySelectorAll('#q3-options .radio-item');
+    items.forEach(function(i) { i.classList.remove('selected'); });
+    item.classList.add('selected');
+    item.querySelector('input').checked = true;
+    document.getElementById('q3-continue').style.display = 'block';
+  }
+
+  // ─── SCREEN 3 — FORM ───
+  var FORM_STEPS = 4;
+
+  function formNext(step) {
+    document.getElementById('form-step-' + (step - 1)).style.display = 'none';
+    document.getElementById('form-step-' + step).style.display = 'block';
+    formStep = step;
+    var pct = (step / FORM_STEPS * 100) + '%';
+    document.getElementById('form-progress-fill').style.width = pct;
+    var labels = ['', 'Step 1 of 4 — Your details', 'Step 2 of 4 — Dispute party', 'Step 3 of 4 — What happened', 'Step 4 of 4 — Review'];
+    document.getElementById('form-step-label').textContent = labels[step];
+    window.scrollTo(0, 0);
+  }
+
+  function formBack(step) {
+    document.getElementById('form-step-' + (step + 1)).style.display = 'none';
+    document.getElementById('form-step-' + step).style.display = 'block';
+    formStep = step;
+    var pct = (step / FORM_STEPS * 100) + '%';
+    document.getElementById('form-progress-fill').style.width = pct;
+    var labels = ['', 'Step 1 of 4 — Your details', 'Step 2 of 4 — Dispute party', 'Step 3 of 4 — What happened', 'Step 4 of 4 — Review'];
+    document.getElementById('form-step-label').textContent = labels[step];
+    window.scrollTo(0, 0);
+  }
+
+  function toggleCheck(item) {
+    var cb = item.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+    item.classList.toggle('checked', cb.checked);
+  }
+
+  // Pre-check "Deposit not returned"
+  document.addEventListener('DOMContentLoaded', function() {
+    var preChecked = document.querySelector('.checkbox-item input[checked]');
+    if (preChecked) {
+      preChecked.parentElement.classList.add('checked');
+    }
+  });
+
+  function updateWordCount() {
+    var ta = document.getElementById('f-narrative');
+    var words = ta.value.trim() === '' ? 0 : ta.value.trim().split(/\s+/).length;
+    var el = document.getElementById('word-count');
+    el.textContent = words + ' / 300 words';
+    el.classList.toggle('near-limit', words >= 270);
+  }
+
+  // ─── SCREEN 8 — SETTLEMENT ───
+  function showAcceptConfirm() {
+    document.getElementById('accept-confirm').style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  function hideAcceptConfirm() {
+    document.getElementById('accept-confirm').style.display = 'none';
+  }
+
+  function toggleCounter() {
+    var wrap = document.getElementById('counter-input-wrap');
+    wrap.classList.toggle('shown');
+  }
+
+  function showCounterTooltip() {
+    document.getElementById('counter-tooltip').style.display = 'block';
+  }
+
+  function showDeclineTooltip() {
+    document.getElementById('decline-tooltip').style.display = 'block';
+  }
+
+  // ─── SCREEN 9 — STARS ───
+  var currentRating = 0;
+
+  function rateStar(n) {
+    currentRating = n;
+    var stars = document.querySelectorAll('.star');
+    stars.forEach(function(s, i) {
+      s.classList.toggle('filled', i < n);
+    });
+  }
+
+  function copyShareLink(btn) {
+    var input = btn.previousElementSibling;
+    input.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    btn.textContent = 'Copied!';
+    setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+  }
+
+  // ─── ANNOTATION ───
+  var annotationOpen = false;
+
+  function toggleAnnotation() {
+    annotationOpen = !annotationOpen;
+    document.getElementById('annotation-body').classList.toggle('open', annotationOpen);
+    document.getElementById('annotation-toggle-icon').textContent = annotationOpen ? '▼ collapse' : '▲ expand';
+  }
+
+  // Init annotation data for screen 1
+  (function() {
+    var meta = SCREEN_META[1];
+    document.getElementById('ann-ref').textContent = meta.ref;
+    document.getElementById('ann-t4').textContent = meta.t4;
+    document.getElementById('ann-pass').textContent = meta.pass;
+    document.getElementById('ann-fail').textContent = meta.fail;
+  })();
+</script>
+</body>
+</html>

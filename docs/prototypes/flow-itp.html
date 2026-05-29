@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calmly Resolve — ITP Journey · Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --text: #0f1923;
+      --text-secondary: #4a5568;
+      --text-muted: #718096;
+      --border: #dde1e7;
+      --border-strong: #b0b8c4;
+      --navy: #0f2744;
+      --navy-hover: #1a3a5c;
+      --navy-light: #e8eef8;
+      --accent: #1f4fa8;
+      --accent-light: #e8eef8;
+      --badge-received-bg: #e8eef8; --badge-received-text: #1f4fa8; --badge-received-border: #b8c8e8;
+      --badge-review-bg: #fef9e6; --badge-review-text: #854d0e; --badge-review-border: #f0d98a;
+      --badge-ev-bg: #f0ebfb; --badge-ev-text: #5b21b6; --badge-ev-border: #c4aff0;
+      --badge-offer-bg: #fff4ed; --badge-offer-text: #9a3412; --badge-offer-border: #fdba74;
+      --badge-resolved-bg: #e6f4ec; --badge-resolved-text: #166534; --badge-resolved-border: #a7d4b8;
+      --badge-withdrawn-bg: #f1f3f5; --badge-withdrawn-text: #4a5568; --badge-withdrawn-border: #d0d5dd;
+      --warning-bg: #fff8e6; --warning-border: #d4820a;
+      --sidebar-w: 220px;
+      --header-h: 56px;
+      --proto-bar-h: 44px;
+      --font: 'DM Sans', system-ui, sans-serif;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+    body { font-family: var(--font); font-size: 14px; background: var(--bg); color: var(--text); line-height: 1.5; }
+
+    /* ── PROTOTYPE CONTROL BAR ── */
+    .proto-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      height: var(--proto-bar-h);
+      background: #0d1117;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display: flex; align-items: center; padding: 0 16px; gap: 12px;
+    }
+    .proto-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); flex-shrink: 0; padding-right: 12px;
+      border-right: 1px solid rgba(255,255,255,0.1);
+    }
+    .proto-progress {
+      font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 500; flex-shrink: 0;
+      min-width: 140px;
+    }
+    .proto-progress span { color: rgba(255,255,255,0.9); }
+    .proto-back {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 500;
+      padding: 4px 12px; border-radius: 4px; cursor: pointer; font-family: var(--font);
+      transition: all 0.15s; flex-shrink: 0;
+    }
+    .proto-back:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .proto-spacer { flex: 1; }
+    .proto-jump-wrap { position: relative; flex-shrink: 0; }
+    .proto-jump {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.5); font-size: 11px; font-family: var(--font);
+      padding: 4px 10px; border-radius: 4px; cursor: pointer; appearance: none;
+      outline: none;
+    }
+    .proto-jump option { background: #1a1a2e; color: #ccc; }
+
+    /* ── APP WRAPPER ── */
+    .app-wrapper {
+      margin-top: var(--proto-bar-h);
+      height: calc(100vh - var(--proto-bar-h));
+      display: flex; flex-direction: column;
+    }
+
+    /* ── SCREENS ── */
+    .screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+    .screen.active { display: flex; }
+
+    /* ── SHELL (authenticated screens) ── */
+    .shell { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+    .shell-header {
+      height: var(--header-h); background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 24px; gap: 16px;
+      flex-shrink: 0; z-index: 10;
+    }
+    .header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .header-logo-mark {
+      width: 28px; height: 28px; background: var(--navy); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .header-logo-mark svg { width: 16px; height: 16px; }
+    .header-logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .header-logo-text .brand { font-size: 14px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; }
+    .header-logo-text .sublabel { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: 0.04em; text-transform: uppercase; }
+    .header-divider { width: 1px; height: 28px; background: var(--border); }
+    .header-itp { display: flex; align-items: center; gap: 8px; }
+    .itp-badge {
+      background: #f0a500; color: white; font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 4px; letter-spacing: 0.02em;
+    }
+    .itp-name { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .header-spacer { flex: 1; }
+    .header-user { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .header-user .avatar {
+      width: 30px; height: 30px; border-radius: 50%; background: var(--navy);
+      color: white; font-size: 12px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-user .user-info { text-align: right; }
+    .header-user .user-name { font-size: 13px; font-weight: 500; color: var(--text); }
+    .header-user .user-role { font-size: 11px; color: var(--text-muted); }
+    .shell-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w); background: var(--navy);
+      display: flex; flex-direction: column; padding: 20px 0;
+      flex-shrink: 0; overflow-y: auto;
+    }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3); padding: 0 20px 8px; margin-top: 16px;
+    }
+    .sidebar-section-label:first-child { margin-top: 0; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 20px; font-size: 13px; font-weight: 500;
+      color: rgba(255,255,255,0.65); cursor: pointer;
+      border-left: 3px solid transparent; text-decoration: none; transition: all 0.15s;
+    }
+    .nav-item:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06); }
+    .nav-item.active { color: #ffffff; background: rgba(255,255,255,0.1); border-left-color: #5b9cf6; }
+    .nav-item svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active svg { opacity: 1; }
+    .nav-badge {
+      margin-left: auto; background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.8); font-size: 10px; font-weight: 600;
+      padding: 1px 6px; border-radius: 10px; min-width: 20px; text-align: center;
+    }
+
+    /* ── CONTENT AREA ── */
+    .content {
+      flex: 1; overflow-y: auto; padding: 32px;
+      display: flex; flex-direction: column;
+    }
+    .content-inner { max-width: 760px; width: 100%; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom: 28px; }
+    .page-title { font-size: 22px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+    .page-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 18px; border-radius: var(--radius); font-family: var(--font);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border: none; transition: all 0.15s; text-decoration: none; white-space: nowrap;
+    }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: #1a3f8a; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--border-strong); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn-ghost { background: transparent; color: var(--accent); padding: 4px 0; }
+    .btn-ghost:hover { text-decoration: underline; }
+
+    /* ── FORM ELEMENTS ── */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: 0.02em; }
+    .form-label .req { color: #e53e3e; margin-left: 2px; }
+    .form-input, .form-textarea, .form-select {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+      border-radius: var(--radius); font-family: var(--font); font-size: 14px;
+      color: var(--text); background: var(--surface); outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(31,79,168,0.1); }
+    .form-textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .form-select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23718096' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+    /* Toggle */
+    .toggle-group { display: flex; gap: 8px; }
+    .toggle-btn {
+      padding: 8px 16px; border: 1px solid var(--border); border-radius: var(--radius);
+      font-family: var(--font); font-size: 13px; font-weight: 500; cursor: pointer;
+      background: var(--surface); color: var(--text-secondary); transition: all 0.15s;
+    }
+    .toggle-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .toggle-btn:hover:not(.active) { border-color: var(--border-strong); color: var(--text); }
+
+    /* Radio */
+    .radio-group { display: flex; flex-direction: column; gap: 8px; }
+    .radio-label { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: var(--text); }
+    .radio-label input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; }
+
+    /* ── FORM STEPS ── */
+    .form-step-bar { display: flex; align-items: center; margin-bottom: 28px; gap: 0; }
+    .form-step {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; font-weight: 500; color: var(--text-muted); flex-shrink: 0;
+    }
+    .form-step .step-num {
+      width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; background: var(--surface);
+    }
+    .form-step.done .step-num { background: var(--accent); border-color: var(--accent); color: white; }
+    .form-step.active .step-num { border-color: var(--accent); color: var(--accent); }
+    .form-step.active { color: var(--text); font-weight: 600; }
+    .form-step-connector { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
+    .form-step-connector.done { background: var(--accent); }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 28px;
+    }
+    .form-card-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+    /* ── WARNING BLOCK ── */
+    .warning-block {
+      background: var(--warning-bg); border-left: 4px solid var(--warning-border);
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 13px; color: #7c4a00; margin-top: 12px; display: none;
+    }
+    .warning-block.visible { display: block; }
+    .warning-block strong { font-weight: 600; }
+
+    /* ── REVIEW SUMMARY ── */
+    .review-section { margin-bottom: 20px; }
+    .review-section-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 10px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .review-dl { display: grid; grid-template-columns: 160px 1fr; row-gap: 8px; }
+    .review-dt { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .review-dd { font-size: 13px; color: var(--text); }
+    .review-edit { font-size: 12px; color: var(--accent); cursor: pointer; text-decoration: none; margin-left: 8px; }
+    .review-edit:hover { text-decoration: underline; }
+
+    /* ── STATUS BADGES ── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 3px; font-size: 11px; font-weight: 600;
+      border: 1px solid; white-space: nowrap;
+    }
+    .badge-received { background: var(--badge-received-bg); color: var(--badge-received-text); border-color: var(--badge-received-border); }
+    .badge-review { background: var(--badge-review-bg); color: var(--badge-review-text); border-color: var(--badge-review-border); }
+    .badge-ev { background: var(--badge-ev-bg); color: var(--badge-ev-text); border-color: var(--badge-ev-border); }
+    .badge-offer { background: var(--badge-offer-bg); color: var(--badge-offer-text); border-color: var(--badge-offer-border); }
+    .badge-resolved { background: var(--badge-resolved-bg); color: var(--badge-resolved-text); border-color: var(--badge-resolved-border); }
+    .badge-withdrawn { background: var(--badge-withdrawn-bg); color: var(--badge-withdrawn-text); border-color: var(--badge-withdrawn-border); }
+
+    /* ── CONFIRMATION ── */
+    .confirm-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 40px;
+      text-align: center; max-width: 560px;
+    }
+    .confirm-icon {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: var(--badge-resolved-bg); border: 2px solid var(--badge-resolved-border);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+    }
+    .confirm-icon svg { width: 28px; height: 28px; color: var(--badge-resolved-text); }
+    .confirm-ref {
+      display: inline-block; background: var(--navy); color: white;
+      font-size: 16px; font-weight: 700; padding: 8px 20px; border-radius: var(--radius);
+      letter-spacing: 0.04em; margin-bottom: 24px; font-family: 'Courier New', monospace;
+    }
+    .confirm-title { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .confirm-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+    .confirm-summary {
+      background: var(--bg); border-radius: var(--radius);
+      padding: 16px; text-align: left; margin-bottom: 24px;
+    }
+    .confirm-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-row .label { color: var(--text-muted); }
+    .confirm-row .value { font-weight: 500; color: var(--text); }
+    .confirm-timeline { font-size: 13px; color: var(--text-secondary); background: var(--accent-light); border-radius: var(--radius); padding: 12px 16px; text-align: left; margin-bottom: 24px; }
+    .confirm-actions { display: flex; gap: 12px; justify-content: center; }
+
+    /* ── TABLE ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-muted); padding: 10px 12px;
+      border-bottom: 2px solid var(--border); white-space: nowrap;
+    }
+    .data-table td { padding: 12px 12px; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+    .data-table tbody tr:hover { background: #f8f9fb; }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .ref-code { font-family: 'Courier New', monospace; font-size: 12px; color: var(--text-secondary); }
+    .amount { font-weight: 600; color: var(--text); }
+    .link-btn { color: var(--accent); cursor: pointer; font-size: 12px; font-weight: 500; text-decoration: none; }
+    .link-btn:hover { text-decoration: underline; }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex; gap: 0; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius-lg);
+      margin-bottom: 20px; overflow: hidden;
+    }
+    .stat-cell {
+      flex: 1; padding: 16px 20px; border-right: 1px solid var(--border);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 4px; }
+    .stat-value { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+    .stat-value.green { color: #166534; }
+    .stat-value.blue { color: var(--accent); }
+
+    /* ── SEARCH / FILTER ROW ── */
+    .filter-row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .filter-row .form-input { max-width: 260px; }
+    .filter-row .form-select { max-width: 180px; }
+
+    /* ── TABLE CARD ── */
+    .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+
+    /* ── KPI GRID ── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+    .kpi-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; display: flex; flex-direction: column;
+    }
+    .kpi-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 8px; }
+    .kpi-value { font-size: 28px; font-weight: 700; color: var(--text); letter-spacing: -0.03em; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .kpi-delta { font-size: 12px; font-weight: 600; color: #166534; margin-top: 4px; }
+
+    /* ── ACTIVITY FEED ── */
+    .activity-feed { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .activity-header { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 700; color: var(--text); }
+    .activity-item { display: flex; gap: 12px; padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+    }
+    .dot-blue { background: var(--accent); }
+    .dot-green { background: #166534; }
+    .dot-purple { background: #5b21b6; }
+    .dot-yellow { background: #d4820a; }
+    .activity-text { font-size: 13px; color: var(--text); line-height: 1.4; flex: 1; }
+    .activity-text .ref { font-family: 'Courier New', monospace; font-size: 11px; color: var(--text-muted); }
+    .activity-time { font-size: 11px; color: var(--text-muted); flex-shrink: 0; margin-top: 2px; }
+
+    /* ── TENURE CALLOUT ── */
+    .tenure-callout {
+      background: var(--accent-light); border-left: 4px solid var(--accent);
+      border-radius: var(--radius); padding: 14px 18px;
+      margin-bottom: 28px; font-size: 13px; color: var(--text-secondary);
+    }
+    .tenure-callout strong { color: var(--navy); font-weight: 700; }
+
+    /* ── OUTCOMES ── */
+    .outcomes-table { width: 100%; border-collapse: collapse; }
+    .outcomes-table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 10px 12px; border-bottom: 2px solid var(--border); }
+    .outcomes-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+
+    /* ── BAR CHART ── */
+    .bar-chart { margin: 24px 0; }
+    .bar-chart-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+    .bar-chart-area { display: flex; align-items: flex-end; gap: 8px; height: 120px; }
+    .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; gap: 4px; height: 100%; justify-content: flex-end; }
+    .bar-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; opacity: 0.85; transition: opacity 0.15s; }
+    .bar-fill:hover { opacity: 1; }
+    .bar-label { font-size: 10px; color: var(--text-muted); font-weight: 500; }
+    .bar-val { font-size: 11px; font-weight: 700; color: var(--text-secondary); }
+
+    /* ── FEE STATEMENT ── */
+    .statement-header {
+      background: var(--navy); color: white; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 24px 28px;
+    }
+    .statement-header h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .statement-header .period { font-size: 13px; opacity: 0.7; }
+    .statement-body { background: var(--surface); border: 1px solid var(--border); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .fee-table { width: 100%; border-collapse: collapse; }
+    .fee-table th { text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); padding: 12px 20px; border-bottom: 2px solid var(--border); }
+    .fee-table td { padding: 12px 20px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .fee-table .totals-row td { font-weight: 700; color: var(--text); background: #f8f9fb; font-size: 14px; }
+    .fee-note { padding: 16px 20px; font-size: 12px; color: var(--text-muted); border-top: 1px solid var(--border); }
+    .download-tooltip-wrap { position: relative; display: inline-block; }
+    .download-tooltip {
+      position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+      background: #0d1117; color: white; font-size: 11px; padding: 6px 12px;
+      border-radius: 4px; white-space: nowrap; opacity: 0; pointer-events: none;
+      transition: opacity 0.15s;
+    }
+    .download-tooltip-wrap:hover .download-tooltip { opacity: 1; }
+    .btn-disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── LOGIN SCREEN ── */
+    .login-screen {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      background: var(--bg); flex-direction: column; gap: 0;
+    }
+    .login-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 40px; width: 380px;
+    }
+    .login-header { text-align: center; margin-bottom: 32px; }
+    .login-logo-mark {
+      width: 48px; height: 48px; background: var(--navy); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
+    }
+    .login-logo-mark svg { width: 24px; height: 24px; }
+    .login-brand { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+    .login-sub { font-size: 13px; color: var(--text-muted); }
+    .login-itp-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #fff8ec; border: 1px solid #f0d98a; border-radius: 4px;
+      padding: 4px 10px; margin: 8px auto 0; font-size: 12px; font-weight: 600; color: #7c4a00;
+    }
+    .login-divider { text-align: center; font-size: 12px; color: var(--text-muted); margin: 16px 0; position: relative; }
+    .login-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); }
+    .login-divider span { position: relative; background: var(--surface); padding: 0 12px; }
+    .login-google-btn {
+      width: 100%; padding: 10px 16px; border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); font-family: var(--font); font-size: 14px; font-weight: 500;
+      color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center;
+      gap: 10px; transition: border-color 0.15s;
+    }
+    .login-google-btn:hover { border-color: var(--border-strong); }
+    .login-footer { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 24px; }
+    .login-footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── ANNOTATION STRIP ── */
+    .annotation-strip {
+      border-top: 2px solid #f0d98a; background: #fffdf4;
+      flex-shrink: 0; overflow: hidden; transition: max-height 0.25s ease;
+      max-height: 32px;
+    }
+    .annotation-toggle {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 16px; cursor: pointer; font-size: 11px; font-weight: 600;
+      color: #7c4a00; letter-spacing: 0.04em; user-select: none;
+    }
+    .annotation-toggle .arrow { transition: transform 0.2s; }
+    .annotation-strip.open { max-height: 200px; }
+    .annotation-strip.open .arrow { transform: rotate(180deg); }
+    .annotation-body { padding: 0 16px 16px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .ann-item { font-size: 12px; color: #4a3800; }
+    .ann-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #7c4a00; margin-bottom: 3px; }
+    .ann-pass { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 2px; margin-left: 6px; }
+    .ann-pass.pass { background: #dcfce7; color: #166534; }
+    .ann-pass.tbc { background: #fef9c3; color: #854d0e; }
+
+    /* ── UTILITY ── */
+    .mt-8 { margin-top: 8px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-24 { margin-top: 24px; }
+    .flex-center { display: flex; align-items: center; justify-content: center; }
+    .centered { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     PROTOTYPE CONTROL BAR
+══════════════════════════════════════════════════════════ -->
+<div class="proto-bar">
+  <span class="proto-label">Prototype</span>
+  <span class="proto-progress" id="progressText">Step <span>1</span> of 7 — Login</span>
+  <button class="proto-back" onclick="goBack()">← Back</button>
+  <span class="proto-spacer"></span>
+  <div class="proto-jump-wrap">
+    <select class="proto-jump" onchange="showScreen(parseInt(this.value)); this.value=''">
+      <option value="">Jump to screen…</option>
+      <option value="1">1 — Login</option>
+      <option value="2">2 — New referral</option>
+      <option value="3">3 — Confirmation</option>
+      <option value="4">4 — Referral history</option>
+      <option value="5">5 — Dashboard</option>
+      <option value="6">6 — Outcomes report</option>
+      <option value="7">7 — Fee statement</option>
+    </select>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     APP WRAPPER
+══════════════════════════════════════════════════════════ -->
+<div class="app-wrapper">
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 1 — LOGIN
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen active" id="screen-1">
+    <div class="login-screen">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="login-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="login-brand">Calmly Resolve</div>
+          <div class="login-sub">Partner Portal</div>
+          <div style="display:flex;justify-content:center">
+            <div class="login-itp-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#f0a500"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              Checkatrade partner portal
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" value="j.williams@checkatrade.com" placeholder="your@email.com">
+        </div>
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="showScreen(2)">
+          Send magic link
+        </button>
+
+        <div class="login-divider"><span>or</span></div>
+
+        <button class="login-google-btn" onclick="showScreen(2)">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Sign in with Google
+        </button>
+
+        <div class="login-footer">
+          Having trouble? <a href="#">Contact partners@calmlyresolve.com</a>
+        </div>
+      </div>
+    </div>
+    <!-- Annotation -->
+    <div class="annotation-strip" id="ann-1">
+      <div class="annotation-toggle" onclick="toggleAnnotation(1)">
+        <span>▼</span> <span class="arrow">▼</span> Annotation — P3-S1
+      </div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P3-S1 — ITP login</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>Magic-link / Google SSO sufficient for B2B partner auth. No MFA shown in prototype.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — no auth logic needed in prototype; either button advances flow.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 2 — NEW REFERRAL (4-step form)
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-2">
+    <div class="shell">
+      <!-- Header -->
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="header-logo-text">
+            <span class="brand">Calmly Resolve</span>
+            <span class="sublabel">Partner Portal</span>
+          </div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp">
+          <span class="itp-badge">Checkatrade</span>
+          <span class="itp-name">Partner Portal</span>
+        </div>
+        <div class="header-spacer"></div>
+        <div class="header-user">
+          <div class="avatar">JW</div>
+          <div class="user-info">
+            <div class="user-name">J. Williams</div>
+            <div class="user-role">Adviser</div>
+          </div>
+        </div>
+      </div>
+      <!-- Body -->
+      <div class="shell-body">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item active" onclick="showScreen(2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New referral
+          </div>
+          <div class="nav-item" onclick="showScreen(4)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            My referrals
+            <span class="nav-badge">11</span>
+          </div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item" onclick="showScreen(5)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            Organisation
+          </div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+            Settings
+          </div>
+        </nav>
+        <!-- Content -->
+        <div class="content">
+          <div class="content-inner">
+            <div class="page-header">
+              <div class="page-title">New referral</div>
+              <div class="page-subtitle">Refer a Checkatrade member to Calmly Resolve</div>
+            </div>
+
+            <!-- Step bar -->
+            <div class="form-step-bar" id="ref-step-bar">
+              <div class="form-step active" id="step-ind-1"><div class="step-num">1</div> Member details</div>
+              <div class="form-step-connector" id="step-conn-1"></div>
+              <div class="form-step" id="step-ind-2"><div class="step-num">2</div> Dispute details</div>
+              <div class="form-step-connector" id="step-conn-2"></div>
+              <div class="form-step" id="step-ind-3"><div class="step-num">3</div> Other party</div>
+              <div class="form-step-connector" id="step-conn-3"></div>
+              <div class="form-step" id="step-ind-4"><div class="step-num">4</div> Review</div>
+            </div>
+
+            <!-- Form steps -->
+            <div id="ref-form-1" class="form-card">
+              <div class="form-card-title">Member details</div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Full name <span class="req">*</span></label>
+                  <input class="form-input" type="text" value="David Okafor">
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Email address <span class="req">*</span></label>
+                  <input class="form-input" type="email" value="david.okafor@gmail.com">
+                </div>
+              </div>
+              <div class="form-group mt-16">
+                <label class="form-label">Phone number</label>
+                <input class="form-input" type="tel" value="07700 900 847">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Is the member aware they are being referred? <span class="req">*</span></label>
+                <div class="toggle-group">
+                  <button class="toggle-btn active" id="aware-yes" onclick="setAwareness(true)">Yes</button>
+                  <button class="toggle-btn" id="aware-no" onclick="setAwareness(false)">No</button>
+                </div>
+                <div class="warning-block" id="awareness-warning">
+                  <strong>⚠ Member not informed.</strong> Calmly Resolve requires member awareness before processing a referral. Please inform the member before submitting.
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="goToRefStep(2)">Continue →</button>
+              </div>
+            </div>
+
+            <div id="ref-form-2" class="form-card" style="display:none">
+              <div class="form-card-title">Dispute details</div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Dispute type <span class="req">*</span></label>
+                  <select class="form-select">
+                    <option selected>Housing</option>
+                    <option>Financial services</option>
+                    <option>Consumer goods</option>
+                    <option>Professional services</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Dispute date <span class="req">*</span></label>
+                  <input class="form-input" type="date" value="2025-05-15">
+                </div>
+              </div>
+              <div class="form-group mt-16">
+                <label class="form-label">Description <span class="req">*</span></label>
+                <textarea class="form-textarea">Member reports deposit of £1,400 not returned after tenancy ended May 2025. Written demand sent twice, no response.</textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Amount in dispute (£) <span class="req">*</span></label>
+                <input class="form-input" type="text" value="1400" style="max-width:200px">
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="goToRefStep(3)">Continue →</button>
+                <button class="btn btn-secondary" onclick="goToRefStep(1)">← Back</button>
+              </div>
+            </div>
+
+            <div id="ref-form-3" class="form-card" style="display:none">
+              <div class="form-card-title">Other party details</div>
+              <div class="form-row">
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Company / person name <span class="req">*</span></label>
+                  <input class="form-input" type="text" value="Southgate Properties Ltd">
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label class="form-label">Trading as (optional)</label>
+                  <input class="form-input" type="text" placeholder="If different from above">
+                </div>
+              </div>
+              <div class="form-group mt-16">
+                <label class="form-label">Is the other party also a Checkatrade member? <span class="req">*</span></label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="itp-member" value="yes"> Yes</label>
+                  <label class="radio-label"><input type="radio" name="itp-member" value="no" checked> No</label>
+                  <label class="radio-label"><input type="radio" name="itp-member" value="unknown"> Don't know</label>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="goToRefStep(4)">Continue →</button>
+                <button class="btn btn-secondary" onclick="goToRefStep(2)">← Back</button>
+              </div>
+            </div>
+
+            <div id="ref-form-4" class="form-card" style="display:none">
+              <div class="form-card-title">Review and submit</div>
+              <div class="review-section">
+                <div class="review-section-title">Member details <a class="review-edit" onclick="goToRefStep(1)">Edit</a></div>
+                <div class="review-dl">
+                  <div class="review-dt">Full name</div><div class="review-dd">David Okafor</div>
+                  <div class="review-dt">Email</div><div class="review-dd">david.okafor@gmail.com</div>
+                  <div class="review-dt">Phone</div><div class="review-dd">07700 900 847</div>
+                  <div class="review-dt">Aware of referral</div><div class="review-dd">Yes</div>
+                </div>
+              </div>
+              <div class="review-section">
+                <div class="review-section-title">Dispute details <a class="review-edit" onclick="goToRefStep(2)">Edit</a></div>
+                <div class="review-dl">
+                  <div class="review-dt">Type</div><div class="review-dd">Housing</div>
+                  <div class="review-dt">Date</div><div class="review-dd">15 May 2025</div>
+                  <div class="review-dt">Amount</div><div class="review-dd"><strong>£1,400</strong></div>
+                  <div class="review-dt">Description</div><div class="review-dd">Member reports deposit of £1,400 not returned after tenancy ended May 2025. Written demand sent twice, no response.</div>
+                </div>
+              </div>
+              <div class="review-section">
+                <div class="review-section-title">Other party <a class="review-edit" onclick="goToRefStep(3)">Edit</a></div>
+                <div class="review-dl">
+                  <div class="review-dt">Company</div><div class="review-dd">Southgate Properties Ltd</div>
+                  <div class="review-dt">Checkatrade member</div><div class="review-dd">No</div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" onclick="showScreen(3)">Refer this member</button>
+                <button class="btn btn-secondary" onclick="goToRefStep(3)">← Back</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Annotation -->
+    <div class="annotation-strip" id="ann-2">
+      <div class="annotation-toggle" onclick="toggleAnnotation(2)">
+        <span class="arrow">▼</span> Annotation — P3-S2
+      </div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P3-S2 — ITP new referral form (4 steps)</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>Awareness toggle is a soft gate — warning shown but submission not blocked in prototype.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — 4-step progression, pre-filled data, review screen with edit links.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 3 — CONFIRMATION
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-3">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="header-logo-text"><span class="brand">Calmly Resolve</span><span class="sublabel">Partner Portal</span></div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-badge">Checkatrade</span><span class="itp-name">Partner Portal</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user"><div class="avatar">JW</div><div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div></div>
+      </div>
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen(2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New referral
+          </div>
+          <div class="nav-item active" onclick="showScreen(4)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            My referrals <span class="nav-badge">11</span>
+          </div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item" onclick="showScreen(5)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Organisation</div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+        </nav>
+        <div class="content" style="align-items:center;justify-content:center">
+          <div class="confirm-box">
+            <div class="confirm-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="confirm-title">Referral submitted</div>
+            <div class="confirm-sub">David Okafor has been referred to Calmly Resolve. Reference number:</div>
+            <div class="confirm-ref">REF-CHK-2026-1847</div>
+            <div class="confirm-summary">
+              <div class="confirm-row"><span class="label">Member</span><span class="value">David Okafor</span></div>
+              <div class="confirm-row"><span class="label">Dispute type</span><span class="value">Housing — deposit not returned</span></div>
+              <div class="confirm-row"><span class="label">Amount</span><span class="value">£1,400</span></div>
+              <div class="confirm-row"><span class="label">Status</span><span class="value"><span class="badge badge-received">Received</span></span></div>
+            </div>
+            <div class="confirm-timeline">
+              <strong>What happens next:</strong> Calmly Resolve will contact David within 2 working days to begin the evidence-verified process. You will receive status updates by email as the case progresses.
+            </div>
+            <div class="confirm-actions">
+              <button class="btn btn-primary" onclick="showScreen(4)">View referral status</button>
+              <button class="btn btn-secondary" onclick="showScreen(2)">Submit another referral</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation-strip" id="ann-3">
+      <div class="annotation-toggle" onclick="toggleAnnotation(3)"><span class="arrow">▼</span> Annotation — P3-S3</div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P3-S3 — Referral confirmation</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>Reference number auto-generated server-side; shown immediately on submission.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — confirmation screen with ref, summary, timeline, two onward CTAs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 4 — REFERRAL HISTORY
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-4">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="header-logo-text"><span class="brand">Calmly Resolve</span><span class="sublabel">Partner Portal</span></div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-badge">Checkatrade</span><span class="itp-name">Partner Portal</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user"><div class="avatar">JW</div><div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div></div>
+      </div>
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New referral</div>
+          <div class="nav-item active" onclick="showScreen(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My referrals<span class="nav-badge">11</span></div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item" onclick="showScreen(5)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Organisation</div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+        </nav>
+        <div class="content">
+          <div class="content-inner" style="max-width:960px">
+            <div class="page-header-row">
+              <div class="page-header" style="margin-bottom:0">
+                <div class="page-title">My referrals</div>
+                <div class="page-subtitle">All referrals submitted via the Checkatrade partner portal</div>
+              </div>
+              <button class="btn btn-primary" onclick="showScreen(2)">+ New referral</button>
+            </div>
+            <div class="mt-24">
+              <div class="stats-bar">
+                <div class="stat-cell"><div class="stat-label">Total referrals</div><div class="stat-value">23</div></div>
+                <div class="stat-cell"><div class="stat-label">Resolved</div><div class="stat-value green">8</div></div>
+                <div class="stat-cell"><div class="stat-label">Active</div><div class="stat-value blue">11</div></div>
+                <div class="stat-cell"><div class="stat-label">Withdrawn</div><div class="stat-value">4</div></div>
+                <div class="stat-cell"><div class="stat-label">Member recovery</div><div class="stat-value green">£18,450</div></div>
+              </div>
+            </div>
+            <div class="filter-row mt-16">
+              <input class="form-input" type="text" placeholder="Search by name or reference…" style="max-width:280px">
+              <select class="form-select" style="max-width:180px">
+                <option>All statuses</option>
+                <option>Received</option>
+                <option>Under review</option>
+                <option>EV complete</option>
+                <option>Settlement offer</option>
+                <option>Resolved</option>
+                <option>Withdrawn</option>
+              </select>
+            </div>
+            <div class="table-card">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Reference</th>
+                    <th>Member</th>
+                    <th>Dispute type</th>
+                    <th>Amount</th>
+                    <th>Submitted</th>
+                    <th>Status</th>
+                    <th>Outcome</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="background:#f0f7ff">
+                    <td><span class="ref-code">REF-CHK-2026-1847</span></td>
+                    <td><strong>David Okafor</strong></td>
+                    <td>Housing</td>
+                    <td class="amount">£1,400</td>
+                    <td>29 May 2026</td>
+                    <td><span class="badge badge-received">Received</span></td>
+                    <td>—</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1831</span></td>
+                    <td>Patricia Adeyemi</td>
+                    <td>Housing</td>
+                    <td class="amount">£3,200</td>
+                    <td>22 May 2026</td>
+                    <td><span class="badge badge-review">Under review</span></td>
+                    <td>—</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1809</span></td>
+                    <td>Kwame Asante</td>
+                    <td>Consumer</td>
+                    <td class="amount">£890</td>
+                    <td>14 May 2026</td>
+                    <td><span class="badge badge-ev">EV complete</span></td>
+                    <td>—</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1784</span></td>
+                    <td>Ngozi Eze</td>
+                    <td>Professional</td>
+                    <td class="amount">£5,600</td>
+                    <td>7 May 2026</td>
+                    <td><span class="badge badge-offer">Settlement offer</span></td>
+                    <td>—</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1762</span></td>
+                    <td><strong>Marcus Obi</strong></td>
+                    <td>Financial</td>
+                    <td class="amount">£2,600</td>
+                    <td>28 Apr 2026</td>
+                    <td><span class="badge badge-resolved">Resolved</span></td>
+                    <td><small>Settlement £2,600 · Fee £520 · Net <strong>£2,080</strong></small></td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1741</span></td>
+                    <td>Amara Diallo</td>
+                    <td>Housing</td>
+                    <td class="amount">£1,100</td>
+                    <td>21 Apr 2026</td>
+                    <td><span class="badge badge-review">Under review</span></td>
+                    <td>—</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1718</span></td>
+                    <td>Chidi Nwosu</td>
+                    <td>Consumer</td>
+                    <td class="amount">£440</td>
+                    <td>14 Apr 2026</td>
+                    <td><span class="badge badge-withdrawn">Withdrawn</span></td>
+                    <td>Member withdrew</td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                  <tr>
+                    <td><span class="ref-code">REF-CHK-2026-1695</span></td>
+                    <td>Funke Adeleke</td>
+                    <td>Housing</td>
+                    <td class="amount">£2,100</td>
+                    <td>6 Apr 2026</td>
+                    <td><span class="badge badge-resolved">Resolved</span></td>
+                    <td><small>Settlement £2,100 · Fee £420 · Net <strong>£1,680</strong></small></td>
+                    <td><a class="link-btn">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation-strip" id="ann-4">
+      <div class="annotation-toggle" onclick="toggleAnnotation(4)"><span class="arrow">▼</span> Annotation — P3-S4</div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P3-S4 — Referral history table</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>David Okafor row shown at top as "just submitted". Marcus Obi shows full settlement breakdown as resolved example.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — 8 rows, all badge variants shown, stats bar, search/filter UI, Organisation nav → Screen 5.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 5 — DASHBOARD HOME
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-5">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="header-logo-text"><span class="brand">Calmly Resolve</span><span class="sublabel">Partner Portal</span></div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-badge">Checkatrade</span><span class="itp-name">Partner Portal</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user"><div class="avatar">JW</div><div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div></div>
+      </div>
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New referral</div>
+          <div class="nav-item" onclick="showScreen(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My referrals<span class="nav-badge">11</span></div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Organisation</div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+        </nav>
+        <div class="content">
+          <div class="content-inner">
+            <div class="page-header">
+              <div class="page-title">Dashboard</div>
+              <div class="page-subtitle">Checkatrade organisation overview — May 2026</div>
+            </div>
+
+            <div class="tenure-callout">
+              <strong>Checkatrade</strong> has been a Calmly Resolve partner since <strong>14 March 2026</strong> — 8 weeks. Your ITP-specific outcomes dataset is building. Full benchmarking available after 6 months.
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-label">Total referrals</div>
+                <div class="kpi-value">23</div>
+                <div class="kpi-delta">↑ 4 this week</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Active cases</div>
+                <div class="kpi-value" style="color:var(--accent)">11</div>
+                <div class="kpi-sub">4 awaiting EV</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Resolved</div>
+                <div class="kpi-value" style="color:#166534">8</div>
+                <div class="kpi-sub">Resolution rate 89%</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Member recovery</div>
+                <div class="kpi-value" style="font-size:22px;color:#166534">£18,450</div>
+                <div class="kpi-sub">Avg £2,306 per case</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Avg time to resolve</div>
+                <div class="kpi-value">18d</div>
+                <div class="kpi-sub">vs 34d sector avg</div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-label">Fees generated</div>
+                <div class="kpi-value" style="font-size:22px">£3,690</div>
+                <div class="kpi-sub">Deducted at settlement</div>
+              </div>
+            </div>
+
+            <div class="page-header-row" style="margin-bottom:16px">
+              <div style="font-size:14px;font-weight:700;color:var(--text)">Recent activity</div>
+              <div style="display:flex;gap:10px">
+                <button class="btn btn-secondary btn-sm" onclick="showScreen(6)">View outcomes report</button>
+                <button class="btn btn-secondary btn-sm" onclick="showScreen(7)">Download fee statement</button>
+              </div>
+            </div>
+
+            <div class="activity-feed">
+              <div class="activity-header">Activity</div>
+              <div class="activity-item">
+                <div class="activity-dot dot-blue"></div>
+                <div class="activity-text">New referral received — <strong>David Okafor</strong>, Housing, £1,400 <span class="ref">REF-CHK-2026-1847</span></div>
+                <div class="activity-time">Today</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot dot-purple"></div>
+                <div class="activity-text">EV report complete — <strong>Kwame Asante</strong>, Consumer, £890. Settlement offer being prepared. <span class="ref">REF-CHK-2026-1809</span></div>
+                <div class="activity-time">26 May</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot dot-yellow"></div>
+                <div class="activity-text">Settlement offer sent — <strong>Ngozi Eze</strong>, £5,600 dispute. Response due 2 Jun. <span class="ref">REF-CHK-2026-1784</span></div>
+                <div class="activity-time">23 May</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot dot-green"></div>
+                <div class="activity-text">Resolved — <strong>Marcus Obi</strong>, £2,600 settlement. Net to member: £2,080. <span class="ref">REF-CHK-2026-1762</span></div>
+                <div class="activity-time">20 May</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-dot dot-blue"></div>
+                <div class="activity-text">New referral received — <strong>Patricia Adeyemi</strong>, Housing, £3,200. <span class="ref">REF-CHK-2026-1831</span></div>
+                <div class="activity-time">22 May</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation-strip" id="ann-5">
+      <div class="annotation-toggle" onclick="toggleAnnotation(5)"><span class="arrow">▼</span> Annotation — P4-S1</div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P4-S1 — Organisation dashboard home</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>KPIs drawn from live case data. Tenure callout disappears after 6 months. Fee statement CTA → Screen 7.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — 6 KPI cards, tenure callout, 5-item activity feed, two onward CTAs.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 6 — OUTCOMES REPORT
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-6">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="header-logo-text"><span class="brand">Calmly Resolve</span><span class="sublabel">Partner Portal</span></div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-badge">Checkatrade</span><span class="itp-name">Partner Portal</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user"><div class="avatar">JW</div><div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div></div>
+      </div>
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New referral</div>
+          <div class="nav-item" onclick="showScreen(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My referrals<span class="nav-badge">11</span></div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Organisation</div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+        </nav>
+        <div class="content">
+          <div class="content-inner">
+            <div style="margin-bottom:16px"><a class="link-btn" onclick="showScreen(5)">← Back to dashboard</a></div>
+            <div class="page-header-row">
+              <div class="page-header" style="margin-bottom:0">
+                <div class="page-title">Outcomes report</div>
+                <div class="page-subtitle">Checkatrade · 14 March – 29 May 2026</div>
+              </div>
+              <div class="download-tooltip-wrap">
+                <button class="btn btn-secondary btn-disabled">↓ Download PDF</button>
+                <div class="download-tooltip">Download available after 3 months of data</div>
+              </div>
+            </div>
+
+            <div class="mt-24 table-card">
+              <table class="outcomes-table">
+                <thead>
+                  <tr>
+                    <th>Dispute type</th>
+                    <th>Referrals</th>
+                    <th>Resolved</th>
+                    <th>Resolution rate</th>
+                    <th>Avg amount</th>
+                    <th>Avg time to resolve</th>
+                    <th>Total recovery</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Housing</strong></td>
+                    <td>12</td>
+                    <td>4</td>
+                    <td><span class="badge badge-resolved">92%</span></td>
+                    <td>£1,980</td>
+                    <td>16 days</td>
+                    <td class="amount">£7,920</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Financial</strong></td>
+                    <td>5</td>
+                    <td>2</td>
+                    <td><span class="badge badge-review">80%</span></td>
+                    <td>£3,100</td>
+                    <td>22 days</td>
+                    <td class="amount">£6,200</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Consumer goods</strong></td>
+                    <td>4</td>
+                    <td>2</td>
+                    <td><span class="badge badge-resolved">100%</span></td>
+                    <td>£665</td>
+                    <td>12 days</td>
+                    <td class="amount">£1,330</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Professional</strong></td>
+                    <td>2</td>
+                    <td>0</td>
+                    <td><span class="badge badge-withdrawn">—</span></td>
+                    <td>£5,600</td>
+                    <td>In progress</td>
+                    <td class="amount">£0</td>
+                  </tr>
+                  <tr style="background:#f8f9fb;font-weight:700">
+                    <td>Total</td>
+                    <td>23</td>
+                    <td>8</td>
+                    <td>89%</td>
+                    <td>£2,306</td>
+                    <td>17 days avg</td>
+                    <td class="amount">£18,450</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="bar-chart">
+              <div class="bar-chart-title">Weekly referral volume</div>
+              <div class="bar-chart-area">
+                <div class="bar-col">
+                  <div class="bar-val">1</div>
+                  <div class="bar-fill" style="height:12%"></div>
+                  <div class="bar-label">3 Mar</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">2</div>
+                  <div class="bar-fill" style="height:24%"></div>
+                  <div class="bar-label">10 Mar</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">3</div>
+                  <div class="bar-fill" style="height:36%"></div>
+                  <div class="bar-label">17 Mar</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">2</div>
+                  <div class="bar-fill" style="height:24%"></div>
+                  <div class="bar-label">24 Mar</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">4</div>
+                  <div class="bar-fill" style="height:48%"></div>
+                  <div class="bar-label">31 Mar</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">3</div>
+                  <div class="bar-fill" style="height:36%"></div>
+                  <div class="bar-label">7 Apr</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">5</div>
+                  <div class="bar-fill" style="height:60%"></div>
+                  <div class="bar-label">14 Apr</div>
+                </div>
+                <div class="bar-col">
+                  <div class="bar-val">3</div>
+                  <div class="bar-fill" style="height:36%"></div>
+                  <div class="bar-label">21 Apr</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:8px"><a class="link-btn" onclick="showScreen(5)">← Back to dashboard</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation-strip" id="ann-6">
+      <div class="annotation-toggle" onclick="toggleAnnotation(6)"><span class="arrow">▼</span> Annotation — P4-S2</div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P4-S2 — Outcomes report</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>Download gated behind 3 months data. Tooltip explains the gate rather than hiding the button.</div>
+        <div class="ann-item"><div class="ann-pass tbc">TBC</div> Whether resolution rate badge colour should reflect performance vs. target — needs threshold definition.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────────────────────────────────────────────────
+       SCREEN 7 — FEE STATEMENT
+  ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="screen-7">
+    <div class="shell">
+      <div class="shell-header">
+        <a class="header-logo" href="#">
+          <div class="header-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="header-logo-text"><span class="brand">Calmly Resolve</span><span class="sublabel">Partner Portal</span></div>
+        </a>
+        <div class="header-divider"></div>
+        <div class="header-itp"><span class="itp-badge">Checkatrade</span><span class="itp-name">Partner Portal</span></div>
+        <div class="header-spacer"></div>
+        <div class="header-user"><div class="avatar">JW</div><div class="user-info"><div class="user-name">J. Williams</div><div class="user-role">Adviser</div></div></div>
+      </div>
+      <div class="shell-body">
+        <nav class="sidebar">
+          <div class="sidebar-section-label">Referrals</div>
+          <div class="nav-item" onclick="showScreen(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New referral</div>
+          <div class="nav-item" onclick="showScreen(4)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My referrals<span class="nav-badge">11</span></div>
+          <div class="sidebar-section-label">Organisation</div>
+          <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>Organisation</div>
+          <div class="sidebar-section-label">Account</div>
+          <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Settings</div>
+        </nav>
+        <div class="content">
+          <div class="content-inner">
+            <div style="margin-bottom:16px"><a class="link-btn" onclick="showScreen(5)">← Back to dashboard</a></div>
+
+            <div style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border)">
+              <div class="statement-header">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div class="statement-header h2" style="font-size:18px;font-weight:700;margin-bottom:4px">Fee statement</div>
+                    <div class="statement-header period" style="font-size:13px;opacity:0.7">Checkatrade · Period: 1–31 May 2026</div>
+                  </div>
+                  <div>
+                    <div style="font-size:11px;opacity:0.6;text-align:right;margin-bottom:4px">Generated 29 May 2026</div>
+                    <div style="font-size:11px;font-family:monospace;opacity:0.7">Statement ref: STMT-CHK-2026-05</div>
+                  </div>
+                </div>
+              </div>
+              <div class="statement-body">
+                <table class="fee-table">
+                  <thead>
+                    <tr>
+                      <th>Reference</th>
+                      <th>Member</th>
+                      <th>Settlement amount</th>
+                      <th>Fee rate</th>
+                      <th>Fee deducted</th>
+                      <th>Member net</th>
+                      <th>Resolved</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="ref-code">REF-CHK-2026-1762</span></td>
+                      <td>Marcus Obi</td>
+                      <td>£2,600</td>
+                      <td>20%</td>
+                      <td><strong>£520</strong></td>
+                      <td class="amount">£2,080</td>
+                      <td>20 May 2026</td>
+                    </tr>
+                    <tr>
+                      <td><span class="ref-code">REF-CHK-2026-1695</span></td>
+                      <td>Funke Adeleke</td>
+                      <td>£2,100</td>
+                      <td>20%</td>
+                      <td><strong>£420</strong></td>
+                      <td class="amount">£1,680</td>
+                      <td>12 May 2026</td>
+                    </tr>
+                    <tr>
+                      <td><span class="ref-code">REF-CHK-2026-1671</span></td>
+                      <td>Emeka Chukwu</td>
+                      <td>£1,350</td>
+                      <td>20%</td>
+                      <td><strong>£270</strong></td>
+                      <td class="amount">£1,080</td>
+                      <td>5 May 2026</td>
+                    </tr>
+                    <tr class="totals-row">
+                      <td colspan="2">Total — May 2026</td>
+                      <td>£6,050</td>
+                      <td></td>
+                      <td>£1,210</td>
+                      <td>£4,840</td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="fee-note">
+                  Fees are deducted at the point of settlement and do not require a separate invoice. This statement is for record-keeping purposes only. Questions: <a href="#" style="color:var(--accent)">partners@calmlyresolve.com</a>
+                </div>
+                <div style="padding:12px 20px;border-top:1px solid var(--border);display:flex;gap:12px">
+                  <div class="download-tooltip-wrap">
+                    <button class="btn btn-secondary btn-disabled">↓ Download PDF</button>
+                    <div class="download-tooltip">PDF available from 1 June 2026</div>
+                  </div>
+                  <a class="link-btn" onclick="showScreen(5)" style="display:flex;align-items:center">← Back to dashboard</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="annotation-strip" id="ann-7">
+      <div class="annotation-toggle" onclick="toggleAnnotation(7)"><span class="arrow">▼</span> Annotation — P4-S3</div>
+      <div class="annotation-body">
+        <div class="ann-item"><div class="ann-label">Flow ref</div>P4-S3 — Fee statement</div>
+        <div class="ann-item"><div class="ann-label">T4 assumption</div>Fee rate fixed at 20% in prototype. In production, rate may vary by ITP agreement. PDF gated until end of statement period.</div>
+        <div class="ann-item"><div class="ann-label">Pass / TBC</div><span class="ann-pass pass">PASS</span> — 3 settled cases, totals row, fee note, gated download with tooltip.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end app-wrapper -->
+
+<script>
+  // ── STATE ──
+  let currentScreen = 1;
+  let history = [1];
+  let currentRefStep = 1;
+
+  const screenNames = {
+    1: 'Login',
+    2: 'New referral',
+    3: 'Confirmation',
+    4: 'Referral history',
+    5: 'Dashboard',
+    6: 'Outcomes report',
+    7: 'Fee statement'
+  };
+
+  // ── SCREEN NAVIGATION ──
+  function showScreen(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById('screen-' + n);
+    if (el) {
+      el.classList.add('active');
+      if (history[history.length - 1] !== n) history.push(n);
+      currentScreen = n;
+      updateProgressBar(n);
+      // Reset ref form when going to screen 2
+      if (n === 2) { goToRefStep(currentRefStep || 1); }
+    }
+  }
+
+  function goBack() {
+    if (history.length > 1) {
+      history.pop();
+      const prev = history[history.length - 1];
+      currentScreen = prev;
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const el = document.getElementById('screen-' + prev);
+      if (el) { el.classList.add('active'); updateProgressBar(prev); }
+    }
+  }
+
+  function updateProgressBar(n) {
+    document.getElementById('progressText').innerHTML =
+      'Step <span>' + n + '</span> of 7 — ' + (screenNames[n] || '');
+  }
+
+  // ── REFERRAL FORM STEPS ──
+  function goToRefStep(step) {
+    currentRefStep = step;
+    for (let i = 1; i <= 4; i++) {
+      const f = document.getElementById('ref-form-' + i);
+      if (f) f.style.display = i === step ? 'block' : 'none';
+    }
+    updateStepBar(step);
+  }
+
+  function updateStepBar(active) {
+    for (let i = 1; i <= 4; i++) {
+      const ind = document.getElementById('step-ind-' + i);
+      if (!ind) continue;
+      ind.classList.remove('active', 'done');
+      if (i < active) ind.classList.add('done');
+      else if (i === active) ind.classList.add('active');
+      // Update step number display for done steps
+      const num = ind.querySelector('.step-num');
+      if (i < active) num.innerHTML = '✓';
+      else num.innerHTML = i;
+    }
+    for (let i = 1; i <= 3; i++) {
+      const conn = document.getElementById('step-conn-' + i);
+      if (conn) { conn.classList.toggle('done', i < active); }
+    }
+  }
+
+  // ── AWARENESS TOGGLE ──
+  function setAwareness(aware) {
+    document.getElementById('aware-yes').classList.toggle('active', aware);
+    document.getElementById('aware-no').classList.toggle('active', !aware);
+    document.getElementById('awareness-warning').classList.toggle('visible', !aware);
+  }
+
+  // ── ANNOTATION STRIP ──
+  function toggleAnnotation(n) {
+    const strip = document.getElementById('ann-' + n);
+    if (strip) strip.classList.toggle('open');
+  }
+
+  // ── INIT ──
+  updateProgressBar(1);
+  goToRefStep(1);
+</script>
+</body>
+</html>
