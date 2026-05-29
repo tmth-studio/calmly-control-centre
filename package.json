@@ -1,7 +1,7 @@
 {
-  "name": "calmly-control-centre",
-  "version": "1.1.0",
-  "description": "Calmly Control Centre — project hub for Calmly venture artifacts",
+  "name": "tmth-venture-studio",
+  "version": "2.0.0",
+  "description": "Tough Minds Tender Hearts — internal venture studio command centre (Calmly Resolve, Forge)",
   "scripts": {
     "start": "node server.js"
   },

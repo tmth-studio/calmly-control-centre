@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forge — TMTH Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #1d4ed8;
+      --accent-light: #eff6ff;
+      --accent-mid: #bfdbfe;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --grey: #94a3b8;
+      --grey-bg: #f1f5f9;
+      --navy: #0f172a;
+      --nav-height: 60px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: var(--nav-height);
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      background: var(--navy);
+      color: #ffffff;
+      padding: 72px 24px 64px;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: #93c5fd;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-ui);
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+
+    .hero-subtitle {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 19px;
+      color: #cbd5e1;
+      max-width: 580px;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(217,119,6,0.15);
+      border: 1px solid rgba(217,119,6,0.35);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fbbf24;
+    }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 56px 24px;
+    }
+
+    .section-heading {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .section-sub {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── BODY PROSE ─── */
+    .prose {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      max-width: 720px;
+    }
+
+    .prose p { margin-bottom: 16px; }
+    .prose p:last-child { margin-bottom: 0; }
+
+    /* ─── METHODOLOGY COMPONENTS ─── */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .method-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .method-card-letter {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      font-family: var(--font-ui);
+    }
+
+    .method-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .method-card-desc {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ─── ARCHITECTURE QUESTIONS ─── */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .question-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .question-num {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--border-strong);
+      font-family: var(--font-ui);
+      line-height: 1.3;
+    }
+
+    .question-body {}
+
+    .question-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .question-detail {
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ─── CALL TO ACTION ─── */
+    .cta-block {
+      background: var(--accent-light);
+      border: 1px solid var(--accent-mid);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      max-width: 720px;
+    }
+
+    .cta-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .cta-text {
+      font-family: var(--font-body);
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .cta-text code {
+      font-family: var(--font-ui);
+      font-size: 14px;
+      font-weight: 600;
+      background: var(--accent-mid);
+      color: var(--accent);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+
+    /* ─── TIMELINE ─── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 24px;
+      margin-top: 8px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 12px;
+      bottom: 12px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 12px 0 12px 24px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -17px;
+      top: 19px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border-strong);
+    }
+
+    .timeline-item.current::before {
+      border-color: var(--amber);
+      background: var(--amber);
+    }
+
+    .timeline-phase {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .timeline-item.current .timeline-phase {
+      color: var(--amber);
+    }
+
+    .timeline-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .timeline-date {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      background: var(--navy);
+      color: #475569;
+      padding: 28px 24px;
+      text-align: center;
+      font-size: 13px;
+      margin-top: 40px;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .hero { padding: 48px 20px 44px; }
+      .method-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="nav-logo">TMTH</span>
+        <span class="nav-label">Tough Minds Tender Hearts</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="/">Portfolio</a></li>
+        <li><a href="/calmly">Calmly Resolve</a></li>
+        <li><a href="/ive" class="active">Forge</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">TMTH Venture Studio · Venture 2</p>
+      <h1>Forge</h1>
+      <p class="hero-subtitle">Commercialising the Integrated Venture Engine methodology.</p>
+      <div class="hero-status">Architecture session needed before work begins</div>
+    </div>
+  </section>
+
+  <!-- ─── WHAT IS IVE ─── -->
+  <div id="what">
+    <div class="section">
+      <h2 class="section-heading">What is IVE?</h2>
+      <p class="section-sub">The methodology that Calmly Resolve was built with — and the product opportunity for venture 2.</p>
+
+      <div class="prose">
+        <p>The Integrated Venture Engine is a structured methodology for evaluating and building ventures. It was developed through the Tough Minds Tender Hearts system and proved out on Calmly Resolve — taking a concept from zero to CDR-passed and Phase 5 in a compressed timeline.</p>
+        <p>The methodology has three interlocking components. Together they form a repeatable system for building ventures with high architectural discipline and low wasted capital.</p>
+      </div>
+
+      <div class="method-grid">
+
+        <div class="method-card">
+          <span class="method-card-letter">A</span>
+          <span class="method-card-title">Venture architecture</span>
+          <p class="method-card-desc">CDR, BALM, phase gates, systems engineering (V-model), and the slice-based build sequence. The framework that takes a concept to a TRR-ready build.</p>
+        </div>
+
+        <div class="method-card">
+          <span class="method-card-letter">B</span>
+          <span class="method-card-title">Investment evaluation</span>
+          <p class="method-card-desc">Financial simulation (FMOS), scenario modelling, capital gate logic, and the financial due diligence that backs every phase decision.</p>
+        </div>
+
+        <div class="method-card">
+          <span class="method-card-letter">C</span>
+          <span class="method-card-title">Founder and team assessment</span>
+          <p class="method-card-desc">The role architecture, decision authority, and operating principles that govern how the venture runs — including the autonomous-first dispatch model.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─── ARCHITECTURE QUESTIONS ─── -->
+  <div id="questions">
+    <div class="section">
+      <h2 class="section-heading">The PCO gate — the real first step</h2>
+      <p class="section-sub">Forge is built using IVE itself. The first gate is the PCO — the IVE scope-setter — not generic product strategy. Nothing is architected until it's confirmed.</p>
+
+      <div class="inset-block" style="border-left:4px solid var(--accent); background:var(--accent-light); padding:16px 20px; margin:16px 0; border-radius:0 4px 4px 0;">
+        <p style="font-family:var(--font-body); font-style:italic;">The broadest possible use case for a core functionality that can most credibly generate the at-scale cash flows needed to pay back all required investment capital at a competitive rate of return. Scope before depth.</p>
+      </div>
+
+      <p class="section-sub" style="margin-top:8px;">The PCO deliberately keeps the solution space open. It does <strong>not</strong> ask "what's the product / wedge / V1" — bounding problem and solution together, or anchoring on a customer segment, are the two failures the PCO exists to prevent.</p>
+
+      <div class="questions-list">
+
+        <div class="question-row">
+          <div class="question-num">1</div>
+          <div class="question-body">
+            <div class="question-title">Investment parameters</div>
+            <p class="question-detail">Period, target IRR, at-scale geography, industry. These bound what "credibly generates at-scale cash flows" means and become the screen every use case is tested against.</p>
+          </div>
+        </div>
+
+        <div class="question-row">
+          <div class="question-num">2</div>
+          <div class="question-body">
+            <div class="question-title">Abstract the core functionality</div>
+            <p class="question-detail">What the IVE engine does and how — stripped of all customer context. Forge is a Path A venture: the capability already exists, so use cases are applications of it.</p>
+          </div>
+        </div>
+
+        <div class="question-row">
+          <div class="question-num">3</div>
+          <div class="question-body">
+            <div class="question-title">Generate use cases (≥6)</div>
+            <p class="question-detail">Broad applications of the functionality at the level of the job to be done — not customer segments. Two people in one segment may have different use cases; two in different segments may share one.</p>
+          </div>
+        </div>
+
+        <div class="question-row">
+          <div class="question-num">4</div>
+          <div class="question-body">
+            <div class="question-title">Evaluate against the financial screen</div>
+            <p class="question-detail">For each use case: is the group large enough, is the customer loss large enough, is a credible workaround possible. Loss-to-price ratio above 2x is a viable direction.</p>
+          </div>
+        </div>
+
+        <div class="question-row">
+          <div class="question-num">5</div>
+          <div class="question-body">
+            <div class="question-title">State the PCO</div>
+            <p class="question-detail">One sentence: who + the condition they face + why the financial shape works. This is the investor-level confirmation every downstream requirement traces to.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─── NEXT STEP ─── -->
+  <div id="next">
+    <div class="section">
+      <h2 class="section-heading">Next step</h2>
+      <p class="section-sub">One action unlocks everything else.</p>
+
+      <div class="cta-block">
+        <div class="cta-label">Required before any work begins</div>
+        <p class="cta-text">Run the PCO. Open <code>/ceo-forge</code> — the CEO confirms the path (A or B), then runs <code>/balm-pco-custom</code> to produce the PCO statement for investor confirmation. Nothing downstream — no requirement, no model, no product choice — is built until the PCO is confirmed in writing.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ─── TIMELINE ─── -->
+  <div id="timeline">
+    <div class="section">
+      <h2 class="section-heading">Timeline</h2>
+      <p class="section-sub">Placeholder phases. Dates are TBD until the architecture session sets the direction.</p>
+
+      <div class="timeline">
+
+        <div class="timeline-item current">
+          <div class="timeline-phase">Phase 0 — current</div>
+          <div class="timeline-title">Concept</div>
+          <div class="timeline-date">TBD</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 1 — next</div>
+          <div class="timeline-title">Architecture</div>
+          <div class="timeline-date">After studio-director session</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 2</div>
+          <div class="timeline-title">Validation</div>
+          <div class="timeline-date">TBD</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Phase 3</div>
+          <div class="timeline-title">Build</div>
+          <div class="timeline-date">TBD</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <footer class="footer">
+    TMTH Venture Studio · Forge · Pre-concept · Updated 28 May 2026
+  </footer>
+
+</body>
+</html>

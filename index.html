@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calmly Control Centre</title>
+  <title>TMTH Venture Studio — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
   <style>
@@ -33,9 +33,7 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -159,10 +157,24 @@
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.15);
       border-radius: 6px;
-      padding: 8px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #e2e8f0;
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+    }
+
+    .stat-pill-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1;
+    }
+
+    .stat-pill-label {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 500;
       letter-spacing: 0.02em;
     }
 
@@ -195,149 +207,49 @@
       margin: 0;
     }
 
-    /* ─── GATE TRACKER ─── */
-    .gate-track {
+    /* ─── VENTURE CARDS ─── */
+    .venture-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 0;
+    }
+
+    .venture-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .venture-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      border-color: var(--accent-mid);
+    }
+
+    .venture-card.wip {
+      border-style: dashed;
+      opacity: 0.85;
+    }
+
+    .venture-card-header {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      position: relative;
-      margin-bottom: 36px;
-      padding: 0 8px;
-    }
-
-    .gate-track::before {
-      content: '';
-      position: absolute;
-      top: 22px;
-      left: 36px;
-      right: 36px;
-      height: 2px;
-      background: var(--border);
-      z-index: 0;
-    }
-
-    .gate-node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      flex: 1;
-      position: relative;
-      z-index: 1;
-    }
-
-    .gate-circle {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 700;
-      background: var(--surface);
-      border: 2px solid var(--border);
-      color: var(--text-muted);
-      position: relative;
-    }
-
-    .gate-node.done .gate-circle {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-      font-size: 18px;
-    }
-
-    .gate-node.current .gate-circle {
-      border: 2px solid var(--accent);
-      color: var(--accent);
-      background: var(--surface);
-    }
-
-    .gate-node.current .gate-circle::after {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 50%;
-      border: 2px solid var(--accent);
-      opacity: 0.4;
-      animation: pulse-ring 2s ease-out infinite;
-    }
-
-    @keyframes pulse-ring {
-      0%   { transform: scale(0.9); opacity: 0.5; }
-      70%  { transform: scale(1.2); opacity: 0; }
-      100% { transform: scale(1.2); opacity: 0; }
-    }
-
-    .gate-name {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.04em;
-    }
-
-    .gate-status {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .gate-node.done .gate-name { color: var(--accent); }
-    .gate-node.current .gate-name { color: var(--accent); }
-    .gate-node.current .gate-status { color: var(--accent); font-weight: 600; }
-    .gate-node.pending .gate-name { color: var(--text-muted); }
-
-    .gate-panel {
-      background: var(--navy);
-      color: #fff;
-      border-radius: 8px;
-      padding: 24px 28px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px 32px;
-    }
-
-    .gate-panel-item {}
-    .gate-panel-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #64748b;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-    .gate-panel-value {
-      font-size: 14px;
-      color: #e2e8f0;
-      line-height: 1.4;
-    }
-    .gate-panel-value strong {
-      color: #fff;
-      font-weight: 600;
-    }
-
-    /* ─── CURRENT FOCUS ─── */
-    .focus-card {
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--accent);
-      border-radius: 8px;
-      background: var(--surface);
-      padding: 24px 28px;
-      margin-bottom: 20px;
-    }
-
-    .focus-header {
-      display: flex;
-      align-items: center;
       gap: 12px;
-      margin-bottom: 20px;
     }
 
-    .focus-title {
-      font-size: 18px;
-      font-weight: 600;
+    .venture-card-name {
+      font-size: 20px;
+      font-weight: 700;
       color: var(--text);
+      letter-spacing: -0.02em;
     }
 
     .badge {
@@ -348,349 +260,119 @@
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.02em;
+      white-space: nowrap;
     }
 
-    .badge-blue   { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); }
     .badge-green  { background: var(--green-bg); color: var(--green); border: 1px solid #a7f3d0; }
     .badge-amber  { background: var(--amber-bg); color: var(--amber); border: 1px solid #fcd34d; }
-    .badge-red    { background: var(--red-bg); color: var(--red); border: 1px solid #fca5a5; }
     .badge-grey   { background: var(--grey-bg); color: #475569; border: 1px solid var(--border-strong); }
+    .badge-blue   { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); }
 
-    .focus-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 20px;
+    .venture-card-desc {
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.55;
     }
 
-    .focus-step {
+    .venture-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .venture-metric {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 16px 20px;
+      padding: 12px 14px;
     }
 
-    .focus-step-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-
-    .step-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-secondary);
-    }
-
-    .step-title {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .step-body {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    .focus-gate-q {
-      background: var(--accent-light);
-      border-left: 3px solid var(--accent);
-      border-radius: 4px;
-      padding: 12px 16px;
-      font-size: 14px;
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .focus-gate-q::before {
-      content: 'Gate question: ';
-      font-weight: 700;
-    }
-
-    /* Next action cards */
-    .next-actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-top: 8px;
-    }
-
-    .action-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: box-shadow 0.15s, border-color 0.15s;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .action-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      border-color: var(--accent-mid);
-    }
-
-    .action-card-num {
+    .venture-metric-label {
       font-size: 11px;
-      font-weight: 700;
-      color: var(--text-muted);
+      font-weight: 600;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
     }
 
-    .action-card-title {
+    .venture-metric-value {
       font-size: 14px;
       font-weight: 600;
       color: var(--text);
-      line-height: 1.3;
     }
 
-    .action-card-desc {
-      font-family: var(--font-body);
-      font-style: italic;
+    .venture-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .venture-next-action {
       font-size: 13px;
       color: var(--text-secondary);
-      flex: 1;
     }
 
-    .action-card-link {
-      font-size: 13px;
+    .venture-next-action strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .venture-link {
+      font-size: 14px;
       font-weight: 600;
       color: var(--accent);
+      text-decoration: none;
       display: flex;
       align-items: center;
       gap: 4px;
-      margin-top: 4px;
+      flex-shrink: 0;
     }
 
-    /* ─── SLICE TRACKER ─── */
-    .slice-list {
+    .venture-link:hover { text-decoration: underline; }
+
+    /* ─── OPEN ACTIONS ─── */
+    .actions-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
     }
 
-    .slice-row {
+    .action-row {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 20px 24px;
-      display: grid;
-      grid-template-columns: 56px 1fr auto;
-      gap: 16px 20px;
-      align-items: start;
-      transition: box-shadow 0.15s;
-    }
-
-    .slice-row:hover {
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-
-    .slice-num {
-      font-size: 40px;
-      font-weight: 700;
-      color: var(--border-strong);
-      line-height: 1;
-      font-family: var(--font-ui);
-      padding-top: 2px;
-    }
-
-    .slice-body {}
-
-    .slice-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .slice-why {
-      font-family: var(--font-body);
-      font-size: 13px;
-      color: var(--text-secondary);
-      font-style: italic;
-      margin-bottom: 10px;
-      line-height: 1.45;
-    }
-
-    .slice-meta {
+      border-left: 4px solid var(--red);
+      border-radius: 6px;
+      padding: 14px 20px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
+      align-items: baseline;
+      gap: 12px;
     }
 
-    .slice-meta-row {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .slice-meta-row strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .slice-gate-q {
-      font-size: 12px;
-      color: var(--text-muted);
-      border-top: 1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 10px;
-      font-style: italic;
-      font-family: var(--font-body);
-    }
-
-    .slice-status {
-      padding-top: 4px;
-    }
-
-    /* ─── DOCUMENTS ─── */
-    .doc-group {
-      margin-bottom: 40px;
-    }
-
-    .doc-group-heading {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 14px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .doc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px;
-    }
-
-    .doc-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 18px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      text-decoration: none;
-      color: inherit;
-      transition: box-shadow 0.15s, border-left-color 0.15s, border-left-width 0.1s;
-      border-left: 3px solid transparent;
-    }
-
-    .doc-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      border-left-color: var(--accent);
-    }
-
-    .doc-card-cat {
+    .action-priority {
       font-size: 11px;
       font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
+      color: var(--red);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    .doc-card-title {
-      font-size: 15px;
-      font-weight: 600;
+    .action-text {
+      font-size: 14px;
       color: var(--text);
-      line-height: 1.3;
-    }
-
-    .doc-card-date {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .doc-card-desc {
-      font-family: var(--font-body);
-      font-style: italic;
-      font-size: 13px;
-      color: var(--text-secondary);
-      flex: 1;
       line-height: 1.45;
     }
 
-    .doc-card-open {
+    .action-status {
       font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-      margin-top: 6px;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    /* ─── QUESTIONS ─── */
-    .questions-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .q-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .q-num {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--red-bg);
-      border: 1px solid #fca5a5;
-      color: var(--red);
-      font-size: 14px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .q-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      line-height: 1.3;
-    }
-
-    .q-body {
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.55;
-      flex: 1;
-    }
-
-    .q-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    .q-meta-row {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
-
-    .q-meta-row strong {
-      font-weight: 600;
-      color: var(--text);
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-left: auto;
     }
 
     /* ─── FOOTER ─── */
@@ -707,13 +389,8 @@
     @media (max-width: 768px) {
       .hero h1 { font-size: 32px; }
       .hero { padding: 48px 20px 44px; }
-      .gate-track::before { display: none; }
-      .gate-track { flex-wrap: wrap; gap: 24px; justify-content: center; }
-      .gate-panel { grid-template-columns: 1fr; }
-      .next-actions { grid-template-columns: 1fr; }
-      .questions-grid { grid-template-columns: 1fr; }
-      .slice-row { grid-template-columns: 40px 1fr; }
-      .slice-status { grid-column: 2; }
+      .venture-grid { grid-template-columns: 1fr; }
+      .venture-metrics { grid-template-columns: repeat(2, 1fr); }
       .nav-links { display: none; }
     }
   </style>
@@ -724,14 +401,14 @@
   <nav class="nav">
     <div class="nav-inner">
       <div class="nav-brand">
-        <span class="nav-logo">Calmly</span>
-        <span class="nav-label">Control Centre</span>
+        <span class="nav-logo">TMTH</span>
+        <span class="nav-label">Tough Minds Tender Hearts</span>
       </div>
       <ul class="nav-links">
-        <li><a href="#overview">Overview</a></li>
-        <li><a href="#slices">Slices</a></li>
-        <li><a href="#documents">Documents</a></li>
-        <li><a href="#questions">Questions</a></li>
+        <li><a href="/" class="active">Portfolio</a></li>
+        <li><a href="/calmly">Calmly Resolve</a></li>
+        <li><a href="/ive">Forge</a></li>
+        <li><a href="#actions">Open actions</a></li>
       </ul>
     </div>
   </nav>
@@ -739,219 +416,93 @@
   <!-- ─── HERO ─── -->
   <section class="hero">
     <div class="hero-inner">
-      <p class="hero-eyebrow">Fintech Justice · CDR passed 22 May 2026</p>
-      <h1>Calmly Control Centre</h1>
-      <p class="hero-subtitle">A DBA-funded claims platform for consumer financial harm. Independent assessment. No win, no fee.</p>
+      <p class="hero-eyebrow">Internal command centre</p>
+      <h1>Tough Minds Tender Hearts — Venture Studio</h1>
+      <p class="hero-subtitle">Two ventures in flight. IVE methodology. Tom Manuel, founder.</p>
       <div class="hero-stats">
-        <span class="stat-pill">FMOS 60.3%</span>
-        <span class="stat-pill">18 system flows</span>
-        <span class="stat-pill">5 build slices</span>
-        <span class="stat-pill">Phase 5 — Implementation</span>
+        <div class="stat-pill">
+          <span class="stat-pill-value">£0</span>
+          <span class="stat-pill-label">Capital deployed</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-value">£50</span>
+          <span class="stat-pill-label">Capital committed</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-value">2</span>
+          <span class="stat-pill-label">Active ventures</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ─── GATE TRACKER ─── -->
-  <div id="overview">
+  <!-- ─── PORTFOLIO ─── -->
+  <div id="portfolio">
     <div class="section">
-      <h2 class="section-heading">Process position</h2>
+      <h2 class="section-heading">Portfolio</h2>
+      <p class="section-sub">Two ventures at different stages. Calmly Resolve is the test case for the IVE methodology.</p>
 
-      <div class="gate-track">
-        <div class="gate-node done">
-          <div class="gate-circle">✓</div>
-          <span class="gate-name">PCOR</span>
-          <span class="gate-status">Completed</span>
-        </div>
-        <div class="gate-node done">
-          <div class="gate-circle">✓</div>
-          <span class="gate-name">AR</span>
-          <span class="gate-status">Completed</span>
-        </div>
-        <div class="gate-node done">
-          <div class="gate-circle">✓</div>
-          <span class="gate-name">PDR</span>
-          <span class="gate-status">Completed</span>
-        </div>
-        <div class="gate-node done">
-          <div class="gate-circle">✓</div>
-          <span class="gate-name">CDR</span>
-          <span class="gate-status">Completed</span>
-        </div>
-        <div class="gate-node current">
-          <div class="gate-circle">⬤</div>
-          <span class="gate-name">TRR</span>
-          <span class="gate-status">In progress</span>
-        </div>
-        <div class="gate-node pending">
-          <div class="gate-circle">○</div>
-          <span class="gate-name">ORR</span>
-          <span class="gate-status">Pending</span>
-        </div>
-      </div>
+      <div class="venture-grid">
 
-      <div class="gate-panel">
-        <div class="gate-panel-item">
-          <div class="gate-panel-label">Current gate</div>
-          <div class="gate-panel-value"><strong>TRR — Test Readiness Review</strong></div>
-        </div>
-        <div class="gate-panel-item">
-          <div class="gate-panel-label">CDR passed</div>
-          <div class="gate-panel-value">22 May 2026</div>
-        </div>
-        <div class="gate-panel-item" style="grid-column: span 2;">
-          <div class="gate-panel-label">Governing question</div>
-          <div class="gate-panel-value">"Are individual components verified and the workflow integration test ready to run?"</div>
-        </div>
-        <div class="gate-panel-item" style="grid-column: span 2;">
-          <div class="gate-panel-label">What unlocks TRR</div>
-          <div class="gate-panel-value">All 5 slices validated, integration test plan written</div>
-        </div>
-      </div>
-
-      <!-- ─── CURRENT FOCUS ─── -->
-      <h2 class="section-heading" style="margin-top: 48px;">Right now</h2>
-
-      <div class="focus-card">
-        <div class="focus-header">
-          <span class="focus-title">Slice 1 — ITP Partnership Loop</span>
-          <span class="badge badge-blue">Active</span>
-        </div>
-
-        <div class="focus-steps">
-          <div class="focus-step">
-            <div class="focus-step-header">
-              <span class="badge badge-amber">T3</span>
-              <span class="step-label">Step A</span>
-              <span class="step-title">Secure the ITP</span>
+        <!-- Calmly Resolve -->
+        <div class="venture-card">
+          <div class="venture-card-header">
+            <span class="venture-card-name">Calmly Resolve</span>
+            <span class="badge badge-green">Phase 5 — Implementation</span>
+          </div>
+          <p class="venture-card-desc">AI-powered dispute resolution. A DBA-funded claims platform for consumer financial harm. Independent assessment. No win, no fee. First ITP target: 19 Jul 2026.</p>
+          <div class="venture-metrics">
+            <div class="venture-metric">
+              <div class="venture-metric-label">O1 deadline</div>
+              <div class="venture-metric-value">19 Jul 2026</div>
             </div>
-            <p class="step-body">Head of Commercial (0.5 FTE) signs ≥1 ITP type. Acceptance: NTP fee (£25/referral) accepted, time-to-sign within Stage 1 runway. ARM constraint: single national contract per ITP type.</p>
-          </div>
-          <div class="focus-step">
-            <div class="focus-step-header">
-              <span class="badge badge-red">T4 · Architectural risk</span>
-              <span class="step-label">Step B</span>
-              <span class="step-title">Embed referral as SOP</span>
+            <div class="venture-metric">
+              <div class="venture-metric-label">FMOS</div>
+              <div class="venture-metric-value">60.3%</div>
             </div>
-            <p class="step-body">Signed ITP refers ≥10 claims without prompting, ≤5 min per referral (PB-06). This is the C7 gateway partner architectural assumption.</p>
+            <div class="venture-metric">
+              <div class="venture-metric-label">BALM score</div>
+              <div class="venture-metric-value">10 / 10</div>
+            </div>
+            <div class="venture-metric">
+              <div class="venture-metric-label">Capital committed</div>
+              <div class="venture-metric-value">£50</div>
+            </div>
+          </div>
+          <div class="venture-card-footer">
+            <span class="venture-next-action"><strong>Next:</strong> First ITP signed</span>
+            <a class="venture-link" href="/calmly">Open Calmly →</a>
           </div>
         </div>
 
-        <div class="focus-gate-q">Has ≥1 ITP type signed within Fin Sim budget AND are ≥10 referrals flowing without prompting?</div>
-      </div>
-
-      <div class="next-actions">
-        <a class="action-card" href="docs/cs-001.html">
-          <span class="action-card-num">Action 1</span>
-          <span class="action-card-title">Complete CP-ITP acquisition pack</span>
-          <span class="action-card-desc">B2B pitch materials for ITP sign-off.</span>
-          <span class="badge badge-amber" style="align-self: flex-start; margin-top: 4px;">In progress</span>
-          <span class="action-card-link">Open →</span>
-        </a>
-        <a class="action-card" href="docs/cs-001.html">
-          <span class="action-card-num">Action 2</span>
-          <span class="action-card-title">Build ITP referral portal</span>
-          <span class="action-card-desc">CS-001. 6 tickets defined.</span>
-          <span class="badge badge-blue" style="align-self: flex-start; margin-top: 4px;">Defined</span>
-          <span class="action-card-link">Open →</span>
-        </a>
-        <a class="action-card" href="docs/conductor.html">
-          <span class="action-card-num">Action 3</span>
-          <span class="action-card-title">Resolve OP7 reference gap</span>
-          <span class="action-card-desc">ICD-09 references OP7 which is not in the 18-flow spec. Decision needed before Capella model is TRR-ready.</span>
-          <span class="badge badge-red" style="align-self: flex-start; margin-top: 4px;">Blocked</span>
-          <span class="action-card-link">Open →</span>
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <!-- ─── SLICE TRACKER ─── -->
-  <div id="slices">
-    <div class="section">
-      <h2 class="section-heading">Build sequence</h2>
-      <p class="section-sub">Slices are built in priority order. A slice gate must clear before the next slice begins design.</p>
-
-      <div class="slice-list">
-
-        <!-- Slice 1 -->
-        <div class="slice-row">
-          <div class="slice-num">1</div>
-          <div class="slice-body">
-            <div class="slice-title">ITP Partnership Loop</div>
-            <div class="slice-why">PartP1 is the entire inbound claim channel. No referrals = nothing else to test.</div>
-            <div class="slice-meta">
-              <div class="slice-meta-row"><strong>Flows:</strong> CP-ITP (T3), PartP1 (T4)</div>
+        <!-- Forge -->
+        <div class="venture-card wip">
+          <div class="venture-card-header">
+            <span class="venture-card-name">Forge</span>
+            <span class="badge badge-amber">Pre-concept</span>
+          </div>
+          <p class="venture-card-desc">Commercialising the Integrated Venture Engine methodology. Architecture session needed before work begins.</p>
+          <div class="venture-metrics">
+            <div class="venture-metric">
+              <div class="venture-metric-label">Phase</div>
+              <div class="venture-metric-value">0 — Concept</div>
             </div>
-            <div class="slice-gate-q">Gate: ITP signed + ≥10 referrals flowing without prompting?</div>
-          </div>
-          <div class="slice-status">
-            <span class="badge badge-blue">Active</span>
-          </div>
-        </div>
-
-        <!-- Slice 2 -->
-        <div class="slice-row">
-          <div class="slice-num">2</div>
-          <div class="slice-body">
-            <div class="slice-title">Claimant Happy Path</div>
-            <div class="slice-why">4 T4 flows in sequence. Needs real referrals from Slice 1 to test.</div>
-            <div class="slice-meta">
-              <div class="slice-meta-row"><strong>Flows:</strong> CP1 (T4), WP1 (T4), WP2 (T4), CP2 (T4)</div>
+            <div class="venture-metric">
+              <div class="venture-metric-label">Capital deployed</div>
+              <div class="venture-metric-value">£0</div>
             </div>
-            <div class="slice-gate-q">Gate: Does EV cost and accuracy hold (≤£16.28/claim, ±20%)?</div>
-          </div>
-          <div class="slice-status">
-            <span class="badge badge-grey">Locked — awaiting Slice 1</span>
-          </div>
-        </div>
-
-        <!-- Slice 3 -->
-        <div class="slice-row">
-          <div class="slice-num">3</div>
-          <div class="slice-body">
-            <div class="slice-title">Defendant Motivation Path</div>
-            <div class="slice-why">CP3 is the biggest FMOS driver (36% failure rate in Stage 4 sim). Needs real EV assessments from Slice 2 first.</div>
-            <div class="slice-meta">
-              <div class="slice-meta-row"><strong>Flows:</strong> CP3 (T4)</div>
+            <div class="venture-metric">
+              <div class="venture-metric-label">First milestone</div>
+              <div class="venture-metric-value">TBD</div>
             </div>
-            <div class="slice-gate-q">Gate: Do defendants settle at ≥60%?</div>
-          </div>
-          <div class="slice-status">
-            <span class="badge badge-grey">Locked — awaiting Slice 2</span>
-          </div>
-        </div>
-
-        <!-- Slice 4 -->
-        <div class="slice-row">
-          <div class="slice-num">4</div>
-          <div class="slice-body">
-            <div class="slice-title">Pool Operator Infrastructure</div>
-            <div class="slice-why">No T4 flows. T2/T3 only. Can build while Slice 3 T4 testing runs.</div>
-            <div class="slice-meta">
-              <div class="slice-meta-row"><strong>Flows:</strong> PartP2, PartP3, WP3, PP-D, OP6 (all T2/T3)</div>
+            <div class="venture-metric">
+              <div class="venture-metric-label">Product form</div>
+              <div class="venture-metric-value">Undecided</div>
             </div>
-            <div class="slice-gate-q">Gate: Does fund flow work end-to-end?</div>
           </div>
-          <div class="slice-status">
-            <span class="badge badge-amber">Build in parallel</span>
-          </div>
-        </div>
-
-        <!-- Slice 5 -->
-        <div class="slice-row">
-          <div class="slice-num">5</div>
-          <div class="slice-body">
-            <div class="slice-title">Defendant Escalation Path</div>
-            <div class="slice-why">~30–40% of defendants who don't settle in Slice 3. Operational volume determines design.</div>
-            <div class="slice-meta">
-              <div class="slice-meta-row"><strong>Flows:</strong> OP4 (T3)</div>
-            </div>
-            <div class="slice-gate-q">Gate: Is escalation operationally viable?</div>
-          </div>
-          <div class="slice-status">
-            <span class="badge badge-grey">Design deferred</span>
+          <div class="venture-card-footer">
+            <span class="venture-next-action"><strong>Next:</strong> Architecture session — define the product</span>
+            <a class="venture-link" href="/ive">Open Forge →</a>
           </div>
         </div>
 
@@ -961,193 +512,42 @@
 
   <hr class="section-divider">
 
-  <!-- ─── DOCUMENTS ─── -->
-  <div id="documents">
+  <!-- ─── STUDIO OPEN ACTIONS ─── -->
+  <div id="actions">
     <div class="section">
-      <h2 class="section-heading">Artifacts</h2>
-      <p class="section-sub">All design documents, prototypes, and specifications.</p>
+      <h2 class="section-heading">Studio open actions</h2>
+      <p class="section-sub">Priority 1 items across all ventures and studio operations. None of these are blocked — they are open and unresolved.</p>
 
-      <!-- Group: Process & Gates -->
-      <div class="doc-group">
-        <div class="doc-group-heading">Process &amp; Gates</div>
-        <div class="doc-grid">
-          <a class="doc-card" href="docs/conductor.html">
-            <span class="doc-card-cat">Process</span>
-            <span class="doc-card-title">Conductor Report</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">Gate position, blockers, and next actions. Updated each session.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/cdr-package.html">
-            <span class="doc-card-cat">Gate</span>
-            <span class="doc-card-title">CDR Package</span>
-            <span class="doc-card-date">22 May 2026</span>
-            <span class="doc-card-desc">Gate entry criteria, FMOS evidence, and CDR verdict. Gate: passed.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/se-process.html">
-            <span class="doc-card-cat">Systems engineering</span>
-            <span class="doc-card-title">Systems Engineering Process</span>
-            <span class="doc-card-date">26 May 2026</span>
-            <span class="doc-card-desc">V-model, gate tracker, and current process position. Berkeley equivalent.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-        </div>
-      </div>
+      <div class="actions-list">
 
-      <!-- Group: Validation & Build -->
-      <div class="doc-group">
-        <div class="doc-group-heading">Validation &amp; Build</div>
-        <div class="doc-grid">
-          <a class="doc-card" href="docs/validation-plan.html">
-            <span class="doc-card-cat">Validation</span>
-            <span class="doc-card-title">Slice Validation Plan</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">5 slices, T4 flows called out, acceptance criteria, go/no-go gates.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/cs-001.html">
-            <span class="doc-card-cat">Component spec</span>
-            <span class="doc-card-title">CS-001: ITP Referral Portal</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">Component spec. 6 tickets defined. Minimum build for Slice 1.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/itp-diligence-pack.html">
-            <span class="doc-card-cat">Diligence</span>
-            <span class="doc-card-title">ITP Diligence Pack</span>
-            <span class="doc-card-date">22 May 2026</span>
-            <span class="doc-card-desc">T4 acceptance criteria, pilot design (25 participants, 5 ITP types).</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group: Prototypes & UX -->
-      <div class="doc-group">
-        <div class="doc-group-heading">Prototypes &amp; UX</div>
-        <div class="doc-grid">
-          <a class="doc-card" href="docs/prototype.html">
-            <span class="doc-card-cat">Prototype</span>
-            <span class="doc-card-title">Claimant Journey Prototype</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">Clickable 10-screen prototype. Referral landing → settled claim.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/wireframes.html">
-            <span class="doc-card-cat">UX</span>
-            <span class="doc-card-title">Lo-fi Wireframes</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">ITP portal (3 screens) and intake specialist queue (3 screens).</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/service-blueprint.html">
-            <span class="doc-card-cat">Service design</span>
-            <span class="doc-card-title">Service Blueprint</span>
-            <span class="doc-card-date">23 May 2026</span>
-            <span class="doc-card-desc">7 actors × 7 stages. All handoffs, line of visibility.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group: Architecture & Design -->
-      <div class="doc-group">
-        <div class="doc-group-heading">Architecture &amp; Design</div>
-        <div class="doc-grid">
-          <a class="doc-card" href="docs/design-definition.html">
-            <span class="doc-card-cat">Design</span>
-            <span class="doc-card-title">Design Definition</span>
-            <span class="doc-card-date">22 May 2026</span>
-            <span class="doc-card-desc">Full CDR design package. All 10 BALM requirements, AOM, ARM, CTM.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/aom.html">
-            <span class="doc-card-cat">Operating model</span>
-            <span class="doc-card-title">AOM v4</span>
-            <span class="doc-card-date">18 May 2026</span>
-            <span class="doc-card-desc">At-scale operating model. 18,240 claims/year, LMU structure.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/resourcing.html">
-            <span class="doc-card-cat">Resourcing</span>
-            <span class="doc-card-title">Resourcing Model (ARM)</span>
-            <span class="doc-card-date">21 May 2026</span>
-            <span class="doc-card-desc">Activity-based cost model. PVC £157/claim, total floor £258/claim.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/launch-components.html">
-            <span class="doc-card-cat">Launch</span>
-            <span class="doc-card-title">Launch Components Map</span>
-            <span class="doc-card-date">May 2026</span>
-            <span class="doc-card-desc">15 launch components across 7 categories. Stage 1 raise £475–700k.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Group: Financial Model -->
-      <div class="doc-group">
-        <div class="doc-group-heading">Financial Model</div>
-        <div class="doc-grid">
-          <a class="doc-card" href="docs/fin-sim.html">
-            <span class="doc-card-cat">Financial</span>
-            <span class="doc-card-title">Financial Simulation v4</span>
-            <span class="doc-card-date">21 May 2026</span>
-            <span class="doc-card-desc">FMOS 60.3% (P50 Stage 3), 69.3% (P50 Stage 4). Monte Carlo 10,000 runs.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-          <a class="doc-card" href="docs/components-map.html">
-            <span class="doc-card-cat">Architecture</span>
-            <span class="doc-card-title">Components Map</span>
-            <span class="doc-card-date">May 2026</span>
-            <span class="doc-card-desc">Full component map. WP, CP, PP, PartP, OP layers.</span>
-            <span class="doc-card-open">Open →</span>
-          </a>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <hr class="section-divider">
-
-  <!-- ─── OPEN QUESTIONS ─── -->
-  <div id="questions">
-    <div class="section">
-      <h2 class="section-heading">Open questions</h2>
-      <p class="section-sub">Three architectural decisions blocking TRR. Each needs a decision before the gate can be called.</p>
-
-      <div class="questions-grid">
-
-        <div class="q-card">
-          <div class="q-num">1</div>
-          <div class="q-title">What is OP7?</div>
-          <div class="q-body">ICD-09 references a flow called OP7, but it's not in the 18-flow register. Until OP7 is defined — or ICD-09 is reclassified as an internal event — the Capella model can't be used as a TRR verification source.</div>
-          <div class="q-meta">
-            <div class="q-meta-row"><strong>Blocks:</strong> Capella model, TRR gate</div>
-            <div class="q-meta-row"><strong>Options:</strong> Add OP7 as a minimal spec (pool operator audit trail?) or reclassify ICD-09</div>
-          </div>
+        <div class="action-row">
+          <span class="action-priority">P1</span>
+          <span class="action-text">AIP expired — send contract to David Yates on receipt</span>
+          <span class="action-status">~29 May</span>
         </div>
 
-        <div class="q-card">
-          <div class="q-num">2</div>
-          <div class="q-title">Assessment Org: AOM vs ARM naming mismatch</div>
-          <div class="q-body">AOM v4 calls the assessment actor "Assessment Org". ARM WP3 calls it "Law Student Assessor / Qualified Supervisor". Capella inherits one naming convention. Until canonical, the model can't be used as a TRR verification source.</div>
-          <div class="q-meta">
-            <div class="q-meta-row"><strong>Blocks:</strong> Capella model, TRR gate</div>
-            <div class="q-meta-row"><strong>Options:</strong> Update ARM to use "Assessment Org", or update AOM to use ARM's breakdown</div>
-          </div>
+        <div class="action-row">
+          <span class="action-priority">P1</span>
+          <span class="action-text">Tom life insurance — no cover in place</span>
+          <span class="action-status">No start date</span>
         </div>
 
-        <div class="q-card">
-          <div class="q-num">3</div>
-          <div class="q-title">Who holds the DBA — Calmly or pool operator?</div>
-          <div class="q-body">The FMOS calculation shifts dramatically based on whether Calmly holds the DBA (combined 69.3% P50) or the pool operator holds it (defendant-only revenue model ~9.3%). This decision affects the fundraising use of the financial model.</div>
-          <div class="q-meta">
-            <div class="q-meta-row"><strong>Blocks:</strong> Financial model, investor materials</div>
-            <div class="q-meta-row"><strong>Options:</strong> Legal opinion on DBA holder. Run both FMOS scenarios in the fin sim.</div>
-          </div>
+        <div class="action-row">
+          <span class="action-priority">P1</span>
+          <span class="action-text">Wills — Tom and Pauline — not started</span>
+          <span class="action-status">No start date</span>
+        </div>
+
+        <div class="action-row">
+          <span class="action-priority">P1</span>
+          <span class="action-text">Calmly O4 legal opinion — budget-blocked, decision pending</span>
+          <span class="action-status">Blocked</span>
+        </div>
+
+        <div class="action-row">
+          <span class="action-priority">P1</span>
+          <span class="action-text">Calmly O1 ITP outreach — not yet dispatched</span>
+          <span class="action-status">Not started</span>
         </div>
 
       </div>
@@ -1156,29 +556,28 @@
 
   <!-- ─── FOOTER ─── -->
   <footer class="footer">
-    Calmly Control Centre · Built on IVE methodology · Updated 24 May 2026
+    TMTH Venture Studio · Internal command centre · Updated 28 May 2026
   </footer>
 
   <script>
     // Active nav link on scroll
-    const sections = ['overview', 'slices', 'documents', 'questions'];
     const navLinks = document.querySelectorAll('.nav-links a');
+    const sections = document.querySelectorAll('#portfolio, #actions');
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const id = entry.target.id;
           navLinks.forEach(link => {
-            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            if (link.getAttribute('href') === '/#' + id || link.getAttribute('href') === '#' + id) {
+              link.classList.add('active');
+            }
           });
         }
       });
     }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
 
-    sections.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    sections.forEach(el => { if (el) observer.observe(el); });
   </script>
 
 </body>

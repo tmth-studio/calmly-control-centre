@@ -16,7 +16,7 @@ if (!pass) {
 app.use(basicAuth({
   users: { [user]: pass },
   challenge: true,
-  realm: 'Calmly Control Centre'
+  realm: 'TMTH Venture Studio'
 }));
 
 app.use(express.static(path.join(__dirname)));
@@ -30,5 +30,5 @@ app.get('*', (req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Calmly Control Centre running on port ${PORT}`);
+  console.log(`TMTH Venture Studio running on port ${PORT}`);
 });

@@ -196,6 +196,34 @@
       .req-grid { grid-template-columns: 1fr; }
       .component-body { padding: 16px 18px; }
     }
+
+    /* ─── TMTH NAV ─── */
+    .tmth-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: 52px;
+      display: flex;
+      align-items: center;
+    }
+    .tmth-nav-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .tmth-nav-brand { display: flex; align-items: baseline; gap: 8px; text-decoration: none; }
+    .tmth-nav-logo { font-size: 16px; font-weight: 700; color: #1d4ed8; letter-spacing: -0.02em; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-label { font-size: 12px; color: #94a3b8; font-family: 'DM Sans', system-ui, sans-serif; }
+    .tmth-nav-links { display: flex; gap: 20px; list-style: none; }
+    .tmth-nav-links a { font-size: 13px; font-weight: 500; color: #475569; text-decoration: none; font-family: 'DM Sans', system-ui, sans-serif; transition: color 0.15s; }
+    .tmth-nav-links a:hover { color: #1d4ed8; }
   </style>
 </head>
 <body>
