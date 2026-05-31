@@ -1,0 +1,154 @@
+{
+  "snapshot_date": "2026-05-31",
+  "source": "04-Projects/Family_High_Performance/household-state.yaml",
+  "yaml_last_updated": "2026-05-29",
+  "note": "Static snapshot. The deployed app cannot read the vault — refresh this file when the household world model moves.",
+
+  "system_flags": [
+    {
+      "id": "flag-003",
+      "source": "CFO",
+      "type": "protection_gap",
+      "item": "Tom life insurance — no cover in place, Maddie + pregnancy confirmed",
+      "action_required": "Get quote this week — Cavendish Online or LifeSearch",
+      "priority": "P1",
+      "raised": "2026-05-28"
+    },
+    {
+      "id": "flag-004",
+      "source": "CoS",
+      "type": "legal",
+      "item": "Wills — Tom and Pauline — not started, urgent",
+      "action_required": "Book solicitor — bundle with LPA appointment",
+      "priority": "P1",
+      "raised": "2026-05-28"
+    },
+    {
+      "id": "flag-005",
+      "source": "Head of Verification",
+      "type": "ncr",
+      "item": "NCR-001: FMOS formula in CDM uses price denominator, not Simanis cost denominator",
+      "action_required": "CEO to decide: resolve (recalculate CDM) / accept with notation / defer",
+      "priority": "P2",
+      "raised": "2026-05-28"
+    }
+  ],
+
+  "employment": {
+    "tom": {
+      "status": "contractor",
+      "employer": "Barclays Business Bank",
+      "day_rate_gbp": 1118,
+      "start_date": "2026-06-01",
+      "days_to_start": 1,
+      "contract_received": false,
+      "conversion_target": "permanent by 30 June 2026",
+      "hire_right_status": "in progress"
+    },
+    "pauline": {
+      "employer": "Tenzing Private Equity",
+      "gross_salary_k": 170,
+      "raise_pending": true,
+      "raise_confirmation_due": "2026-05-27",
+      "bonus_net_gbp": 28000,
+      "bonus_status": "confirmed — landing June 2026"
+    }
+  },
+
+  "household_finances": {
+    "monthly_surplus": {
+      "now_gbp": -3658,
+      "from_june_gbp": 11443,
+      "from_august_gbp": 14077
+    },
+    "cash": {
+      "tom_revolut_gbp": 335,
+      "pauline_monzo_gbp": 11330,
+      "total_liquid_gbp": 11700,
+      "accenture_stock_gbp": 18200,
+      "total_incl_stock_gbp": 29900
+    },
+    "net_worth_gbp": 102000,
+    "net_worth_breakdown": "liquid £12k + GIA £18k + Tom pension £20k + Pauline pension £52k",
+    "pauline_bonus": {
+      "amount_net_gbp": 28000,
+      "status": "confirmed",
+      "landing": "June 2026",
+      "earmarked": "ISA seeding + emergency fund top-up"
+    },
+    "emergency_fund": {
+      "current_gbp": 25000,
+      "target_gbp": 50000,
+      "status": "amber"
+    },
+    "protection": [
+      { "item": "Tom life insurance", "status": "none — urgent", "urgent": true },
+      { "item": "Pauline income protection", "status": "unknown — check Tenzing group policy", "urgent": false },
+      { "item": "Wills (Tom + Pauline)", "status": "not started — urgent", "urgent": true },
+      { "item": "LPA", "status": "not started", "urgent": false }
+    ]
+  },
+
+  "property": {
+    "phase": "Phase 1 — Pre-search setup",
+    "target_area": "N16 / Stoke Newington",
+    "working_budget_gbp": 2000000,
+    "mortgage": {
+      "broker": "David Yates (Nexus FS)",
+      "aip_status": "ACTIVE — refreshed 28 May 2026",
+      "aip_ref": "M536597664 (Accord)",
+      "aip_confirmed_gbp": 1410000,
+      "borrowing_capacity_gbp": 1411740,
+      "buying_power_with_gift_gbp": 1801740,
+      "buying_power_with_loan_gbp": 2111740
+    },
+    "deposit": {
+      "own_cash_gbp": 0,
+      "marcus_clare_gift_gbp": 390000,
+      "marcus_clare_loan_gbp": 310000,
+      "total_available_gbp": 700000,
+      "note": "100% gifted deposit — David Yates to confirm lender appetite"
+    },
+    "hawksley_road": {
+      "address": "35 Hawksley Road, N16 0TL",
+      "price_gbp": 2000000,
+      "type": "off-market",
+      "viewing": "2026-05-26",
+      "outcome": "positive — negotiating on price. AIP now in place, so a formal offer is possible.",
+      "offer_status": "NOT YET MADE — next step is to message Matteo to re-open the price conversation. No number in writing.",
+      "evidence_range_gbp": "1,710,000 – 1,870,000 (breakeven evidence range; £2M asking is above it)",
+      "evidence_ceiling_gbp": 1870000
+    },
+    "solicitor": {
+      "name": "Stuart Palmer",
+      "firm": "Bower Bailey LLP",
+      "status": "Quote received — not yet instructed. Decision pending."
+    }
+  },
+
+  "quarter_goals": [
+    { "id": "G1", "name": "Offer in hand (the role)", "status": "~95% complete — Barclays contractor start 1 June", "percent": 95 },
+    { "id": "G2", "name": "Calmly pilot", "status": "Deferred — O4 legal opinion budget-blocked", "percent": 0 },
+    { "id": "G3", "name": "Venture-assistant build (studio app / Forge)", "status": "~60% — studio app deployed, Forge CDR-complete", "percent": 60 },
+    { "id": "G4", "name": "House offer accepted", "status": "0% — AIP in place, Hawksley offer not yet made", "percent": 0 },
+    { "id": "G5", "name": "System integration", "status": "~30% — world model + departments live, agreement still draft", "percent": 30 }
+  ],
+  "quarter_goals_note": "Per-goal percentages G2–G5 are inferred from venture/property/system state in the YAML — the YAML summary only itemises Q1 (~95%) and Q4 (0%) explicitly.",
+
+  "departments": [
+    { "department": "Chief of Staff", "owner": "AI", "status": "Active — world model owner, AIP refreshed, Forge registered" },
+    { "department": "CFO", "owner": "AI", "status": "Active — 2 P1 protection gaps open (life insurance, wills)" },
+    { "department": "Head of Property", "owner": "AI", "status": "Active — AIP refreshed, Hawksley offer not yet made, solicitor quote received" },
+    { "department": "Studio Director", "owner": "AI", "status": "Live — voice chat deployed, 2 ventures in portfolio" },
+    { "department": "CEO — Calmly Resolve", "owner": "AI", "status": "Phase 5 — O1 outreach pending, O4 budget-blocked" },
+    { "department": "CEO — Forge", "owner": "AI", "status": "Phase 1 — architecture CDR-complete, awaiting pilot decision" },
+    { "department": "Head of Verification", "owner": "AI", "status": "Active — BALM 10/10, 1 NCR open (FMOS formula)" }
+  ],
+  "departments_note": "Department roster assembled from the ventures and finance sections of the YAML — there is no single explicit department status table in the source file.",
+
+  "ventures": {
+    "capital_deployed_gbp": 0,
+    "capital_committed_gbp": 50,
+    "active_count": 2
+  }
+}

@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Household System State — Manuel Family</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --accent: #1d4ed8;
+      --accent-light: #eff6ff;
+      --accent-mid: #bfdbfe;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --amber: #d97706;
+      --amber-bg: #fffbeb;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --grey: #94a3b8;
+      --grey-bg: #f1f5f9;
+      --navy: #0f172a;
+      --nav-height: 60px;
+      --font-ui: 'DM Sans', system-ui, sans-serif;
+      --font-body: 'Lora', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      height: var(--nav-height);
+      display: flex; align-items: center;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto; padding: 0 24px; width: 100%;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-brand { display: flex; align-items: baseline; gap: 10px; }
+    .nav-logo { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+    .nav-label { font-size: 13px; color: var(--text-muted); font-weight: 400; }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      font-size: 14px; font-weight: 500; color: var(--text-secondary);
+      text-decoration: none; padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--accent); border-bottom-color: var(--accent);
+    }
+    .nav-toggle {
+      display: none; background: none; border: none; cursor: pointer;
+      font-size: 22px; color: var(--text); line-height: 1; padding: 4px;
+    }
+
+    /* ─── HERO ─── */
+    .hero { background: var(--navy); color: #fff; padding: 56px 24px 48px; }
+    .hero-inner { max-width: 1100px; margin: 0 auto; }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+      color: #93c5fd; text-transform: uppercase; margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-family: var(--font-ui); font-size: 40px; font-weight: 700;
+      letter-spacing: -0.03em; line-height: 1.1; color: #fff; margin-bottom: 14px;
+    }
+    .hero-subtitle {
+      font-family: var(--font-body); font-style: italic; font-size: 18px;
+      color: #cbd5e1; max-width: 600px; line-height: 1.5;
+    }
+    .snapshot-note {
+      margin-top: 22px; font-size: 12px; color: #94a3b8;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+      padding: 7px 14px; border-radius: 6px;
+    }
+    .snapshot-dot { width: 7px; height: 7px; border-radius: 50%; background: #93c5fd; flex-shrink: 0; }
+
+    /* ─── SECTIONS ─── */
+    .section { max-width: 1100px; margin: 0 auto; padding: 44px 24px 0; }
+    .section:last-of-type { padding-bottom: 24px; }
+    .section-heading {
+      font-size: 22px; font-weight: 600; color: var(--text);
+      margin-bottom: 6px; letter-spacing: -0.01em;
+    }
+    .section-sub {
+      font-family: var(--font-body); font-style: italic; font-size: 15px;
+      color: var(--text-secondary); margin-bottom: 24px;
+    }
+
+    /* ─── CARD GRIDS ─── */
+    .grid { display: grid; gap: 18px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 22px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .card-label {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .card-title { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -0.01em; }
+    .card-value { font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; letter-spacing: -0.02em; }
+    .card-value.neg { color: var(--red); }
+    .card-value.pos { color: var(--green); }
+    .card-sub { font-size: 13px; color: var(--text-secondary); }
+
+    /* ─── BADGES ─── */
+    .badge {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 4px; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.02em; white-space: nowrap;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green); border: 1px solid #a7f3d0; }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid #fcd34d; }
+    .badge-red   { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
+    .badge-grey  { background: var(--grey-bg); color: #475569; border: 1px solid var(--border-strong); }
+    .badge-blue  { background: var(--accent-light); color: var(--accent); border: 1px solid var(--accent-mid); }
+
+    /* ─── FLAG CARDS ─── */
+    .flag {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 4px solid var(--red); border-radius: 8px;
+      padding: 18px 20px; display: flex; flex-direction: column; gap: 8px;
+    }
+    .flag.p2 { border-left-color: var(--amber); }
+    .flag-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .flag-item { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.4; }
+    .flag-action { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); }
+    .flag-action strong { font-family: var(--font-ui); font-weight: 600; color: var(--text); }
+    .flag-source { font-size: 12px; color: var(--text-muted); }
+
+    /* ─── KEY/VALUE ROWS ─── */
+    .kv { display: flex; flex-direction: column; gap: 0; }
+    .kv-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--border);
+    }
+    .kv-row:last-child { border-bottom: none; }
+    .kv-key { font-size: 14px; color: var(--text-secondary); }
+    .kv-val { font-size: 14px; font-weight: 600; color: var(--text); text-align: right; }
+    .kv-val.urgent { color: var(--red); }
+
+    /* ─── PROGRESS BAR ─── */
+    .progress-track { background: var(--grey-bg); border-radius: 999px; height: 10px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: var(--amber); transition: width 0.4s; }
+
+    /* ─── GOALS ─── */
+    .goal {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px 18px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .goal-top { display: flex; align-items: center; gap: 10px; }
+    .goal-id {
+      font-size: 12px; font-weight: 700; color: var(--accent);
+      background: var(--accent-light); border: 1px solid var(--accent-mid);
+      border-radius: 4px; padding: 2px 8px; flex-shrink: 0;
+    }
+    .goal-name { font-size: 15px; font-weight: 600; color: var(--text); }
+    .goal-pct { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--text-secondary); }
+    .goal-status { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); }
+
+    /* ─── TABLE ─── */
+    .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 12px 18px; border-bottom: 1px solid var(--border); background: var(--bg);
+    }
+    tbody td { padding: 13px 18px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+    tbody tr:last-child td { border-bottom: none; }
+    .td-dept { font-weight: 600; color: var(--text); white-space: nowrap; }
+    .td-owner { color: var(--text-muted); }
+    .td-status { color: var(--text-secondary); }
+
+    .inferred {
+      font-size: 12px; color: var(--text-muted); font-style: italic;
+      margin-top: 14px; padding-left: 10px; border-left: 2px solid var(--border-strong);
+    }
+
+    .footer {
+      background: var(--navy); color: #475569; padding: 24px;
+      text-align: center; font-size: 13px; margin-top: 48px;
+    }
+
+    .loading { padding: 60px 24px; text-align: center; color: var(--text-muted); font-size: 15px; }
+    .error { color: var(--red); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 28px; }
+      .hero { padding: 40px 20px 36px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .nav-links {
+        display: none; position: absolute; top: var(--nav-height); left: 0; right: 0;
+        flex-direction: column; gap: 0; background: var(--surface);
+        border-bottom: 1px solid var(--border); box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        padding: 8px 0;
+      }
+      .nav-links.open { display: flex; }
+      .nav-links li { padding: 0 24px; }
+      .nav-links a { display: block; padding: 12px 0; border-bottom: none; }
+      .nav-toggle { display: block; }
+      .card-value { font-size: 24px; }
+      thead { display: none; }
+      tbody td { display: block; padding: 6px 16px; border-bottom: none; }
+      tbody td.td-dept { padding-top: 14px; font-size: 15px; }
+      tbody tr { display: block; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+      tbody tr:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <span class="nav-logo">TMTH</span>
+        <span class="nav-label">Tough Minds Tender Hearts</span>
+      </div>
+      <button class="nav-toggle" aria-label="Toggle navigation" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="/">Portfolio</a></li>
+        <li><a href="/calmly">Calmly Resolve</a></li>
+        <li><a href="/ive">Forge</a></li>
+        <li><a href="/studio-director">Studio Director</a></li>
+        <li><a href="/dashboard" class="active">Dashboard</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Household system state</p>
+      <h1>Manuel Family — High Performance System</h1>
+      <p class="hero-subtitle">The live world model in one view. Flags, employment, finances, the house, the quarter, and who's running what.</p>
+      <span class="snapshot-note"><span class="snapshot-dot"></span><span id="snapshotNote">Loading snapshot…</span></span>
+    </div>
+  </section>
+
+  <!-- ─── TALK TO YOUR TEAM ─── -->
+  <section class="section" id="team" style="padding-top:32px;padding-bottom:8px;">
+    <h2 class="section-heading">Talk to your team</h2>
+    <p style="color:#94a3b8;font-size:14px;margin:-4px 0 18px;">Tap a role to ask a question — by voice or text. Each one knows the current state.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;">
+      <a href="/studio-director" style="text-decoration:none;background:#0f172a;color:#fff;border-radius:10px;padding:18px 20px;display:block;transition:transform .12s;">
+        <div style="font-weight:700;font-size:16px;">Studio Director</div>
+        <div style="font-size:13px;color:#94a3b8;margin-top:3px;">The venture portfolio — Calmly &amp; Forge</div>
+      </a>
+      <a href="/cos" style="text-decoration:none;background:#fff;border:1px solid #e2e8f0;color:#0f172a;border-radius:10px;padding:18px 20px;display:block;transition:transform .12s;">
+        <div style="font-weight:700;font-size:16px;color:#1d4ed8;">Chief of Staff</div>
+        <div style="font-size:13px;color:#94a3b8;margin-top:3px;">Plans, priorities, what needs you</div>
+      </a>
+      <a href="/cfo" style="text-decoration:none;background:#fff;border:1px solid #e2e8f0;color:#0f172a;border-radius:10px;padding:18px 20px;display:block;transition:transform .12s;">
+        <div style="font-weight:700;font-size:16px;color:#1d4ed8;">CFO</div>
+        <div style="font-size:13px;color:#94a3b8;margin-top:3px;">Finances, wealth, mortgage</div>
+      </a>
+      <a href="/property" style="text-decoration:none;background:#fff;border:1px solid #e2e8f0;color:#0f172a;border-radius:10px;padding:18px 20px;display:block;transition:transform .12s;">
+        <div style="font-weight:700;font-size:16px;color:#1d4ed8;">Head of Property</div>
+        <div style="font-size:13px;color:#94a3b8;margin-top:3px;">The N16 search &amp; Hawksley</div>
+      </a>
+    </div>
+  </section>
+
+  <div id="app">
+    <div class="loading">Loading household snapshot…</div>
+  </div>
+
+  <footer class="footer">
+    TMTH · Manuel Family High Performance System · Static snapshot — refresh from <code>household-state.yaml</code>
+  </footer>
+
+  <script>
+    const gbp = n => {
+      if (n === null || n === undefined || isNaN(n)) return '—';
+      const neg = n < 0;
+      const abs = Math.abs(n);
+      let s;
+      if (abs >= 1000000) s = '£' + (abs / 1000000).toFixed(2).replace(/\.00$/, '') + 'M';
+      else s = '£' + abs.toLocaleString('en-GB');
+      return (neg ? '−' : '') + s;
+    };
+    const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    function daysBetween(fromISO, toISO) {
+      const a = new Date(fromISO + 'T00:00:00');
+      const b = new Date(toISO + 'T00:00:00');
+      return Math.round((b - a) / 86400000);
+    }
+
+    function render(d) {
+      const sd = d.snapshot_date;
+      document.getElementById('snapshotNote').textContent =
+        'Snapshot ' + fmtDate(sd) + ' · from household-state.yaml (' + fmtDate(d.yaml_last_updated) + ')';
+
+      const flags = (d.system_flags || []).map(f => {
+        const p2 = f.priority !== 'P1';
+        return `<div class="flag ${p2 ? 'p2' : ''}">
+          <div class="flag-top">
+            <span class="badge ${p2 ? 'badge-amber' : 'badge-red'}">${esc(f.priority)}</span>
+            <span class="badge badge-grey">${esc(f.type)}</span>
+            <span class="flag-item">${esc(f.item)}</span>
+          </div>
+          <div class="flag-action"><strong>Action:</strong> ${esc(f.action_required)}</div>
+          <div class="flag-source">${esc(f.source)} · raised ${fmtDate(f.raised)} · ${esc(f.id)}</div>
+        </div>`;
+      }).join('');
+
+      // Employment
+      const t = d.employment.tom, p = d.employment.pauline;
+      const toStart = daysBetween(sd, t.start_date);
+      const countdown = toStart > 0 ? `${toStart} day${toStart === 1 ? '' : 's'} to start`
+                       : toStart === 0 ? 'Starts today' : 'Started';
+      const tomCard = `<div class="card">
+        <div class="card-label">Tom — ${esc(t.status)}</div>
+        <div class="card-title">${esc(t.employer)}</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">Day rate</span><span class="kv-val">${gbp(t.day_rate_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Start date</span><span class="kv-val">${fmtDate(t.start_date)}</span></div>
+          <div class="kv-row"><span class="kv-key">Countdown</span><span class="kv-val">${countdown}</span></div>
+          <div class="kv-row"><span class="kv-key">Conversion</span><span class="kv-val">${esc(t.conversion_target)}</span></div>
+          <div class="kv-row"><span class="kv-key">Contract received</span><span class="kv-val ${t.contract_received ? '' : 'urgent'}">${t.contract_received ? 'Yes' : 'Not yet'}</span></div>
+        </div>
+      </div>`;
+      const paulineCard = `<div class="card">
+        <div class="card-label">Pauline</div>
+        <div class="card-title">${esc(p.employer)}</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">Gross salary</span><span class="kv-val">£${esc(p.gross_salary_k)}k${p.raise_pending ? ' (raise pending)' : ''}</span></div>
+          <div class="kv-row"><span class="kv-key">Bonus (net)</span><span class="kv-val">${gbp(p.bonus_net_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Bonus status</span><span class="kv-val">${esc(p.bonus_status)}</span></div>
+        </div>
+      </div>`;
+
+      // Finances
+      const fin = d.household_finances;
+      const ms = fin.monthly_surplus;
+      const surplusCard = `<div class="card">
+        <div class="card-label">Monthly surplus</div>
+        <div class="card-value ${ms.now_gbp < 0 ? 'neg' : 'pos'}">${gbp(ms.now_gbp)}</div>
+        <div class="card-sub">now (Pauline-only, pre-June)</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">From June</span><span class="kv-val">${gbp(ms.from_june_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">From August</span><span class="kv-val">${gbp(ms.from_august_gbp)}</span></div>
+        </div>
+      </div>`;
+      const cash = fin.cash;
+      const cashCard = `<div class="card">
+        <div class="card-label">Liquidity</div>
+        <div class="card-value">${gbp(cash.total_incl_stock_gbp)}</div>
+        <div class="card-sub">total incl. stock</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">Liquid cash</span><span class="kv-val">${gbp(cash.total_liquid_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Accenture stock</span><span class="kv-val">${gbp(cash.accenture_stock_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Net worth</span><span class="kv-val">${gbp(fin.net_worth_gbp)}</span></div>
+        </div>
+      </div>`;
+      const ef = fin.emergency_fund;
+      const efPct = Math.min(100, Math.round((ef.current_gbp / ef.target_gbp) * 100));
+      const efColour = ef.status === 'green' ? 'var(--green)' : ef.status === 'red' ? 'var(--red)' : 'var(--amber)';
+      const efCard = `<div class="card">
+        <div class="card-label">Emergency fund</div>
+        <div class="card-value">${gbp(ef.current_gbp)}</div>
+        <div class="card-sub">of ${gbp(ef.target_gbp)} target · ${efPct}%</div>
+        <div class="progress-track"><div class="progress-fill" style="width:${efPct}%;background:${efColour}"></div></div>
+        <div style="margin-top:2px"><span class="badge badge-${ef.status === 'green' ? 'green' : ef.status === 'red' ? 'red' : 'amber'}">${esc(ef.status)}</span></div>
+      </div>`;
+      const protRows = (fin.protection || []).map(pr =>
+        `<div class="kv-row"><span class="kv-key">${esc(pr.item)}</span><span class="kv-val ${pr.urgent ? 'urgent' : ''}">${esc(pr.status)}</span></div>`
+      ).join('');
+      const protCard = `<div class="card" style="grid-column:1 / -1">
+        <div class="card-label">Protection</div>
+        <div class="card-title">Cover gaps</div>
+        <div class="kv">${protRows}</div>
+      </div>`;
+
+      // Property
+      const pr = d.property, h = pr.hawksley_road, mg = pr.mortgage, dep = pr.deposit;
+      const propCard = `<div class="card">
+        <div class="card-label">Target purchase — off-market</div>
+        <div class="card-title">${esc(h.address)}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="badge badge-blue">Offer ${esc(h.offer_status.split('—')[0].trim())}</span><span class="badge badge-grey">Asking ${gbp(h.price_gbp)}</span></div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">Opening offer</span><span class="kv-val">${gbp(h.opening_offer_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Target</span><span class="kv-val">${gbp(h.target_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Evidence ceiling</span><span class="kv-val">${gbp(h.evidence_ceiling_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Walk away above</span><span class="kv-val">${gbp(h.walk_away_above_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Solicitor</span><span class="kv-val">${esc(pr.solicitor.name)}</span></div>
+        </div>
+      </div>`;
+      const mortCard = `<div class="card">
+        <div class="card-label">Mortgage &amp; buying power</div>
+        <div style="margin-bottom:2px"><span class="badge badge-green">AIP ${esc(mg.aip_status.split('—')[0].trim())}</span></div>
+        <div class="card-value">${gbp(mg.buying_power_with_gift_gbp)}</div>
+        <div class="card-sub">buying power with gift</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">AIP confirmed</span><span class="kv-val">${gbp(mg.aip_confirmed_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">With loan (cond.)</span><span class="kv-val">${gbp(mg.buying_power_with_loan_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Broker</span><span class="kv-val">${esc(mg.broker)}</span></div>
+        </div>
+      </div>`;
+      const depCard = `<div class="card" style="grid-column:1 / -1">
+        <div class="card-label">Deposit picture</div>
+        <div class="card-title">${gbp(dep.total_available_gbp)} available — 100% gifted</div>
+        <div class="kv">
+          <div class="kv-row"><span class="kv-key">Own cash</span><span class="kv-val">${gbp(dep.own_cash_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Marcus &amp; Clare gift</span><span class="kv-val">${gbp(dep.marcus_clare_gift_gbp)}</span></div>
+          <div class="kv-row"><span class="kv-key">Marcus &amp; Clare loan (cond.)</span><span class="kv-val">${gbp(dep.marcus_clare_loan_gbp)}</span></div>
+        </div>
+        <div class="card-sub">${esc(dep.note)}</div>
+      </div>`;
+
+      // Goals
+      const goals = (d.quarter_goals || []).map(g => {
+        const colour = g.percent >= 80 ? 'var(--green)' : g.percent > 0 ? 'var(--accent)' : 'var(--grey)';
+        return `<div class="goal">
+          <div class="goal-top">
+            <span class="goal-id">${esc(g.id)}</span>
+            <span class="goal-name">${esc(g.name)}</span>
+            <span class="goal-pct">${g.percent}%</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:${g.percent}%;background:${colour}"></div></div>
+          <div class="goal-status">${esc(g.status)}</div>
+        </div>`;
+      }).join('');
+
+      // Departments
+      const deptRows = (d.departments || []).map(dp =>
+        `<tr><td class="td-dept">${esc(dp.department)}</td><td class="td-owner">${esc(dp.owner)}</td><td class="td-status">${esc(dp.status)}</td></tr>`
+      ).join('');
+
+      document.getElementById('app').innerHTML = `
+        <section class="section" id="flags">
+          <h2 class="section-heading">System flags</h2>
+          <p class="section-sub">Cross-domain items needing attention. P1 red, P2 amber.</p>
+          <div class="grid">${flags || '<div class="card"><div class="card-sub">No open flags.</div></div>'}</div>
+        </section>
+
+        <section class="section" id="employment">
+          <h2 class="section-heading">Employment</h2>
+          <p class="section-sub">Two incomes — the household engine.</p>
+          <div class="grid grid-2">${tomCard}${paulineCard}</div>
+        </section>
+
+        <section class="section" id="finances">
+          <h2 class="section-heading">Finances</h2>
+          <p class="section-sub">Surplus, liquidity, the emergency fund, and where cover is missing.</p>
+          <div class="grid grid-3" style="margin-bottom:18px">${surplusCard}${cashCard}${efCard}</div>
+          <div class="grid grid-2">${protCard}</div>
+        </section>
+
+        <section class="section" id="property">
+          <h2 class="section-heading">Property</h2>
+          <p class="section-sub">Hawksley Road — offer submitted. AIP active.</p>
+          <div class="grid grid-2" style="margin-bottom:18px">${propCard}${mortCard}</div>
+          <div class="grid grid-2">${depCard}</div>
+        </section>
+
+        <section class="section" id="goals">
+          <h2 class="section-heading">Quarter goals</h2>
+          <p class="section-sub">Five goals, one line each. ${esc(d.quarter_goals_note || '')}</p>
+          <div class="grid grid-2">${goals}</div>
+        </section>
+
+        <section class="section" id="departments">
+          <h2 class="section-heading">Departments</h2>
+          <p class="section-sub">Who's running what, and current status.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Department</th><th>Owner</th><th>Status</th></tr></thead>
+              <tbody>${deptRows}</tbody>
+            </table>
+          </div>
+          <p class="inferred">${esc(d.departments_note || '')}</p>
+        </section>
+      `;
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '—';
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const [y, m, day] = iso.split('-');
+      return parseInt(day, 10) + ' ' + months[parseInt(m, 10) - 1] + ' ' + y;
+    }
+
+    fetch('/household-snapshot.json', { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(render)
+      .catch(err => {
+        document.getElementById('app').innerHTML =
+          '<div class="loading error">Could not load the household snapshot (' + esc(err.message) + ').</div>';
+        document.getElementById('snapshotNote').textContent = 'Snapshot unavailable';
+      });
+  </script>
+
+</body>
+</html>

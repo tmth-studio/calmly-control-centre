@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talk to your team — TMTH Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-secondary: #475569;
+      --text-muted: #94a3b8; --border: #e2e8f0; --border-strong: #cbd5e1;
+      --accent: #1d4ed8; --accent-light: #eff6ff; --green: #059669; --green-bg: #ecfdf5;
+      --red: #dc2626; --red-bg: #fef2f2; --navy: #0f172a; --nav-height: 60px;
+      --font-ui: 'DM Sans', system-ui, sans-serif; --font-body: 'Lora', Georgia, serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; height: 100vh; height: 100dvh; display: flex; flex-direction: column; }
+
+    .nav { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); height: var(--nav-height); display: flex; align-items: center; flex-shrink: 0; }
+    .nav-inner { max-width: 900px; margin: 0 auto; padding: 0 20px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .nav-brand { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
+    .nav-logo { font-size: 19px; font-weight: 700; color: var(--accent); letter-spacing: -0.02em; }
+    .nav-sub { font-size: 12px; color: var(--text-muted); }
+    .nav-links { display: flex; gap: 14px; list-style: none; overflow-x: auto; }
+    .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; white-space: nowrap; }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    @media (max-width: 600px) { .nav-sub { display: none; } }
+
+    .wrap { flex: 1; display: flex; flex-direction: column; max-width: 900px; width: 100%; margin: 0 auto; padding: 0 20px; min-height: 0; }
+    .header { padding: 20px 0 10px; flex-shrink: 0; display: flex; align-items: center; gap: 14px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; flex-shrink: 0; }
+    .header h1 { font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+    .header p { color: var(--text-muted); font-size: 13px; }
+
+    .log { flex: 1; overflow-y: auto; padding: 10px 0; display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+    .msg { max-width: 82%; padding: 11px 15px; border-radius: 14px; font-family: var(--font-body); font-size: 16px; line-height: 1.5; white-space: pre-wrap; }
+    .msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .msg.bot { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .msg.bot .who { display: block; font-family: var(--font-ui); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+    .msg.sys { align-self: center; background: var(--accent-light); color: var(--accent); font-family: var(--font-ui); font-size: 13px; padding: 8px 14px; border-radius: 8px; text-align: center; max-width: 100%; }
+    .msg.err { align-self: center; background: var(--red-bg); color: var(--red); font-family: var(--font-ui); font-size: 13px; padding: 8px 14px; border-radius: 8px; text-align: center; max-width: 100%; }
+    .suggest { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 0 8px; }
+    .suggest button { font-family: var(--font-ui); font-size: 13px; background: var(--surface); border: 1px solid var(--border-strong); color: var(--text-secondary); border-radius: 16px; padding: 6px 13px; cursor: pointer; }
+    .suggest button:hover { border-color: var(--accent); color: var(--accent); }
+    .typing { align-self: flex-start; display: flex; gap: 5px; padding: 13px 17px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    .typing span { width: 7px; height: 7px; background: var(--text-muted); border-radius: 50%; animation: blink 1.3s infinite both; }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+    .controls { flex-shrink: 0; padding: 12px 0 20px; border-top: 1px solid var(--border); background: var(--bg); }
+    .input-row { display: flex; gap: 9px; align-items: flex-end; }
+    textarea { flex: 1; resize: none; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 14px; font-family: var(--font-ui); font-size: 15px; line-height: 1.4; max-height: 120px; background: var(--surface); color: var(--text); }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    button { font-family: var(--font-ui); font-weight: 600; border: none; border-radius: 12px; cursor: pointer; transition: all 0.15s; }
+    .mic { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 21px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .mic:hover { background: #1741a6; }
+    .mic.listening { background: var(--red); animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.5); } 70% { box-shadow: 0 0 0 14px rgba(220,38,38,0); } 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0); } }
+    .send { padding: 0 18px; height: 52px; background: var(--navy); color: #fff; font-size: 14px; }
+    .send:hover { background: #1e293b; }
+    .send:disabled { background: var(--border-strong); cursor: not-allowed; }
+    .meta { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; font-size: 12px; color: var(--text-muted); }
+    .toggle { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+    .hint { font-style: italic; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand"><span class="nav-logo">TMTH</span><span class="nav-sub">Tough Minds Tender Hearts</span></div>
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/">Portfolio</a></li>
+        <li><a href="/studio-director">Studio</a></li>
+        <li><a href="/cos" data-role="cos">CoS</a></li>
+        <li><a href="/cfo" data-role="cfo">CFO</a></li>
+        <li><a href="/property" data-role="property">Property</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="header">
+      <div class="avatar" id="avatar">·</div>
+      <div>
+        <h1 id="role-name">Your team</h1>
+        <p id="role-sub"></p>
+      </div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <div class="controls">
+      <div class="suggest" id="suggest"></div>
+      <div class="input-row">
+        <button class="mic" id="mic" title="Press to talk" aria-label="Press to talk">🎙</button>
+        <textarea id="input" rows="1" placeholder="Speak or type…"></textarea>
+        <button class="send" id="send">Send</button>
+      </div>
+      <div class="meta">
+        <label class="toggle"><input type="checkbox" id="speak" checked> Speak replies aloud</label>
+        <span class="hint" id="status"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ─── Role config (path-based) ───
+    const ROLE_CONFIG = {
+      cos: {
+        name: 'Chief of Staff', sub: 'The operational layer — plans, priorities, what needs you', avatar: 'CoS',
+        greeting: "I'm your Chief of Staff. Ask me what needs your attention today, what's stale, or how the week's shaping up.",
+        suggestions: ["What needs my attention today?", "What's stale or slipping?", "What should I do before Barclays starts?", "Where's the week at?"]
+      },
+      cfo: {
+        name: 'CFO', sub: 'Household finances, wealth, mortgage', avatar: 'CFO',
+        greeting: "I'm your CFO. Ask about cash flow, the deposit, the bonus, protection gaps, or the long-term plan.",
+        suggestions: ["What's the cash flow picture?", "Summarise the deposit", "What protection gaps are urgent?", "Where are we on the £4M plan?"]
+      },
+      property: {
+        name: 'Head of Property', sub: 'The N16 search and the Hawksley decision', avatar: 'HoP',
+        greeting: "I'm your Head of Property. Ask about Hawksley Road, what to offer, the AIP, or the shortlist.",
+        suggestions: ["Why is £2M too high for Hawksley?", "What should we offer?", "Is the AIP sorted?", "What's on the shortlist?"]
+      }
+    };
+
+    const pathKey = location.pathname.replace(/\//g, '');
+    const role = ROLE_CONFIG[pathKey] ? pathKey : 'cos';
+    const cfg = ROLE_CONFIG[role];
+
+    document.title = cfg.name + ' — TMTH Studio';
+    document.getElementById('role-name').textContent = cfg.name;
+    document.getElementById('role-sub').textContent = cfg.sub;
+    document.getElementById('avatar').textContent = cfg.avatar;
+    document.querySelectorAll('.nav-links a[data-role]').forEach(a => { if (a.dataset.role === role) a.classList.add('active'); });
+
+    const log = document.getElementById('log');
+    const input = document.getElementById('input');
+    const sendBtn = document.getElementById('send');
+    const micBtn = document.getElementById('mic');
+    const speakToggle = document.getElementById('speak');
+    const status = document.getElementById('status');
+    const suggest = document.getElementById('suggest');
+    const history = [];
+
+    // greeting + suggestions
+    addMsg('sys', cfg.greeting);
+    cfg.suggestions.forEach(q => {
+      const b = document.createElement('button');
+      b.textContent = q;
+      b.onclick = () => { input.value = q; autosize(); send(); };
+      suggest.appendChild(b);
+    });
+
+    // ─── Voice input ───
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition = null, listening = false;
+    if (SR) {
+      recognition = new SR();
+      recognition.lang = 'en-GB'; recognition.interimResults = true; recognition.continuous = false;
+      recognition.onresult = (e) => { let t = ''; for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript; input.value = t; autosize(); };
+      recognition.onend = () => { listening = false; micBtn.classList.remove('listening'); status.textContent = input.value.trim() ? 'Ready — press send' : ''; if (input.value.trim()) send(); };
+      recognition.onerror = (e) => { listening = false; micBtn.classList.remove('listening'); status.textContent = e.error === 'not-allowed' ? 'Microphone blocked — allow access' : 'Voice error: ' + e.error; };
+    } else { micBtn.disabled = true; status.textContent = 'Voice needs Chrome or Safari — typing works.'; }
+
+    micBtn.addEventListener('click', () => {
+      if (!recognition) return;
+      if (listening) { recognition.stop(); return; }
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      input.value = ''; listening = true; micBtn.classList.add('listening'); status.textContent = 'Listening…';
+      try { recognition.start(); } catch (_) {}
+    });
+
+    // ─── Voice output ───
+    function speak(text) {
+      if (!speakToggle.checked || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-GB'; u.rate = 1.04;
+      const voices = window.speechSynthesis.getVoices();
+      const pref = voices.find(v => /en-GB/.test(v.lang) && /Male|Daniel|Arthur|George/.test(v.name)) || voices.find(v => /en-GB/.test(v.lang));
+      if (pref) u.voice = pref;
+      window.speechSynthesis.speak(u);
+    }
+
+    function autosize() { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 120) + 'px'; }
+    input.addEventListener('input', autosize);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+
+    function addMsg(kind, text) {
+      const d = document.createElement('div');
+      if (kind === 'user') { d.className = 'msg user'; d.textContent = text; }
+      else if (kind === 'bot') { d.className = 'msg bot'; d.innerHTML = '<span class="who">' + cfg.name + '</span>'; d.appendChild(document.createTextNode(text)); }
+      else if (kind === 'err') { d.className = 'msg err'; d.textContent = text; }
+      else { d.className = 'msg sys'; d.textContent = text; }
+      log.appendChild(d); log.scrollTop = log.scrollHeight; return d;
+    }
+    function showTyping() { const t = document.createElement('div'); t.className = 'typing'; t.id = 'typing'; t.innerHTML = '<span></span><span></span><span></span>'; log.appendChild(t); log.scrollTop = log.scrollHeight; }
+    function hideTyping() { const t = document.getElementById('typing'); if (t) t.remove(); }
+
+    async function send() {
+      const text = input.value.trim();
+      if (!text) return;
+      suggest.style.display = 'none';
+      addMsg('user', text);
+      history.push({ role: 'user', content: text });
+      input.value = ''; autosize(); status.textContent = '';
+      sendBtn.disabled = true; showTyping();
+      try {
+        const r = await fetch('/api/chat/' + role, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages: history })
+        });
+        const data = await r.json();
+        hideTyping();
+        if (!r.ok) { addMsg('err', data.error || 'Something went wrong.'); }
+        else { addMsg('bot', data.reply); history.push({ role: 'assistant', content: data.reply }); speak(data.reply); }
+      } catch (_) { hideTyping(); addMsg('err', 'Could not reach ' + cfg.name + '. Check your connection.'); }
+      finally { sendBtn.disabled = false; }
+    }
+    sendBtn.addEventListener('click', send);
+    if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
